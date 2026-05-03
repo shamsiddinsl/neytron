@@ -7,92 +7,173 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --bg: #080a0f; --sidebar: #11141d; --card: rgba(22, 27, 38, 0.8); --accent: #00e5ff; --danger: #ff3d71; --text: #ffffff; --muted: #848da1; --border: rgba(255, 255, 255, 0.05); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
-        .container { display: flex; width: 100%; height: 100vh; }
-        .sidebar { width: 320px; background: var(--sidebar); padding: 30px; display: flex; flex-direction: column; border-right: 1px solid var(--border); gap: 25px; }
-        .brand { font-size: 20px; font-weight: 900; color: var(--accent); letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
-        .input-group h3 { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; opacity: 0.8; }
-        input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 10px; color: white; border-radius: 8px; outline: none; margin-bottom: 10px; }
-        .activity-row { display: grid; grid-template-columns: 1fr 70px 30px; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .main-btn { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: auto; width: 100%; }
-        .mini-btn { background: none; border: 1px solid var(--border); color: white; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; }
-        .delete-btn { border: none; color: var(--muted); cursor: pointer; background: none; }
-        .dashboard { flex: 1; padding: 40px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top right, #161b26, #080a0f); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 1000px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 30px; backdrop-filter: blur(10px); position: relative; }
-        .chart-box { height: 400px; display: flex; align-items: center; justify-content: center; }
-        .chart-overlay { position: absolute; text-align: center; }
-        #finalFreeText { font-size: 60px; font-weight: 900; color: var(--accent); display: block; line-height: 1; }
-        #activityList { max-height: 200px; overflow-y: auto; }
+        :root { --bg: #0b0f19; --sidebar: #151b28; --card: #1e2533; --accent: #00e5ff; --danger: #ff3d71; --text: #ffffff; --muted: #848da1; --border: rgba(255, 255, 255, 0.08); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        /* Mobil uchun moslashuvchan layout */
+        .container { display: flex; flex-direction: column; min-height: 100vh; }
+        @media (min-width: 768px) { .container { flex-direction: row; } }
+
+        .sidebar { width: 100%; background: var(--sidebar); padding: 25px; border-bottom: 1px solid var(--border); }
+        @media (min-width: 768px) { .sidebar { width: 350px; height: 100vh; border-right: 1px solid var(--border); border-bottom: none; overflow-y: auto; } }
+
+        .brand { font-size: 22px; font-weight: 900; color: var(--accent); letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        h3 { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; opacity: 0.8; }
+        
+        .input-group { margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; }
+        input { width: 100%; background: #0b0f19; border: 1px solid var(--border); padding: 12px; color: white; border-radius: 10px; outline: none; margin-bottom: 10px; font-size: 14px; }
+        
+        /* Zonalarning ko'rinishini yaxshilash */
+        .activity-row { display: grid; grid-template-columns: 2fr 1fr 40px; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .activity-row input { margin-bottom: 0; }
+        
+        .main-btn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .mini-btn { background: var(--accent); color: #000; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .delete-btn { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 18px; }
+
+        .dashboard { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; padding: 25px; width: 100%; max-width: 500px; text-align: center; position: relative; }
+        
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .chart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+        #finalFreeText { font-size: 48px; font-weight: 900; color: var(--accent); display: block; }
     </style>
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
-            <div class="brand"><i class="fa-solid fa-microchip"></i> NEYTRON OS</div>
-            <section class="input-group">
-                <h3>Asosiy Vaqt</h3>
-                <input type="number" id="sleepH" value="8" placeholder="Uyqu (soat)">
-                <input type="number" id="workH" value="8" placeholder="Ish (soat)">
-            </section>
-            <section class="input-group">
+            <div class="brand"><i class="fa-solid fa-atom"></i> NEYTRON OS</div>
+            <div class="input-group">
+                <h3>Asosiy Vaqt (Soat)</h3>
+                <label style="font-size: 12px; color: var(--muted);">Uyqu</label>
+                <input type="number" id="sleepH" value="8" min="0" max="24">
+                <label style="font-size: 12px; color: var(--muted);">Ish / O'qish</label>
+                <input type="number" id="workH" value="8" min="0" max="24">
+            </div>
+            <div class="input-group">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3 style="margin:0;">Zonalar</h3>
+                    <h3 style="margin:0;">Foydali Zonalar</h3>
                     <button id="addActivityBtn" class="mini-btn"><i class="fa-solid fa-plus"></i></button>
                 </div>
                 <div id="activityList"></div>
-            </section>
-            <button id="calculateBtn" class="main-btn">HISOB-KITOBLAR</button>
-        </aside>
-        <main class="dashboard">
-            <div class="grid">
-                <div class="card chart-box">
-                    <canvas id="timeChart"></canvas>
-                    <div class="chart-overlay"><span id="finalFreeText">08:00</span><small>BO'SH VAQT</small></div>
-                </div>
-                <div class="card" id="insightArea"></div>
             </div>
+            <button id="calculateBtn" class="main-btn">TAHLIL QILISH</button>
+        </aside>
+        
+        <main class="dashboard">
+            <div class="card">
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                    <div class="chart-overlay">
+                        <span id="finalFreeText">08:00</span>
+                        <small style="color:var(--muted); letter-spacing:2px;">BO'SH VAQT</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="insightArea"></div>
         </main>
     </div>
+
     <script>
         class NeytronOS {
-            constructor() { this.chart = null; this.init(); }
-            init() { this.setupChart(); this.bindEvents(); this.addNewZone(); this.executeTahlil(); }
+            constructor() {
+                this.chart = null;
+                this.init();
+            }
+
+            init() {
+                this.setupChart();
+                this.bindEvents();
+                this.addNewZone('Sport', 60);
+                this.executeTahlil();
+            }
+
             bindEvents() {
                 document.getElementById('addActivityBtn').onclick = () => this.addNewZone();
                 document.getElementById('calculateBtn').onclick = () => this.executeTahlil();
-                document.getElementById('sleepH').oninput = () => this.executeTahlil();
-                document.getElementById('workH').oninput = () => this.executeTahlil();
             }
+
             setupChart() {
                 const ctx = document.getElementById('timeChart').getContext('2d');
                 this.chart = new Chart(ctx, {
                     type: 'doughnut',
-                    data: { datasets: [{ data: [480, 480, 0, 480], backgroundColor: ['#1e293b', '#2d3446', '#00e5ff', '#ff3d71'], borderWidth: 0, cutout: '85%' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: ['#1e293b', '#2d3446', '#00e5ff', '#ff3d71', '#ff9f43', '#4cd137', '#9c88ff'],
+                            borderWidth: 0,
+                            cutout: '80%',
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (item) => ` ${item.label}: ${item.raw} daqiqa`
+                                }
+                            }
+                        }
+                    }
                 });
             }
-            addNewZone(name = '', min = 0) {
+
+            addNewZone(name = '', min = '') {
                 const container = document.getElementById('activityList');
                 const div = document.createElement('div');
                 div.className = 'activity-row';
-                div.innerHTML = `<input type="text" placeholder="Nomi" value="${name}" class="act-name"><input type="number" placeholder="Min" value="${min}" class="act-min"><button class="delete-btn"><i class="fa-solid fa-trash"></i></button>`;
+                div.innerHTML = `
+                    <input type="text" placeholder="Zona nomi" value="${name}" class="act-name">
+                    <input type="number" placeholder="Min" value="${min}" class="act-min">
+                    <button class="delete-btn"><i class="fa-solid fa-circle-xmark"></i></button>
+                `;
                 container.appendChild(div);
                 div.querySelector('.delete-btn').onclick = () => { div.remove(); this.executeTahlil(); };
                 div.querySelectorAll('input').forEach(i => i.oninput = () => this.executeTahlil());
             }
+
             executeTahlil() {
-                const sH = +document.getElementById('sleepH').value || 0, wH = +document.getElementById('workH').value || 0;
-                let investMin = 0;
-                document.querySelectorAll('.act-min').forEach(inp => investMin += (+inp.value || 0));
-                const freeMin = Math.max(0, 1440 - (sH*60 + wH*60 + investMin));
-                document.getElementById('finalFreeText').innerText = `${String(Math.floor(freeMin/60)).padStart(2,'0')}:${String(freeMin%60).padStart(2,'0')}`;
-                this.chart.data.datasets[0].data = [sH*60, wH*60, investMin, freeMin];
+                const sH = (+document.getElementById('sleepH').value || 0) * 60;
+                const wH = (+document.getElementById('workH').value || 0) * 60;
+                
+                let labels = ['Uyqu', 'Ish/O\'qish'];
+                let values = [sH, wH];
+                let investTotal = 0;
+
+                document.querySelectorAll('.activity-row').forEach(row => {
+                    const name = row.querySelector('.act-name').value || 'Nomsiz zona';
+                    const min = +row.querySelector('.act-min').value || 0;
+                    if (min > 0) {
+                        labels.push(name);
+                        values.push(min);
+                        investTotal += min;
+                    }
+                });
+
+                const freeMin = Math.max(0, 1440 - (sH + wH + investTotal));
+                labels.push('Bo\'sh vaqt');
+                values.push(freeMin);
+
+                // UI yangilash
+                const h = Math.floor(freeMin / 60);
+                const m = freeMin % 60;
+                document.getElementById('finalFreeText').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+                
+                this.chart.data.labels = labels;
+                this.chart.data.datasets[0].data = values;
                 this.chart.update();
-                const lostY = ((Math.floor((freeMin*365)/1440)*40)/365).toFixed(1);
-                document.getElementById('insightArea').innerHTML = `<p style="font-size:12px; color:var(--accent); font-weight:800;">40 YILLIK PROGNOZ</p><h2 style="font-size:40px; margin:10px 0;">${lostY} YIL</h2><p style="opacity:0.7; font-size:13px;">Umringizning ushbu qismi nazoratsiz o'tadi.</p>`;
+
+                const lostYears = ((Math.floor((freeMin * 365) / 1440) * 40) / 365).toFixed(1);
+                document.getElementById('insightArea').innerHTML = `
+                    <h4 style="color:var(--accent); font-size:12px;">40 YILLIK PROGNOZ</h4>
+                    <h2 style="font-size:35px; margin:10px 0;">${lostYears} YIL</h2>
+                    <p style="font-size:13px; opacity:0.6;">Ushbu vaqt sizning nazoratingizdan tashqarida.</p>
+                `;
             }
         }
         window.onload = () => new NeytronOS();
