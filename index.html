@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeytronOS | Time Intelligence Engine</title>
+    <title>NeytronOS | Time Intelligence</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,59 +14,60 @@
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.5; }
+        body { background: var(--bg); color: var(--text); padding: 15px; }
 
         .app-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) { .app-container { grid-template-columns: 400px 1fr; } }
+        @media (min-width: 900px) { .app-container { grid-template-columns: 380px 1fr; } }
 
-        /* Professional Logo & Header */
+        /* Branding */
         .header { 
-            grid-column: 1 / -1; background: var(--card); padding: 20px 30px; border-radius: 24px; 
+            grid-column: 1 / -1; background: var(--card); padding: 20px 30px; border-radius: 20px; 
             border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
         }
-        .logo-box { display: flex; align-items: center; gap: 15px; }
-        .logo-circle { 
-            width: 45px; height: 45px; border: 3px solid var(--accent); border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; position: relative;
-            box-shadow: 0 0 20px var(--glow); transform: rotate(45deg);
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { 
+            width: 40px; height: 40px; border: 2px solid var(--accent); border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--glow);
         }
-        .logo-circle i { transform: rotate(-45deg); color: var(--accent); font-size: 20px; }
-        .brand-text { font-size: 22px; font-weight: 800; letter-spacing: 2px; color: #fff; }
+        .brand-text { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
         .brand-text span { color: var(--accent); }
 
-        /* Layout Cards */
+        /* Card System */
         .card { 
             background: var(--card); border-radius: 24px; padding: 25px; 
-            border: 1px solid var(--border); transition: 0.4s ease;
+            border: 1px solid var(--border);
         }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px; }
+        .section-title { font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--accent); display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+
+        /* Input Controls */
+        .input-group { margin-bottom: 18px; }
+        label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
         input { 
             width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 14px; 
-            color: #fff; border-radius: 14px; font-size: 15px; outline: none; transition: 0.3s;
+            color: #fff; border-radius: 12px; font-size: 15px; outline: none;
         }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--glow); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--glow); }
 
-        /* Dynamic Zones */
+        /* Zone Builder */
         .zone-row { display: grid; grid-template-columns: 1fr 80px 40px; gap: 10px; margin-bottom: 12px; }
-        .btn { cursor: pointer; border: none; font-weight: 700; border-radius: 16px; transition: 0.3s; }
-        .btn-add { background: rgba(34, 211, 238, 0.1); color: var(--accent); width: 100%; padding: 15px; border: 1px dashed var(--accent); }
-        .btn-save { background: var(--accent); color: #020617; width: 100%; padding: 18px; margin-top: 20px; font-size: 16px; }
+        .btn { cursor: pointer; border: none; font-weight: 700; border-radius: 14px; transition: 0.2s; }
+        .btn-add { background: rgba(34, 211, 238, 0.05); color: var(--accent); width: 100%; padding: 12px; border: 1px dashed var(--accent); }
+        .btn-save { background: var(--accent); color: #020617; width: 100%; padding: 16px; margin-top: 20px; font-size: 15px; box-shadow: 0 4px 15px var(--glow); }
 
-        /* Analysis Panel */
-        .analysis-panel { margin-top: 25px; }
-        .analysis-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--accent); }
+        /* Professional Insights Center */
         .insight-card { 
-            background: rgba(255,255,255,0.03); border-left: 4px solid var(--accent); 
-            padding: 15px; border-radius: 0 15px 15px 0; margin-bottom: 15px; font-size: 14px;
+            background: rgba(255,255,255,0.02); border-left: 3px solid var(--accent); 
+            padding: 20px; border-radius: 0 16px 16px 0; margin-bottom: 15px;
         }
-        .insight-card strong { color: var(--accent); display: block; margin-bottom: 5px; }
+        .insight-card strong { color: var(--accent); display: block; margin-bottom: 8px; font-size: 15px; }
+        .insight-card p { font-size: 14px; line-height: 1.6; color: #cbd5e1; }
+        .insight-card b { color: #fff; }
 
-        /* Visuals */
-        .chart-box { position: relative; height: 350px; display: flex; align-items: center; justify-content: center; }
-        .center-stat { position: absolute; text-align: center; }
-        #time-left { font-size: 55px; font-weight: 900; color: #fff; }
-        .bad-time { color: var(--danger) !important; }
+        /* Visualization */
+        .chart-box { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; }
+        .center-display { position: absolute; text-align: center; }
+        #balance-text { font-size: 50px; font-weight: 900; color: #fff; line-height: 1; }
+        .negative { color: var(--danger) !important; }
     </style>
 </head>
 <body>
@@ -74,47 +75,47 @@
 <div class="app-container">
     <header class="header">
         <div class="logo-box">
-            <div class="logo-circle"><i class="fa-solid fa-atom"></i></div>
+            <div class="logo-icon"><i class="fa-solid fa-bolt" style="color: var(--accent);"></i></div>
             <div class="brand-text">NEYTRON<span>OS</span></div>
         </div>
-        <input type="date" id="datePicker" style="width: auto; padding: 10px; border-radius: 10px;">
+        <input type="date" id="datePicker" style="width: auto; padding: 8px; border-radius: 8px;">
     </header>
 
     <aside class="card">
-        <div class="analysis-title"><i class="fa-solid fa-gauge-high"></i> Resurs Kiritish</div>
+        <div class="section-title"><i class="fa-solid fa-clock"></i> Taqsimot</div>
         <div class="input-group">
-            <label>Uyqu (Sirkad ritm)</label>
+            <label>Uyqu (Soat)</label>
             <input type="number" id="sleepH" value="8" step="0.5">
         </div>
         <div class="input-group">
-            <label>Asosiy Majburiyatlar</label>
+            <label>Majburiyatlar (Ish/O'qish)</label>
             <input type="number" id="workH" value="8" step="0.5">
         </div>
 
-        <div style="margin-bottom: 10px;"><label>Foydali Investitsiyalar (Zonalar)</label></div>
-        <div id="zones-area"></div>
-        <button class="btn btn-add" onclick="addZone()"><i class="fa-solid fa-plus"></i> Zona Qo'shish</button>
+        <div class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-layer-group"></i> Foydali Zonalar</div>
+        <div id="zones-container"></div>
+        <button class="btn btn-add" onclick="addNewZone()"><i class="fa-solid fa-plus-circle"></i> Zona qo'shish</button>
         
-        <button class="btn btn-save" onclick="saveAndAnalyze()">
-            <i class="fa-solid fa-bolt"></i> SAQLASH VA TAHLIL
+        <button class="btn btn-save" onclick="saveData()">
+            <i class="fa-solid fa-microchip"></i> TAHLIL VA SAQLASH
         </button>
     </aside>
 
     <main>
-        <section class="card">
+        <section class="card" style="margin-bottom: 20px;">
             <div class="chart-box">
-                <canvas id="timeChart"></canvas>
-                <div class="center-stat">
-                    <div id="time-left">08:00</div>
+                <canvas id="balanceChart"></canvas>
+                <div class="center-display">
+                    <div id="balance-text">08:00</div>
                     <p style="font-size: 10px; letter-spacing: 2px; opacity: 0.5;">QOLGAN BALANS</p>
                 </div>
             </div>
         </section>
 
-        <section class="card analysis-panel" id="analysis-results">
-            <div class="analysis-title"><i class="fa-solid fa-brain"></i> Neytron Analitika Markazi</div>
-            <div id="insights-list">
-                <div class="insight-card">Ma'lumotlarni kiriting va "Tahlil" tugmasini bosing...</div>
+        <section class="card">
+            <div class="section-title"><i class="fa-solid fa-brain"></i> Neytron Analitika Markazi</div>
+            <div id="insights-output">
+                <div class="insight-card"><p>Ma'lumotlarni kiriting va tahlil tugmasini bosing.</p></div>
             </div>
         </section>
     </main>
@@ -122,132 +123,127 @@
 
 <script>
 let chart;
-const dateInput = document.getElementById('datePicker');
-dateInput.valueAsDate = new Date();
+const dateEl = document.getElementById('datePicker');
+dateEl.valueAsDate = new Date();
 
 function init() {
-    load();
-    dateInput.onchange = load;
+    loadData();
+    dateEl.onchange = loadData;
 }
 
-function addZone(n = '', v = '') {
+function addNewZone(name = '', min = '') {
     const div = document.createElement('div');
     div.className = 'zone-row';
     div.innerHTML = `
-        <input type="text" placeholder="Nom" value="${n}" class="zn">
-        <input type="number" placeholder="Min" value="${v}" class="zv">
-        <button onclick="this.parentElement.remove(); update()" style="background:none; color:var(--danger); border:none;"><i class="fa-solid fa-trash-can"></i></button>
+        <input type="text" placeholder="Zona nomi" value="${name}" class="z-n">
+        <input type="number" placeholder="Min" value="${min}" class="z-v">
+        <button onclick="this.parentElement.remove(); refreshUI()" style="background:none; color:var(--danger); border:none; font-size:18px;"><i class="fa-solid fa-circle-xmark"></i></button>
     `;
-    document.getElementById('zones-area').appendChild(div);
-    div.querySelectorAll('input').forEach(i => i.oninput = update);
-    update();
+    document.getElementById('zones-container').appendChild(div);
+    div.querySelectorAll('input').forEach(i => i.oninput = refreshUI);
+    refreshUI();
 }
 
-function update() {
+function refreshUI() {
     const s = (+document.getElementById('sleepH').value || 0) * 60;
     const w = (+document.getElementById('workH').value || 0) * 60;
-    let labels = ['Uyqu', 'Majburiyatlar'], values = [s, w], zSum = 0;
+    let labels = ['Uyqu', 'Majburiyatlar'], values = [s, w], zTotal = 0;
 
     document.querySelectorAll('.zone-row').forEach(r => {
-        const name = r.querySelector('.zn').value || 'Zona', min = +r.querySelector('.zv').value || 0;
-        if(min > 0) { labels.push(name); values.push(min); zSum += min; }
+        const n = r.querySelector('.z-n').value || 'Zona', v = +r.querySelector('.z-v').value || 0;
+        if(v > 0) { labels.push(n); values.push(v); zTotal += v; }
     });
 
-    const total = s + w + zSum;
+    const total = s + w + zTotal;
     const free = 1440 - total;
-    const display = document.getElementById('time-left');
+    const disp = document.getElementById('balance-text');
     
-    display.innerText = `${Math.floor(Math.abs(free)/60).toString().padStart(2,'0')}:${(Math.abs(free)%60).toString().padStart(2,'0')}`;
-    free < 0 ? display.classList.add('bad-time') : display.classList.remove('bad-time');
+    disp.innerText = `${Math.floor(Math.abs(free)/60).toString().padStart(2,'0')}:${(Math.abs(free)%60).toString().padStart(2,'0')}`;
+    free < 0 ? disp.classList.add('negative') : disp.classList.remove('negative');
 
     labels.push('Bo\'sh vaqt'); values.push(free > 0 ? free : 0);
 
     if(chart) chart.destroy();
-    chart = new Chart(document.getElementById('timeChart'), {
+    chart = new Chart(document.getElementById('balanceChart'), {
         type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
                 data: values,
                 backgroundColor: ['#1e293b', '#334155', '#22d3ee', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981'],
-                borderWidth: 0, cutout: '85%'
+                borderWidth: 0, cutout: '82%'
             }]
         },
         options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
     });
 }
 
-function saveAndAnalyze() {
-    const data = {
-        s: document.getElementById('sleepH').value,
-        w: document.getElementById('workH').value,
-        z: Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.zn').value, v: r.querySelector('.zv').value}))
-    };
-    localStorage.setItem(`n_v4_${dateInput.value}`, JSON.stringify(data));
+function saveData() {
+    const s = document.getElementById('sleepH').value;
+    const w = document.getElementById('workH').value;
+    const z = Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.z-n').value, v: r.querySelector('.z-v').value}));
     
-    // Ilmiy Tahlil Algoritmi
-    const freeMin = 1440 - ((+data.s*60) + (+data.w*60) + data.z.reduce((a,b)=>a+(+b.v),0));
-    const list = document.getElementById('insights-list');
-    list.innerHTML = '';
-
-    const insights = [];
-    
-    // 1. Pareto Printsipi (80/20)
-    if(freeMin > 180) {
-        insights.push({
-            t: "Pareto Printsipi (80/20)",
-            m: `Sizda ${Math.floor(freeMin/60)} soat bo'sh vaqtingiz bor. Ilmiy jihatdan, ushbu vaqtning bor-yo'g'i 20% qismini (ya'ni ${Math.floor(freeMin*0.2)} daqiqa) eng muhim maqsadingizga yo'naltirsangiz, kunlik natijangizning 80% qismini qo'lga kiritasiz.`
-        });
-    }
-
-    // 2. 10,000 Soat qoidasi
-    data.z.forEach(zone => {
-        if(zone.v > 0) {
-            const daysToMaster = Math.floor(600000 / zone.v);
-            insights.push({
-                t: `Professional O'sish: ${zone.n}`,
-                m: `Agar har kuni ${zone.v} daqiqa "${zone.n}" bilan shug'ullansangiz, jahon darajasidagi ekspert (10k soat) bo'lishingiz uchun ${daysToMaster} kun kerak bo'ladi. Har bir daqiqa - bu investitsiya.`
-            });
-        }
-    });
-
-    // 3. Sirkad ritmlar va Uyqu
-    if(data.s < 7) {
-        insights.push({
-            t: "Sirkad Ritm Ogohlantirishi",
-            m: "Uyqu 7 soatdan kam. Stenford universiteti tadqiqotlariga ko'ra, bu diqqatni jamlash qobiliyatini 30% ga pasaytiradi. Uyquni optimallashtirish - eng katta samaradorlik siri."
-        });
-    }
-
-    // 4. Vaqtning narxi
-    if(freeMin > 0) {
-        insights.push({
-            t: "Yillik Prognoz",
-            m: `Ushbu bo'sh vaqtingizning 1 soatini kitob o'qishga ajratsangiz, yiliga 365 soat yoki o'rtacha 52 ta kitob mutolaa qilgan bo'lasiz. Sizning 'Bo'sh vaqtingiz' - bu sizning boyligingiz.`
-        });
-    }
-
-    insights.forEach(insh => {
-        const d = document.createElement('div');
-        d.className = 'insight-card';
-        d.innerHTML = `<strong>${insh.t}</strong>${insh.m}`;
-        list.appendChild(d);
-    });
+    localStorage.setItem(`n_v5_${dateEl.value}`, JSON.stringify({s, w, z}));
+    runAnalysis(s, w, z);
 }
 
-function load() {
-    const saved = JSON.parse(localStorage.getItem(`n_v4_${dateInput.value}`));
-    document.getElementById('zones-area').innerHTML = '';
+function runAnalysis(s, w, z) {
+    const output = document.getElementById('insights-output');
+    output.innerHTML = '';
+    
+    const zTotalMin = z.reduce((a, b) => a + (+b.v || 0), 0);
+    const freeMin = 1440 - ((s * 60) + (w * 60) + zTotalMin);
+    
+    // 1. STRATEGIK INVESTITSIYA (Eng katta zona)
+    const topZone = z.sort((a, b) => b.v - a.v)[0];
+    if (topZone && topZone.v > 0) {
+        const yH = Math.floor((topZone.v * 365) / 60);
+        output.appendChild(createInsight(
+            `Strategik Investitsiya: ${topZone.n}`,
+            `Agar shu tempni saqlasangiz, yiliga <b>${yH} soat</b> vaqtingizni ushbu sohaga yo'naltirasiz. Bu professional darajaga chiqish uchun yiliga qo'shimcha <b>${Math.floor(yH/8)} ta to'liq ish kuni</b> degani.`
+        ));
+    }
+
+    // 2. VAQT INFLYATSIYASI (Bo'sh vaqt)
+    if (freeMin > 0) {
+        const yD = Math.floor((freeMin * 365) / 1440);
+        output.appendChild(createInsight(
+            "Vaqt Inflyatsiyasi",
+            `Hozirgi bo'sh vaqtingiz yiliga <b>${yD} sutkani</b> tashkil qiladi. Ushbu vaqtni nazorat qilmaslik — hayotingizdan yiliga <b>${yD} kunni</b> butunlay o'chirib tashlash bilan barobardir.`
+        ));
+    }
+
+    // 3. KRITIK OGOHLANTIRISH (Uyqu)
+    if (s < 7) {
+        output.appendChild(createInsight(
+            "Kritik Holat: Biologik Limit",
+            "Sizning uyqungiz me'yordan kam. Bu miyaning kognitiv quvvatini 30% gacha pasaytiradi. Siz hozir o'z potensialingizning faqat 70% idan foydalanyapsiz.",
+            true
+        ));
+    }
+}
+
+function createInsight(title, text, isDanger = false) {
+    const d = document.createElement('div');
+    d.className = 'insight-card';
+    if(isDanger) d.style.borderLeftColor = 'var(--danger)';
+    d.innerHTML = `<strong>${title}</strong><p>${text}</p>`;
+    return d;
+}
+
+function loadData() {
+    const saved = JSON.parse(localStorage.getItem(`n_v5_${dateEl.value}`));
+    document.getElementById('zones-container').innerHTML = '';
     if(saved) {
         document.getElementById('sleepH').value = saved.s;
         document.getElementById('workH').value = saved.w;
-        saved.z.forEach(z => addZone(z.n, z.v));
+        saved.z.forEach(z => addNewZone(z.n, z.v));
     } else {
         document.getElementById('sleepH').value = 8;
         document.getElementById('workH').value = 8;
-        addZone('Bilim olish', 60);
+        addNewZone('Kitob o\'qish', 45);
     }
-    update();
+    refreshUI();
 }
 
 window.onload = init;
