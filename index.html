@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeytronOS | Intelligent Limit</title>
+    <title>NeytronOS | Pro Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
             --bg: #020617; --card: #0f172a; --accent: #22d3ee; 
-            --danger: #ef4444; --text: #f8fafc; --border: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+            --text: #f8fafc; --border: rgba(255, 255, 255, 0.08);
             --glow: rgba(34, 211, 238, 0.3);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -24,14 +25,14 @@
         input { width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; color: #fff; border-radius: 10px; outline: none; margin-bottom: 10px; transition: 0.3s; }
         input.limit-exceeded { border-color: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         .zone-row { display: grid; grid-template-columns: 1fr 70px 30px; gap: 8px; margin-bottom: 8px; }
-        .btn-save { background: var(--accent); color: #020617; width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; margin-top: 15px; }
-        .insight-card { background: rgba(255,255,255,0.02); border-left: 4px solid var(--accent); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 12px; }
-        .insight-card strong { color: var(--accent); display: block; margin-bottom: 5px; font-size: 14px; }
-        .insight-card p { font-size: 13.5px; color: #cbd5e1; line-height: 1.5; }
-        .chart-box { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; }
+        .btn-save { background: var(--accent); color: #020617; width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px var(--glow); }
+        .insight-card { background: rgba(255,255,255,0.02); border-left: 4px solid var(--accent); padding: 18px; border-radius: 0 12px 12px 0; margin-bottom: 15px; }
+        .insight-card strong { color: var(--accent); display: block; margin-bottom: 6px; font-size: 15px; }
+        .insight-card p { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
+        .insight-card b { color: #fff; }
+        .chart-box { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; }
         .center-display { position: absolute; text-align: center; pointer-events: none; }
-        #balance-text { font-size: 45px; font-weight: 900; color: var(--accent); }
-        .error-msg { color: var(--danger); font-size: 10px; margin-top: -8px; margin-bottom: 10px; display: none; }
+        #balance-text { font-size: 50px; font-weight: 900; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -43,19 +44,17 @@
     </header>
 
     <aside class="card">
-        <div class="section-title"><i class="fa-solid fa-hourglass-start"></i> Resurslar</div>
-        
+        <div class="section-title"><i class="fa-solid fa-clock"></i> Resurslar</div>
         <label style="font-size: 11px; opacity: 0.6;">UYQU (SOAT)</label>
-        <input type="number" id="sleepH" value="8" min="0" max="24" step="0.5" oninput="validateLimit(this)">
-        
+        <input type="number" id="sleepH" value="8" step="0.5" oninput="validateLimit(this)">
         <label style="font-size: 11px; opacity: 0.6;">MAJBURIYATLAR (SOAT)</label>
-        <input type="number" id="workH" value="8" min="0" max="24" step="0.5" oninput="validateLimit(this)">
+        <input type="number" id="workH" value="8" step="0.5" oninput="validateLimit(this)">
 
-        <div class="section-title" style="margin-top: 20px;"><i class="fa-solid fa-list-check"></i> Foydali Zonalar</div>
+        <div class="section-title" style="margin-top: 25px;"><i class="fa-solid fa-brain"></i> Zonalar</div>
         <div id="zones-area"></div>
-        <button onclick="addZone()" style="background: none; border: 1px dashed var(--accent); color: var(--accent); width: 100%; padding: 10px; border-radius: 10px; cursor: pointer;">+ Yangi zona qo'shish</button>
+        <button onclick="addZone()" style="background: none; border: 1px dashed var(--accent); color: var(--accent); width: 100%; padding: 12px; border-radius: 10px; cursor: pointer;">+ Zona qo'shish</button>
         
-        <button class="btn-save" onclick="saveAndAnalyze()"><i class="fa-solid fa-brain"></i> TAHLIL VA SAQLASH</button>
+        <button class="btn-save" onclick="saveAndAnalyze()"><i class="fa-solid fa-microchip"></i> TAHLIL VA SAQLASH</button>
     </aside>
 
     <main>
@@ -64,14 +63,14 @@
                 <canvas id="mainChart"></canvas>
                 <div class="center-display">
                     <div id="balance-text">08:00</div>
-                    <p id="balance-label" style="font-size: 10px; opacity: 0.5;">BO'SH BALANS</p>
+                    <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">BO'SH BALANS</p>
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="section-title"><i class="fa-solid fa-microchip"></i> Neytron Analitika Markazi</div>
+            <div class="section-title"><i class="fa-solid fa-chart-line"></i> Neytron Analitika Markazi</div>
             <div id="insights-output">
-                <div class="insight-card"><p>Vaqtingizni kiriting va professional tahlilni oling.</p></div>
+                <div class="insight-card"><p>Ma'lumotlarni kiriting va professional tahlilni oling.</p></div>
             </div>
         </div>
     </main>
@@ -88,18 +87,16 @@ function addZone(n = '', v = '') {
     div.innerHTML = `
         <input type="text" placeholder="Nom" value="${n}" class="zn">
         <input type="number" placeholder="Min" value="${v}" class="zv" oninput="validateLimit(this)">
-        <button onclick="this.parentElement.remove(); updateUI()" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size: 20px;">&times;</button>
+        <button onclick="this.parentElement.remove(); updateUI()" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:22px;">&times;</button>
     `;
     document.getElementById('zones-area').appendChild(div);
     updateUI();
 }
 
-// AQLLI LIMIT FILTRI
 function validateLimit(input) {
     const currentVal = +input.value || 0;
     const isHourInput = input.id === 'sleepH' || input.id === 'workH';
     
-    // Boshqa barcha elementlar yig'indisini hisoblash
     let otherTotal = 0;
     if (input.id !== 'sleepH') otherTotal += (+document.getElementById('sleepH').value || 0) * 60;
     if (input.id !== 'workH') otherTotal += (+document.getElementById('workH').value || 0) * 60;
@@ -113,12 +110,9 @@ function validateLimit(input) {
     const currentInputInMin = isHourInput ? currentVal * 60 : currentVal;
 
     if (currentInputInMin > maxAllowed) {
-        // Limitdan oshsa, qiymatni ruxsat etilgan maksimalga qaytarish
         input.classList.add('limit-exceeded');
         const allowedVal = Math.max(0, maxAllowed);
         input.value = isHourInput ? (allowedVal / 60).toFixed(1) : allowedVal;
-        
-        // Foydalanuvchiga bildirishnoma (ixtiyoriy vizual effekt)
         setTimeout(() => input.classList.remove('limit-exceeded'), 500);
     }
     updateUI();
@@ -128,18 +122,13 @@ function updateUI() {
     const s = (+document.getElementById('sleepH').value || 0) * 60;
     const w = (+document.getElementById('workH').value || 0) * 60;
     let labels = ['Uyqu', 'Majburiyat'], values = [s, w], zTotal = 0;
-
     document.querySelectorAll('.zone-row').forEach(r => {
         const n = r.querySelector('.zn').value || 'Zona', v = +r.querySelector('.zv').value || 0;
         if(v > 0) { labels.push(n); values.push(v); zTotal += v; }
     });
-
     const free = 1440 - (s + w + zTotal);
-    const disp = document.getElementById('balance-text');
-    disp.innerText = `${Math.floor(free/60).toString().padStart(2,'0')}:${(free%60).toString().padStart(2,'0')}`;
-    
+    document.getElementById('balance-text').innerText = `${Math.floor(free/60).toString().padStart(2,'0')}:${(free%60).toString().padStart(2,'0')}`;
     labels.push('Bo\'sh'); values.push(free);
-
     if(chart) chart.destroy();
     chart = new Chart(document.getElementById('mainChart'), {
         type: 'doughnut',
@@ -149,28 +138,45 @@ function updateUI() {
 }
 
 function saveAndAnalyze() {
-    const s = document.getElementById('sleepH').value, w = document.getElementById('workH').value;
-    const z = Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.zn').value, v: r.querySelector('.zv').value}));
+    const s = +document.getElementById('sleepH').value, w = +document.getElementById('workH').value;
+    const z = Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.zn').value || 'Zona', v: +r.querySelector('.zv').value || 0}));
     localStorage.setItem(`n_v7_${dateEl.value}`, JSON.stringify({s, w, z}));
     
     const output = document.getElementById('insights-output');
     output.innerHTML = '';
-    const freeMin = 1440 - ((s*60)+(w*60)+z.reduce((a,b)=>a+(+b.v||0),0));
+    const freeMin = 1440 - ((s*60)+(w*60)+z.reduce((a,b)=>a+b.v,0));
 
-    // TAHLILLAR
-    const waste = z.find(i => ['yo\'l', 'yol', 'transport', 'kutish', 'ijtimoiy'].some(k => i.n.toLowerCase().includes(k)));
+    // 1. BEFOYDA VAQT (YO'L/KUTISH)
+    const waste = z.find(i => ['yo\'l', 'yol', 'transport', 'kutish', 'navbat'].some(k => i.n.toLowerCase().includes(k)));
     if (waste && waste.v > 0) {
-        output.innerHTML += `<div class="insight-card" style="border-left-color: var(--danger)"><strong>Vaqt O'g'risi: ${waste.n}</strong><p>Yiliga <b>${Math.floor((waste.v*365)/60)} soat</b> bekor ketmoqda. Bu vaqtda audiokitob eshitishni odat qiling.</p></div>`;
+        const yH = Math.floor((waste.v * 365) / 60);
+        output.innerHTML += `
+            <div class="insight-card" style="border-left-color: var(--danger)">
+                <strong>⚠️ Vaqt Yo'qotilishi: ${waste.n}</strong>
+                <p>Yiliga <b>${yH} soat</b> vaqtingizni ushbu passiv zonada yo'qotyapsiz. Bu <b>${Math.floor(yH/8)} ta to'liq ish kuni</b> demakdir. Ushbu vaqtda audiokitob eshitish orqali yiliga qo'shimcha <b>${Math.floor(yH/5)} ta kitob</b> "o'qigan" bo'lasiz.</p>
+            </div>`;
     }
 
+    // 2. KITOB ANALITIKASI
     const kitob = z.find(i => i.n.toLowerCase().includes('kitob'));
     if (kitob && kitob.v > 0) {
-        const bCount = Math.floor((kitob.v * 365) / 250);
-        output.innerHTML += `<div class="insight-card"><strong>Bilim Kapitali</strong><p>Yiliga <b>${bCount} ta kitob</b>. Status: <b>${bCount > 24 ? 'Professional' : 'Havasakor'}</b>.</p></div>`;
+        const yP = kitob.v * 365;
+        const bC = Math.floor(yP / 250);
+        output.innerHTML += `
+            <div class="insight-card" style="border-left-color: var(--success)">
+                <strong>📚 Bilim Kapitali: Kitob</strong>
+                <p>Kunlik ${kitob.v} daqiqa bilan yiliga <b>${yP.toLocaleString()} bet</b> yoki <b>${bC} ta kitob</b> tugatasiz. Status: <b>${bC > 24 ? 'Professional Kitobxon' : 'Havasakor'}</b>. 5 yilda bu ko'rsatkich <b>${bC * 5} ta</b> kitobga yetadi.</p>
+            </div>`;
     }
 
+    // 3. VAQT INFLYATSIYASI
     if (freeMin > 0) {
-        output.innerHTML += `<div class="insight-card"><strong>Yillik Prognoz</strong><p>Sizda yiliga <b>${Math.floor((freeMin*365)/1440)} sutka</b> bo'sh vaqt bor. Bu sizning eng katta boyligingiz.</p></div>`;
+        const yD = Math.floor((freeMin * 365) / 1440);
+        output.innerHTML += `
+            <div class="insight-card" style="border-left-color: var(--warning)">
+                <strong>⏳ Vaqt Inflyatsiyasi</strong>
+                <p>Sizda yiliga <b>${yD} sutka</b> nazoratsiz bo'sh vaqt bor. Ushbu vaqtning 30 daqiqasini yangi tilga ajratsangiz, yiliga <b>182 soat</b> bilim olasiz — bu chet tilini B1 darajasiga olib chiqish uchun yetarli resursdir.</p>
+            </div>`;
     }
 }
 
