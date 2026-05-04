@@ -1,1 +1,212 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeytronOS | Pro Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #030712; 
+            --card: #111827; 
+            --accent: #00f2ff; 
+            --danger: #ff4d4d; 
+            --text: #f9fafb;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 15px; min-height: 100vh; }
 
+        .app-container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        @media (min-width: 900px) { .app-container { display: grid; grid-template-columns: 380px 1fr; } }
+
+        /* Yuqori panel */
+        .glass-header { 
+            grid-column: 1 / -1; background: var(--card); padding: 20px; border-radius: 24px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .brand { font-size: 24px; font-weight: 900; letter-spacing: 3px; color: var(--accent); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
+
+        /* Kartalar */
+        .card { 
+            background: var(--card); border-radius: 28px; padding: 25px; 
+            border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        /* Inputlar */
+        .input-box { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 8px; font-weight: 500; }
+        input { 
+            width: 100%; background: #1f2937; border: 1px solid var(--border); padding: 14px; 
+            color: #fff; border-radius: 16px; transition: 0.3s; font-size: 15px;
+        }
+        input:focus { border-color: var(--accent); background: #263346; outline: none; }
+
+        /* Zonalar dizayni */
+        .zone-list-container { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .zone-row { display: grid; grid-template-columns: 1fr 80px 45px; gap: 10px; margin-bottom: 12px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tugmalar */
+        .btn { 
+            cursor: pointer; border: none; font-weight: 700; transition: 0.2s; border-radius: 18px; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-add { 
+            background: rgba(0, 242, 255, 0.05); color: var(--accent); border: 2px dashed rgba(0, 242, 255, 0.3); 
+            width: 100%; padding: 15px; margin-top: 10px;
+        }
+        .btn-add:hover { background: rgba(0, 242, 255, 0.15); border-color: var(--accent); }
+        
+        .btn-save { 
+            background: var(--accent); color: #000; width: 100%; padding: 18px; 
+            font-size: 16px; margin-top: 25px; box-shadow: 0 8px 20px rgba(0,242,255,0.3);
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0,242,255,0.4); }
+
+        /* Diagramma */
+        #chart-container { position: relative; height: 350px; width: 100%; margin: auto; }
+        .center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        #freeTimeLabel { font-size: 56px; font-weight: 900; color: var(--accent); line-height: 1; }
+
+        .limit-bad { color: var(--danger); text-shadow: 0 0 10px rgba(255,77,77,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="glass-header">
+        <div class="brand"><i class="fa-solid fa-microchip"></i> NEYTRON OS</div>
+        <input type="date" id="datePicker" style="width: auto; padding: 8px 15px; background: #1f2937;">
+    </header>
+
+    <aside class="card">
+        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent);"></i> Resurslar</h3>
+        
+        <div class="input-box">
+            <label>Uyqu (soatda)</label>
+            <input type="number" id="sleepH" value="8" step="0.5">
+        </div>
+        
+        <div class="input-box">
+            <label>Majburiyatlar (Ish/O'qish)</label>
+            <input type="number" id="workH" value="8" step="0.5">
+        </div>
+
+        <div class="zone-list-container">
+            <label>Foydali investitsiyalar</label>
+            <div id="zones-wrapper"></div>
+            <button class="btn btn-add" onclick="addZoneRow()">
+                <i class="fa-solid fa-plus-circle"></i> Yangi zona qo'shish
+            </button>
+        </div>
+
+        <button class="btn btn-save" onclick="saveData()">
+            <i class="fa-solid fa-cloud-upload"></i> SAQLASH VA TAHLIL
+        </button>
+    </aside>
+
+    <main class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <div id="chart-container">
+            <canvas id="mainChart"></canvas>
+            <div class="center-text">
+                <div id="freeTimeLabel">08:00</div>
+                <div style="font-size: 12px; letter-spacing: 3px; opacity: 0.6; margin-top: 5px;">BO'SH VAQT</div>
+            </div>
+        </div>
+        <div id="statusMessage" style="text-align: center; margin-top: 30px; font-size: 14px; opacity: 0.7;"></div>
+    </main>
+</div>
+
+<script>
+let myChart;
+const datePicker = document.getElementById('datePicker');
+datePicker.valueAsDate = new Date();
+
+function init() {
+    loadData();
+    datePicker.addEventListener('change', loadData);
+}
+
+function addZoneRow(name = '', min = '') {
+    const wrapper = document.getElementById('zones-wrapper');
+    const div = document.createElement('div');
+    div.className = 'zone-row';
+    div.innerHTML = `
+        <input type="text" placeholder="Zona nomi" value="${name}" class="z-name">
+        <input type="number" placeholder="Min" value="${min}" class="z-min">
+        <button onclick="this.parentElement.remove(); refresh()" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size: 20px;"><i class="fa-solid fa-circle-xmark"></i></button>
+    `;
+    wrapper.appendChild(div);
+    div.querySelectorAll('input').forEach(i => i.oninput = refresh);
+    refresh();
+}
+
+function refresh() {
+    const sH = (+document.getElementById('sleepH').value || 0) * 60;
+    const wH = (+document.getElementById('workH').value || 0) * 60;
+    let labels = ['Uyqu', 'Majburiyatlar'], values = [sH, wH], zTotal = 0;
+
+    document.querySelectorAll('.zone-row').forEach(row => {
+        const n = row.querySelector('.z-name').value || 'Zona', v = +row.querySelector('.z-min').value || 0;
+        if(v > 0) { labels.push(n); values.push(v); zTotal += v; }
+    });
+
+    const total = sH + wH + zTotal;
+    const free = 1440 - total;
+    const display = document.getElementById('freeTimeLabel');
+    
+    display.innerText = `${Math.floor(Math.abs(free)/60).toString().padStart(2,'0')}:${(Math.abs(free)%60).toString().padStart(2,'0')}`;
+    if(free < 0) { display.classList.add('limit-bad'); display.innerText = "-" + display.innerText; } 
+    else { display.classList.remove('limit-bad'); }
+
+    labels.push('Bo\'sh vaqt'); values.push(Math.max(0, free));
+
+    if(myChart) myChart.destroy();
+    myChart = new Chart(document.getElementById('mainChart'), {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: ['#1f2937', '#374151', '#00f2ff', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981'],
+                borderWidth: 2, borderColor: '#111827', hoverOffset: 15
+            }]
+        },
+        options: { plugins: { legend: { display: false } }, cutout: '82%', responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function saveData() {
+    const data = {
+        s: document.getElementById('sleepH').value,
+        w: document.getElementById('workH').value,
+        z: Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.z-name').value, v: r.querySelector('.z-min').value}))
+    };
+    localStorage.setItem(`n_os_${datePicker.value}`, JSON.stringify(data));
+    alert("Ma'lumotlar xotiraga muhrlandi!");
+}
+
+function loadData() {
+    const saved = JSON.parse(localStorage.getItem(`n_os_${datePicker.value}`));
+    document.getElementById('zones-wrapper').innerHTML = '';
+    if(saved) {
+        document.getElementById('sleepH').value = saved.s;
+        document.getElementById('workH').value = saved.w;
+        saved.z.forEach(z => addZoneRow(z.n, z.v));
+    } else {
+        document.getElementById('sleepH').value = 8;
+        document.getElementById('workH').value = 8;
+        addZoneRow('Sport', 60);
+    }
+    refresh();
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
