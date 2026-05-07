@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neytron | Cloud Strategy</title>
+    <title>Neytron | Final Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -13,73 +13,64 @@
             --text: #f1f5f9; --border: rgba(255, 255, 255, 0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
 
-        /* Login Ekran Stili */
-        #login-screen {
-            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
-        }
+        /* Login Ekran */
+        #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
         .login-box { text-align: center; padding: 40px; border-radius: 30px; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border); backdrop-filter: blur(10px); }
-        .login-box h1 { font-size: 40px; letter-spacing: 10px; color: var(--accent); margin-bottom: 20px; }
-        .google-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 15px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
-        .google-btn:hover { transform: scale(1.05); }
+        .google-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 15px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-top: 20px; }
 
-        /* Asosiy interfeys (Dastlab yashirin) */
-        #main-app { display: none; padding: 20px; }
+        #main-app { display: none; max-width: 1100px; margin: 0 auto; }
 
-        header { max-width: 1100px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); }
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 30px; }
         .brand { font-weight: 900; font-size: 22px; letter-spacing: 5px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
         .atom-core { animation: spin 4s linear infinite; display: inline-block; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .dashboard { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 25px; }
         @media (min-width: 1100px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-        .panel { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); }
+        .panel { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); height: fit-content; }
         .label-sm { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; opacity: 0.6; }
 
         .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
-        .mode-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: #475569; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .mode-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: #475569; font-size: 11px; font-weight: 700; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
         .zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; position: relative; }
         .zone-main { display: flex; align-items: center; gap: 10px; }
         .zone-card input { background: transparent; border: none; color: #fff; outline: none; font-size: 14px; width: 100%; }
-        .zone-card .time { width: 65px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; font-weight: 800; color: var(--accent); }
-        
-        .p-indicator { width: 40px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+        .zone-card .time { width: 70px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; font-weight: 800; color: var(--accent); }
+
+        .p-indicator { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); }
         .p-indicator.p3 { color: var(--p3); border-color: var(--p3); }
 
-        .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 18px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
-        .p-opt { font-size: 11px; font-weight: 800; cursor: pointer; padding: 8px; border-radius: 10px; }
-
-        .chart-box { height: 350px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .chart-box { height: 350px; position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .balans-center { position: absolute; text-align: center; }
         .balans-center h1 { font-size: 55px; font-weight: 900; color: var(--accent); line-height: 0.8; }
 
-        .ai-card { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
+        /* Analitika dizayni */
+        .ai-card { background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
         .ai-card.crit { border-left-color: var(--p1); }
         .ai-card.sport { border-left-color: #f59e0b; }
         .ai-card h6 { font-size: 11px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .ai-card p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+        .ai-card p { font-size: 13px; line-height: 1.6; color: #94a3b8; }
+        .ai-card .note { margin-top: 10px; font-size: 11px; color: #475569; font-style: italic; }
 
-        .btn-run { background: var(--accent); color: #000; width: 100%; padding: 20px; border-radius: 18px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; }
-        .btn-logout { background: transparent; border: 1px solid var(--border); color: #475569; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 11px; }
+        .btn-run { background: var(--accent); color: #000; width: 100%; padding: 18px; border-radius: 18px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; letter-spacing: 2px; }
+        .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 18px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <i class="fa-solid fa-atom atom-core" style="font-size: 50px; color: var(--accent); margin-bottom: 20px;"></i>
         <h1>NEYTRON</h1>
-        <p style="color: #475569; margin-bottom: 30px; font-size: 14px;">Strategik rejalashtirish platformasi</p>
         <button class="google-btn" onclick="window.signIn()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-            Google orqali kirish
+            Google orqali boshlash
         </button>
     </div>
 </div>
@@ -88,9 +79,9 @@
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <input type="date" id="pDate" style="background:transparent; border:none; color:var(--accent); font-weight:800; font-size: 16px;" onchange="window.loadData()">
-            <div id="user-info" style="display:flex; align-items:center; gap:10px;"></div>
-            <button class="btn-logout" onclick="window.logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <input type="date" id="pDate" style="background:transparent; border:none; color:var(--accent); font-weight:800; font-size:16px;" onchange="window.loadData()">
+            <div id="user-p"></div>
+            <i class="fa-solid fa-power-off" style="cursor:pointer; opacity:0.3" onclick="window.logout()"></i>
         </div>
     </header>
 
@@ -103,14 +94,14 @@
                 <button class="mode-btn" id="m5.0" onclick="setMode(5.0, this)">QIYIN</button>
             </div>
 
-            <span class="label-sm">Resurslar</span>
+            <span class="label-sm">Kunlik Resurslar (Soat)</span>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:25px;">
                 <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:15px;">
-                    <label style="font-size:9px; opacity:0.5; display:block; margin-bottom:5px;">UYQU</label>
+                    <label style="font-size:9px; opacity:0.5; display:block;">UYQU</label>
                     <input type="number" id="sH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="updateUI()">
                 </div>
                 <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:15px;">
-                    <label style="font-size:9px; opacity:0.5; display:block; margin-bottom:5px;">ISH</label>
+                    <label style="font-size:9px; opacity:0.5; display:block;">ISH</label>
                     <input type="number" id="wH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="updateUI()">
                 </div>
             </div>
@@ -130,8 +121,8 @@
                         <p style="font-size:9px; opacity:0.3; letter-spacing:3px;">BO'SH VAQT</p>
                     </div>
                 </div>
+                <div id="aiHub"></div>
             </div>
-            <div id="aiHub" style="margin-top:25px;"></div>
         </section>
     </div>
 </div>
@@ -155,7 +146,6 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // GLOBAL FUNKSIYALAR
     window.signIn = () => signInWithPopup(auth, provider);
     window.logout = () => signOut(auth);
 
@@ -163,7 +153,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            document.getElementById('user-info').innerHTML = `<img src="${user.photoURL}" style="width:32px; border-radius:50%; border:1px solid var(--accent)">`;
+            document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:30px; border-radius:50%">`;
             window.loadData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
@@ -187,7 +177,7 @@
             complexity: window.complexity,
             zones: zones
         });
-        alert("Ma'lumotlar bulutga saqlandi!");
+        alert("Saqlandi.");
         window.analyze();
     };
 
@@ -195,8 +185,7 @@
         const user = auth.currentUser;
         if (!user) return;
         const date = document.getElementById('pDate').value;
-        const docRef = doc(db, "users", user.uid, "plans", date);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
         
         document.getElementById('zList').innerHTML = '';
         if (docSnap.exists()) {
@@ -221,7 +210,10 @@
         window.complexity = val;
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
-        else document.getElementById('m' + val).classList.add('active');
+        else {
+            const target = document.getElementById('m' + val.toFixed(1));
+            if(target) target.classList.add('active');
+        }
         if(shouldSync) updateUI();
     };
 
@@ -234,17 +226,29 @@
         div.innerHTML = `
             <div class="zone-main">
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
-                <input type="text" placeholder="Maqsad nomi..." class="name" value="${n}" oninput="updateUI()">
-                <input type="number" placeholder="min" class="time" value="${m}" oninput="updateUI()">
+                <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
+                <input type="number" placeholder="min" class="time" value="${m}" oninput="validateTime(this)">
                 <i class="fa-solid fa-xmark" style="opacity:0.2; cursor:pointer;" onclick="remZ(${id})"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div class="p-opt p1" onclick="selP(${id},'p1')" style="color:var(--p1)">P1-Muhim</div>
-                <div class="p-opt p2" onclick="selP(${id},'p2')" style="color:var(--p2)">P2-O'rta</div>
-                <div class="p-opt p3" onclick="selP(${id},'p3')" style="color:var(--p3)">P3-Qo'shimcha</div>
+                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">P1</div>
+                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">P2</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">P3</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         if(shouldSync) updateUI();
+    };
+
+    window.validateTime = (input) => {
+        const s = (+document.getElementById('sH').value || 0) * 60;
+        const w = (+document.getElementById('wH').value || 0) * 60;
+        let otherZones = 0;
+        document.querySelectorAll('.zone-card').forEach(z => {
+            if(z.querySelector('.time') !== input) otherZones += (+z.querySelector('.time').value || 0);
+        });
+        const maxPossible = 1440 - (s + w + otherZones);
+        if (+input.value > maxPossible) input.value = maxPossible;
+        updateUI();
     };
 
     window.showP = (id) => { document.getElementById(`ov-${id}`).style.display = 'flex'; }
@@ -263,7 +267,7 @@
         let labs = ['Uyqu','Ish'], vals = [s,w], total = s + w;
 
         document.querySelectorAll('.zone-card').forEach(z => {
-            labs.push(z.querySelector('.name').value || 'Vazifa');
+            labs.push(z.querySelector('.name').value || 'Zona');
             const v = +z.querySelector('.time').value || 0;
             vals.push(v); total += v;
         });
@@ -286,18 +290,15 @@
     window.analyze = () => {
         const hub = document.getElementById('aiHub');
         hub.innerHTML = '';
-        const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
-            n: z.querySelector('.name').value.toLowerCase(),
-            t: +z.querySelector('.time').value,
-            p: z.dataset.p
-        }));
-        zones.forEach(z => {
-            if (z.n.includes('kitob') || z.n.includes('mutolaa')) {
-                hub.innerHTML += `<div class="ai-card"><h6>Chuqur Mutolaa</h6><p>Bugun ${Math.floor(z.t / window.complexity)} bet o'qish imkoniyati bor.</p></div>`;
-            } else if (z.n.includes('sport') || z.n.includes('yugurish')) {
-                hub.innerHTML += `<div class="ai-card sport"><h6>Sport</h6><p>${z.t} daqiqa faollik irodani charxlaydi.</p></div>`;
-            } else if (z.p === 'p1' && z.t > 0) {
-                hub.innerHTML += `<div class="ai-card crit"><h6>Strategik Fokus</h6><p>${z.n.toUpperCase()} vazifasi bugungi kun asosi.</p></div>`;
+        document.querySelectorAll('.zone-card').forEach(z => {
+            const n = z.querySelector('.name').value.toLowerCase();
+            const t = +z.querySelector('.time').value;
+            if (n.includes('kitob') || n.includes('mutolaa')) {
+                hub.innerHTML += `<div class="ai-card"><h6>Mutolaa Strategiyasi</h6><p>Bugun ${Math.floor(t / window.complexity)} bet o'qish mumkin. Miya bu yuklamani qabul qiladi.</p><div class="note">Fakt: Kitob o'qish kortizol darajasini 68% ga tushiradi.</div></div>`;
+            } else if (n.includes('sport') || n.includes('mashq')) {
+                hub.innerHTML += `<div class="ai-card sport"><h6>Jismoniy Faollik</h6><p>${t} daqiqa sport miyani kislorod bilan to'yintiradi.</p><div class="note">Fakt: Mashqlar neyrogenez (yangi hujayralar) hosil qiladi.</div></div>`;
+            } else if (z.dataset.p === 'p1' && t > 0) {
+                hub.innerHTML += `<div class="ai-card crit"><h6>Kritik Fokus: ${n.toUpperCase()}</h6><p>Kunlik irodaning 70% qismini shu vazifaga yo'naltiring.</p></div>`;
             }
         });
     }
