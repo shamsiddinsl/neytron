@@ -3,184 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neytron OS | Time Intelligence</title>
+    <title>Neytron | Universal Strategy</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { 
-            --bg: #020617; --card: #0f172a; --accent: #22d3ee; 
-            --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
-            --text: #f8fafc; --border: rgba(255, 255, 255, 0.08);
-            --glow: rgba(34, 211, 238, 0.3);
+        :root {
+            --bg: #030712; --card: #0f172a; --accent: #22d3ee;
+            --p1: #ef4444; --p2: #d97706; --p3: #10b981;
+            --text: #f1f5f9; --border: rgba(255, 255, 255, 0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; }
-        .app-container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) { .app-container { grid-template-columns: 360px 1fr; } }
-        .header { grid-column: 1 / -1; background: var(--card); padding: 20px; border-radius: 18px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .brand-text { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
-        .brand-text span { color: var(--accent); }
-        .card { background: var(--card); border-radius: 20px; padding: 22px; border: 1px solid var(--border); }
-        .section-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        input { width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; color: #fff; border-radius: 10px; outline: none; margin-bottom: 10px; transition: 0.3s; }
-        input.limit-exceeded { border-color: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
-        .zone-row { display: grid; grid-template-columns: 1fr 70px 30px; gap: 8px; margin-bottom: 8px; }
-        .btn-save { background: var(--accent); color: #020617; width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px var(--glow); }
-        .insight-card { background: rgba(255,255,255,0.02); border-left: 4px solid var(--accent); padding: 18px; border-radius: 0 12px 12px 0; margin-bottom: 15px; }
-        .insight-card strong { color: var(--accent); display: block; margin-bottom: 6px; font-size: 15px; }
-        .insight-card p { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
-        .insight-card b { color: #fff; }
-        .chart-box { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; }
-        .center-display { position: absolute; text-align: center; pointer-events: none; }
-        #balance-text { font-size: 50px; font-weight: 900; color: var(--accent); }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
+
+        header { max-width: 1100px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); }
+        .brand { font-weight: 900; font-size: 22px; letter-spacing: 5px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        
+        /* Atom animatsiyasi */
+        .atom-core { animation: spin 4s linear infinite; display: inline-block; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .dashboard { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media (min-width: 1100px) { .dashboard { grid-template-columns: 420px 1fr; } }
+
+        .panel { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); }
+        .label-sm { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; opacity: 0.6; }
+
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
+        .mode-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: #475569; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; position: relative; }
+        .zone-main { display: flex; align-items: center; gap: 10px; }
+        .zone-card input { background: transparent; border: none; color: #fff; outline: none; font-size: 14px; }
+        .zone-card .time { width: 60px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; font-weight: 800; color: var(--accent); }
+        
+        .p-indicator { width: 40px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
+        .p-indicator.p1 { color: var(--p1); border-color: var(--p1); }
+        .p-indicator.p2 { color: var(--p2); border-color: var(--p2); }
+        .p-indicator.p3 { color: var(--p3); border-color: var(--p3); }
+
+        .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 18px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
+        .p-opt { font-size: 11px; font-weight: 800; cursor: pointer; padding: 8px; border-radius: 10px; }
+        .p-opt.p1 { color: var(--p1); } .p-opt.p2 { color: var(--p2); } .p-opt.p3 { color: var(--p3); }
+
+        .chart-box { height: 350px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .balans-center { position: absolute; text-align: center; }
+        .balans-center h1 { font-size: 60px; font-weight: 900; color: var(--accent); line-height: 0.8; }
+
+        .ai-card { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
+        .ai-card.crit { border-left-color: var(--p1); }
+        .ai-card.sport { border-left-color: #f59e0b; }
+        .ai-card h6 { font-size: 11px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-card p { font-size: 13px; line-height: 1.6; color: #94a3b8; }
+        .ai-card .note { margin-top: 10px; font-size: 11px; color: #475569; font-style: italic; }
+
+        .btn-run { background: var(--accent); color: #000; width: 100%; padding: 20px; border-radius: 18px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; letter-spacing: 2px; }
+        .shake { animation: shake 0.4s; border-color: var(--p1) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="header">
-        <div class="brand-text"><i class="fa-solid fa-bolt"></i> NEYTRON<span>OS</span></div>
-        <input type="date" id="datePicker" style="width: auto; margin: 0; padding: 5px;">
-    </header>
+<header>
+    <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
+    <input type="date" id="pDate" style="background:transparent; border:none; color:var(--accent); font-weight:700;">
+</header>
 
-    <aside class="card">
-        <div class="section-title"><i class="fa-solid fa-clock"></i> Resurslar</div>
-        <label style="font-size: 11px; opacity: 0.6;">UYQU (SOAT)</label>
-        <input type="number" id="sleepH" value="8" step="0.5" oninput="validateLimit(this)">
-        <label style="font-size: 11px; opacity: 0.6;">MAJBURIYATLAR (SOAT)</label>
-        <input type="number" id="workH" value="8" step="0.5" oninput="validateLimit(this)">
+<div class="dashboard">
+    <section class="panel">
+        <span class="label-sm">Aqliy yuklama</span>
+        <div class="mode-selector">
+            <button class="mode-btn" onclick="setMode(1.5, this)">OSON</button>
+            <button class="mode-btn active" onclick="setMode(3.0, this)">O'RTACHA</button>
+            <button class="mode-btn" onclick="setMode(5.0, this)">QIYIN</button>
+        </div>
 
-        <div class="section-title" style="margin-top: 25px;"><i class="fa-solid fa-brain"></i> Foydali Zonalar</div>
-        <div id="zones-area"></div>
-        <button onclick="addZone()" style="background: none; border: 1px dashed var(--accent); color: var(--accent); width: 100%; padding: 12px; border-radius: 10px; cursor: pointer;">+ Zona qo'shish</button>
-        
-        <button class="btn-save" onclick="saveAndAnalyze()"><i class="fa-solid fa-chart-pie"></i> TAHLIL VA SAQLASH</button>
-    </aside>
+        <span class="label-sm">Resurslar (Soat)</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:25px;">
+            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;">
+                <label style="font-size:9px; opacity:0.5;">UYQU</label>
+                <input type="number" id="sH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()">
+            </div>
+            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;">
+                <label style="font-size:9px; opacity:0.5;">ISH</label>
+                <input type="number" id="wH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()">
+            </div>
+        </div>
 
-    <main>
-        <div class="card" style="margin-bottom: 20px;">
+        <span class="label-sm">Vaqt zonalari</span>
+        <div id="zList"></div>
+        <button onclick="addZ()" style="background:transparent; border:2px dashed var(--border); color:#475569; width:100%; padding:15px; border-radius:15px; cursor:pointer; font-weight:700; margin-top:10px;">+ ZONA QO'SHISH</button>
+        <button class="btn-run" onclick="analyze()">Strategik Tahlil</button>
+    </section>
+
+    <section>
+        <div class="panel">
             <div class="chart-box">
-                <canvas id="mainChart"></canvas>
-                <div class="center-display">
-                    <div id="balance-text">08:00</div>
-                    <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">BO'SH BALANS</p>
+                <canvas id="nChart"></canvas>
+                <div class="balans-center">
+                    <h1 id="balText">08:00</h1>
+                    <p style="font-size:9px; opacity:0.3; letter-spacing:3px;">BO'SH VAQT</p>
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="section-title"><i class="fa-solid fa-microchip"></i> Analitika Markazi</div>
-            <div id="insights-output">
-                <div class="insight-card"><p>Vaqtingizni kiriting va saqlash tugmasini bosing.</p></div>
-            </div>
-        </div>
-    </main>
+        <div id="aiHub" style="margin-top:25px;"></div>
+    </section>
 </div>
 
 <script>
 let chart;
-const dateEl = document.getElementById('datePicker');
-dateEl.valueAsDate = new Date();
+let complexity = 3.0;
+document.getElementById('pDate').valueAsDate = new Date();
 
-function addZone(n = '', v = '') {
+function setMode(val, btn) {
+    complexity = val;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    sync();
+}
+
+function sync() { updateUI(); }
+
+function addZ(n='', m='', p='p2') {
+    const id = Date.now();
     const div = document.createElement('div');
-    div.className = 'zone-row';
+    div.className = 'zone-card';
+    div.id = `z-${id}`;
+    div.dataset.p = p;
     div.innerHTML = `
-        <input type="text" placeholder="Nom" value="${n}" class="zn">
-        <input type="number" placeholder="Min" value="${v}" class="zv" oninput="validateLimit(this)">
-        <button onclick="this.parentElement.remove(); updateUI()" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:22px;">&times;</button>
+        <div class="zone-main">
+            <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
+            <input type="text" placeholder="Maqsad nomi..." class="name" style="flex:1;" value="${n}" oninput="sync()">
+            <input type="number" placeholder="min" class="time" value="${m}" oninput="valT(this)">
+            <i class="fa-solid fa-xmark" style="opacity:0.2; cursor:pointer;" onclick="remZ(${id})"></i>
+        </div>
+        <div class="p-overlay" id="ov-${id}">
+            <div class="p-opt p1" onclick="selP(${id},'p1')">P1 - Muhim</div>
+            <div class="p-opt p2" onclick="selP(${id},'p2')">P2 - O'rtacha</div>
+            <div class="p-opt p3" onclick="selP(${id},'p3')">P3 - Qo'shimcha</div>
+        </div>
     `;
-    document.getElementById('zones-area').appendChild(div);
-    updateUI();
+    document.getElementById('zList').appendChild(div);
+    sync();
 }
 
-function validateLimit(input) {
-    let total = (+document.getElementById('sleepH').value || 0) * 60 + (+document.getElementById('workH').value || 0) * 60;
-    document.querySelectorAll('.zv').forEach(z => { if(z !== input) total += (+z.value || 0); });
-    
-    let max = 1440 - total;
-    let val = input.id.includes('H') ? (+input.value * 60) : +input.value;
+function showP(id) { document.getElementById(`ov-${id}`).style.display = 'flex'; }
+function selP(id, p) {
+    const z = document.getElementById(`z-${id}`);
+    z.dataset.p = p;
+    z.querySelector('.p-indicator').className = `p-indicator ${p}`;
+    document.getElementById(`ov-${id}`).style.display = 'none';
+    sync();
+}
 
-    if (val > max) {
-        input.classList.add('limit-exceeded');
-        input.value = input.id.includes('H') ? (max / 60).toFixed(1) : max;
-        setTimeout(() => input.classList.remove('limit-exceeded'), 500);
+function valT(el) {
+    const s = (+document.getElementById('sH').value || 0) * 60;
+    const w = (+document.getElementById('wH').value || 0) * 60;
+    let sum = 0;
+    document.querySelectorAll('.time').forEach(i => { if(i!==el) sum += (+i.value || 0); });
+    let max = 1440 - (s + w + sum);
+    if (+el.value > max) {
+        el.value = Math.max(0, max);
+        el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 400);
     }
-    updateUI();
+    sync();
 }
+
+function remZ(id) { document.getElementById(`z-${id}`).remove(); sync(); }
 
 function updateUI() {
-    const s = (+document.getElementById('sleepH').value || 0) * 60;
-    const w = (+document.getElementById('workH').value || 0) * 60;
-    let labels = ['Uyqu', 'Majburiyat'], values = [s, w], zTotal = 0;
-    document.querySelectorAll('.zone-row').forEach(r => {
-        const n = r.querySelector('.zn').value || 'Zona', v = +r.querySelector('.zv').value || 0;
-        if(v > 0) { labels.push(n); values.push(v); zTotal += v; }
+    const s = (+document.getElementById('sH').value || 0) * 60;
+    const w = (+document.getElementById('wH').value || 0) * 60;
+    let labs = ['Uyqu','Ish'], vals = [s,w], total = s + w;
+
+    document.querySelectorAll('.zone-card').forEach(z => {
+        labs.push(z.querySelector('.name').value || 'Zona');
+        const v = +z.querySelector('.time').value || 0;
+        vals.push(v); total += v;
     });
-    const free = 1440 - (s + w + zTotal);
-    document.getElementById('balance-text').innerText = `${Math.floor(free/60).toString().padStart(2,'0')}:${(free%60).toString().padStart(2,'0')}`;
-    labels.push('Bo\'sh'); values.push(free);
-    if(chart) chart.destroy();
-    chart = new Chart(document.getElementById('mainChart'), {
-        type: 'doughnut',
-        data: { labels, datasets: [{ data: values, backgroundColor: ['#1e293b', '#334155', '#22d3ee', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981'], borderWidth: 0, cutout: '80%' }] },
-        options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
+
+    const bal = Math.max(0, 1440 - total);
+    labs.push('Bo\'sh'); vals.push(bal);
+    document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+
+    if (!chart) {
+        chart = new Chart(document.getElementById('nChart').getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: labs, datasets: [{ data: vals, backgroundColor: ['#1e293b', '#334155', '#ef4444', '#d97706', '#10b981', '#22d3ee', '#8b5cf6', '#475569'], borderWidth: 0 }] },
+            options: { cutout: '85%', plugins: { legend: { display: false } } }
+        });
+    } else {
+        chart.data.labels = labs; chart.data.datasets[0].data = vals; chart.update('none');
+    }
+}
+
+function analyze() {
+    const hub = document.getElementById('aiHub');
+    hub.innerHTML = '';
+    const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
+        n: z.querySelector('.name').value.toLowerCase(),
+        t: +z.querySelector('.time').value,
+        p: z.dataset.p
+    }));
+
+    const bal = 1440 - (zones.reduce((a,b)=>a+b.t, 0) + (+document.getElementById('sH').value*60) + (+document.getElementById('wH').value*60));
+
+    // UNIVERSAL TAHLIL MANTIQI
+    zones.forEach(z => {
+        // 1. Mutolaa (Tushunib o'qish)
+        if (z.n.includes('kitob') || z.n.includes('mutolaa') || z.n.includes('o\'qish')) {
+            const pages = Math.floor(z.t / complexity);
+            hub.innerHTML += createCard('', 'Chuqur Mutolaa', `Bugun ${pages} bet matnni to'liq hazm qilish uchun yetarli vaqt ajratdingiz.`, `Strategiya: Miya bu sur'atda ma'lumotni uzoq muddatli xotiraga muhrlaydi.`);
+        }
+        // 2. Jismoniy faollik (Sport/Yugurish)
+        else if (z.n.includes('sport') || z.n.includes('yugurish') || z.n.includes('mashq') || z.n.includes('zal')) {
+            const cal = Math.floor(z.t * 6.5);
+            hub.innerHTML += createCard('sport', 'Fiziologik Tiklanish', `Bugungi ${z.t} daqiqalik faollik taxminan ${cal} kkal energiya sarfi va qon aylanishini 30% ga yaxshilash demakdir.`, `Fakt: Jismoniy mashq aqliy faoliyat samaradorligini oshiradi.`);
+        }
+        // 3. Til o'rganish
+        else if (z.n.includes('til') || z.n.includes('english') || z.n.includes('nemis')) {
+            hub.innerHTML += createCard('', 'Lingvistik Rivoj', `${z.t} daqiqa diqqat bilan yangi so'zlar va konstruksiyalar ustida ishlash yiliga 300+ soatlik bilim poydevorini yaratadi.`, `Maslahat: Til o'rganishda 45 daqiqadan so'ng 5 daqiqa tanaffus qiling.`);
+        }
+        // 4. Boshqa P1 vazifalar (Universal)
+        else if (z.p === 'p1' && z.t > 0) {
+            hub.innerHTML += createCard('crit', 'Fokus Markazi', `"${z.n.toUpperCase()}" vazifasi bugungi kunning strategik nuqtasi. Unga bor kuchingizni bering.`, `Eslatma: P1 vazifalar kun yakunida g'oliblik hissini beradi.`);
+        }
     });
-}
 
-function saveAndAnalyze() {
-    const s = +document.getElementById('sleepH').value, w = +document.getElementById('workH').value;
-    const z = Array.from(document.querySelectorAll('.zone-row')).map(r => ({n: r.querySelector('.zn').value || 'Zona', v: +r.querySelector('.zv').value || 0}));
-    localStorage.setItem(`neytron_v7_${dateEl.value}`, JSON.stringify({s, w, z}));
-    
-    const output = document.getElementById('insights-output');
-    output.innerHTML = '';
-    const freeMin = 1440 - ((s*60)+(w*60)+z.reduce((a,b)=>a+b.v,0));
-
-    // 1. KITOB ANALITIKASI (Yillik prognoz)
-    const k = z.find(i => i.n.toLowerCase().includes('kitob'));
-    if (k && k.v > 0) {
-        const books = Math.floor((k.v * 365) / 250);
-        output.innerHTML += `
-            <div class="insight-card" style="border-left-color: var(--success)">
-                <strong>📚 Yillik Kitobxonlik Prognozi</strong>
-                <p>Kuniga ${k.v} daqiqa mutolaa orqali siz yiliga <b>${books} ta kitob</b> tugatasiz. Bu sizni intellektual salohiyat bo'yicha aholining yuqori 1% qatlamiga olib chiqadi.</p>
-            </div>`;
+    // 5. Bo'sh vaqt tahlili
+    if (bal > 30) {
+        hub.innerHTML += createCard('', 'Strategik Bo\'sh Vaqt', `${Math.floor(bal/60)} soat ${bal%60} minut bo'sh vaqt - bu sizning erkinlik resursingiz.`, `Mantiq: Bu vaqtni yangi g'oyalar va o'z-o'zini tahlil qilish (reflection) uchun ishlating.`);
     }
 
-    // 2. VAQT O'G'RISI (Yo'l/Kutish)
-    const bad = z.find(i => ['yo\'l', 'yol', 'transport', 'kutish', 'navbat'].some(key => i.n.toLowerCase().includes(key)));
-    if (bad && bad.v > 0) {
-        const h = Math.floor((bad.v * 365) / 60);
-        output.innerHTML += `
-            <div class="insight-card" style="border-left-color: var(--danger)">
-                <strong>⚠️ Vaqt Yo'qotilishi: ${bad.n}</strong>
-                <p>Yiliga <b>${h} soat</b> vaqtingiz ushbu passiv zonada bekor ketmoqda. Agar shu vaqtda audiokitob eshitsangiz, yiliga qo'shimcha <b>${Math.floor(h/5)} ta kitob</b> tugatgan bo'lar edingiz.</p>
-            </div>`;
-    }
-
-    // 3. VAQT INFLYATSIYASI
-    if (freeMin > 0) {
-        const days = Math.floor((freeMin * 365) / 1440);
-        output.innerHTML += `
-            <div class="insight-card" style="border-left-color: var(--warning)">
-                <strong>⏳ Vaqt Inflyatsiyasi</strong>
-                <p>Sizda yiliga <b>${days} sutka</b> nazoratsiz bo'sh vaqt bor. Ushbu vaqtni "Foydali Zonalar"ga o'tkazish hayotingizni 10 barobar tezlashtiradi.</p>
-            </div>`;
+    // 6. Ma'lumot kam bo'lsa
+    if (hub.innerHTML === '') {
+        hub.innerHTML = createCard('', 'Tizim Tayyor', 'Kamida bitta vazifa (Zona) qo\'shing va unga vaqt ajrating.');
     }
 }
 
-function load() {
-    const saved = JSON.parse(localStorage.getItem(`neytron_v7_${dateEl.value}`));
-    document.getElementById('zones-area').innerHTML = '';
-    if(saved) {
-        document.getElementById('sleepH').value = saved.s;
-        document.getElementById('workH').value = saved.w;
-        saved.z.forEach(z => addZone(z.n, z.v));
-    } else { addZone('Kitob o\'qish', 30); }
-    updateUI();
+function createCard(c, title, txt, note) {
+    return `<div class="ai-card ${c}"><h6>${title}</h6><p>${txt}</p><div class="note">${note}</div></div>`;
 }
-window.onload = load;
-dateEl.onchange = load;
 </script>
 </body>
 </html>
