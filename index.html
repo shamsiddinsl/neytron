@@ -3,9 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neytron | Universal Strategy</title>
+    <title>Neytron | Cloud Planner</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
+            authDomain: "neytronplanner.firebaseapp.com",
+            projectId: "neytronplanner",
+            storageBucket: "neytronplanner.firebasestorage.app",
+            messagingSenderId: "960758855592",
+            appId: "1:960758855592:web:bf7c16fea616e75df54f9d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        window.auth = auth; window.db = db; window.signIn = () => signInWithPopup(auth, provider);
+        window.logout = () => signOut(auth).then(() => location.reload());
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-section').innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${user.photoURL}" style="width:30px; border-radius:50%; border:1px solid var(--accent)">
+                        <span style="font-size:12px; font-weight:700;">${user.displayName.split(' ')[0]}</span>
+                        <i class="fa-solid fa-right-from-bracket" style="cursor:pointer; opacity:0.5" onclick="logout()"></i>
+                    </div>`;
+                loadData();
+            } else {
+                document.getElementById('auth-section').innerHTML = `
+                    <button onclick="signIn()" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:10px; font-weight:800; cursor:pointer; font-size:11px;">KIRISH</button>`;
+            }
+        });
+
+        // Global functions to be used in old script
+        window.saveData = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            const date = document.getElementById('pDate').value;
+            const zones = [];
+            document.querySelectorAll('.zone-card').forEach(z => {
+                zones.push({ n: z.querySelector('.name').value, t: z.querySelector('.time').value, p: z.dataset.p });
+            });
+            await setDoc(doc(db, "users", user.uid, "plans", date), {
+                sleep: document.getElementById('sH').value,
+                work: document.getElementById('wH').value,
+                complexity: window.complexity,
+                zones: zones
+            });
+        };
+
+        window.loadData = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            const date = document.getElementById('pDate').value;
+            const docRef = doc(db, "users", user.uid, "plans", date);
+            const docSnap = await getDoc(docRef);
+            
+            document.getElementById('zList').innerHTML = '';
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('sH').value = data.sleep;
+                document.getElementById('wH').value = data.work;
+                window.setMode(data.complexity || 3.0, null, false);
+                data.zones.forEach(z => window.addZ(z.n, z.t, z.p, false));
+            } else {
+                window.addZ('', '', 'p2', false);
+            }
+            window.updateUI(); window.analyze();
+        };
+    </script>
+
     <style>
         :root {
             --bg: #030712; --card: #0f172a; --accent: #22d3ee;
@@ -14,237 +90,165 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); padding: 20px; }
-
         header { max-width: 1100px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); }
-        .brand { font-weight: 900; font-size: 22px; letter-spacing: 5px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
-        
-        /* Atom animatsiyasi */
+        .brand { font-weight: 900; font-size: 20px; letter-spacing: 5px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
         .atom-core { animation: spin 4s linear infinite; display: inline-block; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
         .dashboard { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 25px; }
         @media (min-width: 1100px) { .dashboard { grid-template-columns: 420px 1fr; } }
-
         .panel { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); }
         .label-sm { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; opacity: 0.6; }
-
         .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
         .mode-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: #475569; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.3s; }
         .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
         .zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; position: relative; }
         .zone-main { display: flex; align-items: center; gap: 10px; }
         .zone-card input { background: transparent; border: none; color: #fff; outline: none; font-size: 14px; }
         .zone-card .time { width: 60px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; font-weight: 800; color: var(--accent); }
-        
-        .p-indicator { width: 40px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
+        .p-indicator { width: 40px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); }
         .p-indicator.p3 { color: var(--p3); border-color: var(--p3); }
-
         .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 18px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
         .p-opt { font-size: 11px; font-weight: 800; cursor: pointer; padding: 8px; border-radius: 10px; }
         .p-opt.p1 { color: var(--p1); } .p-opt.p2 { color: var(--p2); } .p-opt.p3 { color: var(--p3); }
-
         .chart-box { height: 350px; position: relative; display: flex; align-items: center; justify-content: center; }
         .balans-center { position: absolute; text-align: center; }
         .balans-center h1 { font-size: 60px; font-weight: 900; color: var(--accent); line-height: 0.8; }
-
         .ai-card { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
         .ai-card.crit { border-left-color: var(--p1); }
         .ai-card.sport { border-left-color: #f59e0b; }
         .ai-card h6 { font-size: 11px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
         .ai-card p { font-size: 13px; line-height: 1.6; color: #94a3b8; }
         .ai-card .note { margin-top: 10px; font-size: 11px; color: #475569; font-style: italic; }
-
         .btn-run { background: var(--accent); color: #000; width: 100%; padding: 20px; border-radius: 18px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; letter-spacing: 2px; }
-        .shake { animation: shake 0.4s; border-color: var(--p1) !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
 <body>
 
 <header>
     <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-    <input type="date" id="pDate" style="background:transparent; border:none; color:var(--accent); font-weight:700;">
+    <div style="display:flex; align-items:center; gap:20px;">
+        <input type="date" id="pDate" style="background:transparent; border:none; color:var(--accent); font-weight:700;" onchange="window.loadData()">
+        <div id="auth-section"></div>
+    </div>
 </header>
 
 <div class="dashboard">
     <section class="panel">
         <span class="label-sm">Aqliy yuklama</span>
         <div class="mode-selector">
-            <button class="mode-btn" onclick="setMode(1.5, this)">OSON</button>
-            <button class="mode-btn active" onclick="setMode(3.0, this)">O'RTACHA</button>
-            <button class="mode-btn" onclick="setMode(5.0, this)">QIYIN</button>
+            <button class="mode-btn" data-val="1.5" onclick="setMode(1.5, this)">OSON</button>
+            <button class="mode-btn active" data-val="3.0" onclick="setMode(3.0, this)">O'RTACHA</button>
+            <button class="mode-btn" data-val="5.0" onclick="setMode(5.0, this)">QIYIN</button>
         </div>
-
         <span class="label-sm">Resurslar (Soat)</span>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:25px;">
-            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;">
-                <label style="font-size:9px; opacity:0.5;">UYQU</label>
-                <input type="number" id="sH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()">
-            </div>
-            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;">
-                <label style="font-size:9px; opacity:0.5;">ISH</label>
-                <input type="number" id="wH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()">
-            </div>
+            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;"><label style="font-size:9px; opacity:0.5;">UYQU</label><input type="number" id="sH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()"></div>
+            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:15px;"><label style="font-size:9px; opacity:0.5;">ISH</label><input type="number" id="wH" value="8" style="background:transparent; border:none; color:#fff; width:100%; font-weight:800;" oninput="sync()"></div>
         </div>
-
         <span class="label-sm">Vaqt zonalari</span>
         <div id="zList"></div>
         <button onclick="addZ()" style="background:transparent; border:2px dashed var(--border); color:#475569; width:100%; padding:15px; border-radius:15px; cursor:pointer; font-weight:700; margin-top:10px;">+ ZONA QO'SHISH</button>
-        <button class="btn-run" onclick="analyze()">Strategik Tahlil</button>
+        <button class="btn-run" onclick="window.saveData(); analyze();">Strategik Saqlash</button>
     </section>
-
     <section>
-        <div class="panel">
-            <div class="chart-box">
-                <canvas id="nChart"></canvas>
-                <div class="balans-center">
-                    <h1 id="balText">08:00</h1>
-                    <p style="font-size:9px; opacity:0.3; letter-spacing:3px;">BO'SH VAQT</p>
-                </div>
-            </div>
-        </div>
+        <div class="panel"><div class="chart-box"><canvas id="nChart"></canvas><div class="balans-center"><h1 id="balText">08:00</h1><p style="font-size:9px; opacity:0.3; letter-spacing:3px;">BO'SH VAQT</p></div></div></div>
         <div id="aiHub" style="margin-top:25px;"></div>
     </section>
 </div>
 
 <script>
-let chart;
-let complexity = 3.0;
-document.getElementById('pDate').valueAsDate = new Date();
+    let chart;
+    window.complexity = 3.0;
+    document.getElementById('pDate').valueAsDate = new Date();
 
-function setMode(val, btn) {
-    complexity = val;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    sync();
-}
-
-function sync() { updateUI(); }
-
-function addZ(n='', m='', p='p2') {
-    const id = Date.now();
-    const div = document.createElement('div');
-    div.className = 'zone-card';
-    div.id = `z-${id}`;
-    div.dataset.p = p;
-    div.innerHTML = `
-        <div class="zone-main">
-            <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
-            <input type="text" placeholder="Maqsad nomi..." class="name" style="flex:1;" value="${n}" oninput="sync()">
-            <input type="number" placeholder="min" class="time" value="${m}" oninput="valT(this)">
-            <i class="fa-solid fa-xmark" style="opacity:0.2; cursor:pointer;" onclick="remZ(${id})"></i>
-        </div>
-        <div class="p-overlay" id="ov-${id}">
-            <div class="p-opt p1" onclick="selP(${id},'p1')">P1 - Muhim</div>
-            <div class="p-opt p2" onclick="selP(${id},'p2')">P2 - O'rtacha</div>
-            <div class="p-opt p3" onclick="selP(${id},'p3')">P3 - Qo'shimcha</div>
-        </div>
-    `;
-    document.getElementById('zList').appendChild(div);
-    sync();
-}
-
-function showP(id) { document.getElementById(`ov-${id}`).style.display = 'flex'; }
-function selP(id, p) {
-    const z = document.getElementById(`z-${id}`);
-    z.dataset.p = p;
-    z.querySelector('.p-indicator').className = `p-indicator ${p}`;
-    document.getElementById(`ov-${id}`).style.display = 'none';
-    sync();
-}
-
-function valT(el) {
-    const s = (+document.getElementById('sH').value || 0) * 60;
-    const w = (+document.getElementById('wH').value || 0) * 60;
-    let sum = 0;
-    document.querySelectorAll('.time').forEach(i => { if(i!==el) sum += (+i.value || 0); });
-    let max = 1440 - (s + w + sum);
-    if (+el.value > max) {
-        el.value = Math.max(0, max);
-        el.classList.add('shake');
-        setTimeout(() => el.classList.remove('shake'), 400);
-    }
-    sync();
-}
-
-function remZ(id) { document.getElementById(`z-${id}`).remove(); sync(); }
-
-function updateUI() {
-    const s = (+document.getElementById('sH').value || 0) * 60;
-    const w = (+document.getElementById('wH').value || 0) * 60;
-    let labs = ['Uyqu','Ish'], vals = [s,w], total = s + w;
-
-    document.querySelectorAll('.zone-card').forEach(z => {
-        labs.push(z.querySelector('.name').value || 'Zona');
-        const v = +z.querySelector('.time').value || 0;
-        vals.push(v); total += v;
-    });
-
-    const bal = Math.max(0, 1440 - total);
-    labs.push('Bo\'sh'); vals.push(bal);
-    document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
-
-    if (!chart) {
-        chart = new Chart(document.getElementById('nChart').getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: labs, datasets: [{ data: vals, backgroundColor: ['#1e293b', '#334155', '#ef4444', '#d97706', '#10b981', '#22d3ee', '#8b5cf6', '#475569'], borderWidth: 0 }] },
-            options: { cutout: '85%', plugins: { legend: { display: false } } }
+    window.setMode = (val, btn, shouldSync=true) => {
+        window.complexity = val;
+        document.querySelectorAll('.mode-btn').forEach(b => {
+            b.classList.toggle('active', parseFloat(b.dataset.val) === val);
         });
-    } else {
-        chart.data.labels = labs; chart.data.datasets[0].data = vals; chart.update('none');
-    }
-}
+        if(shouldSync) sync();
+    };
 
-function analyze() {
-    const hub = document.getElementById('aiHub');
-    hub.innerHTML = '';
-    const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
-        n: z.querySelector('.name').value.toLowerCase(),
-        t: +z.querySelector('.time').value,
-        p: z.dataset.p
-    }));
+    function sync() { updateUI(); }
 
-    const bal = 1440 - (zones.reduce((a,b)=>a+b.t, 0) + (+document.getElementById('sH').value*60) + (+document.getElementById('wH').value*60));
-
-    // UNIVERSAL TAHLIL MANTIQI
-    zones.forEach(z => {
-        // 1. Mutolaa (Tushunib o'qish)
-        if (z.n.includes('kitob') || z.n.includes('mutolaa') || z.n.includes('o\'qish')) {
-            const pages = Math.floor(z.t / complexity);
-            hub.innerHTML += createCard('', 'Chuqur Mutolaa', `Bugun ${pages} bet matnni to'liq hazm qilish uchun yetarli vaqt ajratdingiz.`, `Strategiya: Miya bu sur'atda ma'lumotni uzoq muddatli xotiraga muhrlaydi.`);
-        }
-        // 2. Jismoniy faollik (Sport/Yugurish)
-        else if (z.n.includes('sport') || z.n.includes('yugurish') || z.n.includes('mashq') || z.n.includes('zal')) {
-            const cal = Math.floor(z.t * 6.5);
-            hub.innerHTML += createCard('sport', 'Fiziologik Tiklanish', `Bugungi ${z.t} daqiqalik faollik taxminan ${cal} kkal energiya sarfi va qon aylanishini 30% ga yaxshilash demakdir.`, `Fakt: Jismoniy mashq aqliy faoliyat samaradorligini oshiradi.`);
-        }
-        // 3. Til o'rganish
-        else if (z.n.includes('til') || z.n.includes('english') || z.n.includes('nemis')) {
-            hub.innerHTML += createCard('', 'Lingvistik Rivoj', `${z.t} daqiqa diqqat bilan yangi so'zlar va konstruksiyalar ustida ishlash yiliga 300+ soatlik bilim poydevorini yaratadi.`, `Maslahat: Til o'rganishda 45 daqiqadan so'ng 5 daqiqa tanaffus qiling.`);
-        }
-        // 4. Boshqa P1 vazifalar (Universal)
-        else if (z.p === 'p1' && z.t > 0) {
-            hub.innerHTML += createCard('crit', 'Fokus Markazi', `"${z.n.toUpperCase()}" vazifasi bugungi kunning strategik nuqtasi. Unga bor kuchingizni bering.`, `Eslatma: P1 vazifalar kun yakunida g'oliblik hissini beradi.`);
-        }
-    });
-
-    // 5. Bo'sh vaqt tahlili
-    if (bal > 30) {
-        hub.innerHTML += createCard('', 'Strategik Bo\'sh Vaqt', `${Math.floor(bal/60)} soat ${bal%60} minut bo'sh vaqt - bu sizning erkinlik resursingiz.`, `Mantiq: Bu vaqtni yangi g'oyalar va o'z-o'zini tahlil qilish (reflection) uchun ishlating.`);
+    window.addZ = (n='', m='', p='p2', shouldSync=true) => {
+        const id = Date.now() + Math.random();
+        const div = document.createElement('div');
+        div.className = 'zone-card';
+        div.id = `z-${id}`;
+        div.dataset.p = p;
+        div.innerHTML = `
+            <div class="zone-main">
+                <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
+                <input type="text" placeholder="Maqsad..." class="name" style="flex:1;" value="${n}" oninput="sync()">
+                <input type="number" placeholder="min" class="time" value="${m}" oninput="sync()">
+                <i class="fa-solid fa-xmark" style="opacity:0.2; cursor:pointer;" onclick="remZ(${id})"></i>
+            </div>
+            <div class="p-overlay" id="ov-${id}">
+                <div class="p-opt p1" onclick="selP(${id},'p1')">P1 - Muhim</div>
+                <div class="p-opt p2" onclick="selP(${id},'p2')">P2 - O'rtacha</div>
+                <div class="p-opt p3" onclick="selP(${id},'p3')">P3 - Qo'shimcha</div>
+            </div>`;
+        document.getElementById('zList').appendChild(div);
+        if(shouldSync) sync();
     }
 
-    // 6. Ma'lumot kam bo'lsa
-    if (hub.innerHTML === '') {
-        hub.innerHTML = createCard('', 'Tizim Tayyor', 'Kamida bitta vazifa (Zona) qo\'shing va unga vaqt ajrating.');
+    window.showP = (id) => { document.getElementById(`ov-${id}`).style.display = 'flex'; }
+    window.selP = (id, p) => {
+        const z = document.getElementById(`z-${id}`);
+        z.dataset.p = p;
+        z.querySelector('.p-indicator').className = `p-indicator ${p}`;
+        document.getElementById(`ov-${id}`).style.display = 'none';
+        sync();
     }
-}
+    window.remZ = (id) => { document.getElementById(`z-${id}`).remove(); sync(); }
 
-function createCard(c, title, txt, note) {
-    return `<div class="ai-card ${c}"><h6>${title}</h6><p>${txt}</p><div class="note">${note}</div></div>`;
-}
+    window.updateUI = () => {
+        const s = (+document.getElementById('sH').value || 0) * 60;
+        const w = (+document.getElementById('wH').value || 0) * 60;
+        let labs = ['Uyqu','Ish'], vals = [s,w], total = s + w;
+        document.querySelectorAll('.zone-card').forEach(z => {
+            labs.push(z.querySelector('.name').value || 'Zona');
+            const v = +z.querySelector('.time').value || 0;
+            vals.push(v); total += v;
+        });
+        const bal = Math.max(0, 1440 - total);
+        labs.push('Bo\'sh'); vals.push(bal);
+        document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+
+        if (!chart) {
+            chart = new Chart(document.getElementById('nChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: labs, datasets: [{ data: vals, backgroundColor: ['#1e293b', '#334155', '#ef4444', '#d97706', '#10b981', '#22d3ee', '#8b5cf6', '#475569'], borderWidth: 0 }] },
+                options: { cutout: '85%', plugins: { legend: { display: false } } }
+            });
+        } else {
+            chart.data.labels = labs; chart.data.datasets[0].data = vals; chart.update();
+        }
+    }
+
+    window.analyze = () => {
+        const hub = document.getElementById('aiHub');
+        hub.innerHTML = '';
+        const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
+            n: z.querySelector('.name').value.toLowerCase(),
+            t: +z.querySelector('.time').value,
+            p: z.dataset.p
+        }));
+        zones.forEach(z => {
+            if (z.n.includes('kitob') || z.n.includes('mutolaa')) {
+                hub.innerHTML += createCard('', 'Mutolaa', `Bugun ${Math.floor(z.t / window.complexity)} bet o'qishingiz mumkin.`, `Miya bu tezlikda bilimni yaxshi saqlaydi.`);
+            } else if (z.n.includes('sport') || z.n.includes('yugurish')) {
+                hub.innerHTML += createCard('sport', 'Sport', `${z.t} daqiqa faollik miya qon aylanishini yaxshilaydi.`, `Fakt: Jismoniy faollik irodani kuchaytiradi.`);
+            }
+        });
+    }
+
+    function createCard(c, title, txt, note) {
+        return `<div class="ai-card ${c}"><h6>${title}</h6><p>${txt}</p><div class="note">${note}</div></div>`;
+    }
 </script>
 </body>
 </html>
