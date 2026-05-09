@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neytron | Beta System</title>
+<title>Neytron | AI Upgrade</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -18,143 +18,153 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:var(--bg);color:var(--text);padding:15px;}
 
-/* LOADING */
-#loading{
-position:fixed;inset:0;
-display:flex;justify-content:center;align-items:center;
-background:#030712;z-index:9999;
+body{
+background:var(--bg);
+color:var(--text);
+padding:12px;
+overflow-x:hidden;
 }
-
-.loader{
-width:60px;height:60px;border:4px solid #222;
-border-top:4px solid var(--accent);
-border-radius:50%;
-animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 /* LOGIN */
 #login{
-position:fixed;inset:0;
-display:flex;justify-content:center;align-items:center;
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
 background:#020617;
+z-index:999;
 }
 
 .box{
 background:var(--card);
-padding:40px;
-border-radius:20px;
+padding:30px;
+border-radius:16px;
 text-align:center;
-border:1px solid var(--border);
+width:90%;
+max-width:360px;
 }
 
 button{
-padding:12px 20px;
+padding:12px 16px;
 border:none;
 border-radius:10px;
+background:var(--accent);
+font-weight:800;
 cursor:pointer;
-font-weight:700;
 }
 
 /* APP */
-#app{display:none;max-width:1000px;margin:auto;}
-
-header{
-display:flex;justify-content:space-between;
-padding:12px;
-background:var(--card);
-border-radius:15px;
-border:1px solid var(--border);
-margin-bottom:15px;
+#app{
+display:none;
+max-width:1000px;
+margin:auto;
 }
 
+/* HEADER */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:var(--card);
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+}
+
+/* PANEL */
 .panel{
 background:var(--card);
-padding:15px;
-border-radius:15px;
-margin-bottom:15px;
-border:1px solid var(--border);
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
 }
 
+/* INPUT */
 input{
 width:100%;
 padding:10px;
-margin:5px 0;
+margin-top:8px;
 border-radius:10px;
-border:1px solid #222;
+border:none;
 background:#020617;
-color:white;
+color:#fff;
 }
 
+/* TASK */
 .task{
 display:flex;
-gap:10px;
-margin-top:10px;
+justify-content:space-between;
+padding:8px;
+margin-top:6px;
+background:#020617;
+border-radius:8px;
 }
 
-.toast{
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-background:var(--accent);
-color:#000;
-padding:10px 20px;
-border-radius:10px;
-opacity:0;
-transition:0.3s;
-}
-.toast.show{opacity:1;bottom:40px;}
+/* CHART */
+canvas{max-width:100%;}
 
+/* MOBILE FIX */
+@media(max-width:600px){
+header{flex-direction:column;align-items:flex-start;gap:8px;}
+}
 </style>
 </head>
+
 <body>
 
-<div id="loading"><div class="loader"></div></div>
-
+<!-- LOGIN -->
 <div id="login">
 <div class="box">
-<h2>Neytron</h2>
-<p>Login orqali kirish</p>
+<h2>Neytron AI</h2>
+<p>Bir marta login</p>
 <br>
 <button onclick="login()">Google Login</button>
 </div>
 </div>
 
+<!-- APP -->
 <div id="app">
 
 <header>
-<div><b>NEYTRON</b></div>
+<div><b>NEYTRON AI</b></div>
 <button onclick="logout()">Chiqish</button>
 </header>
 
 <div class="panel">
-<h3>Kun rejasi</h3>
+<h3>Vazifa qo‘shish</h3>
 
-<input id="taskName" placeholder="Vazifa">
-<input id="taskTime" type="number" placeholder="Vaqt (min)">
+<input id="name" placeholder="Vazifa">
+<input id="time" type="number" placeholder="Vaqt (min)">
 
-<button onclick="addTask()">Qo‘shish</button>
+<button onclick="add()">Qo‘shish</button>
 
-<div id="tasks"></div>
+<div id="list"></div>
 </div>
 
 <div class="panel">
-<h3>Analitika</h3>
+<h3>AI Analitika</h3>
 <canvas id="chart"></canvas>
+<div id="ai"></div>
 </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+getAuth,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged,
+signOut,
+setPersistence,
+browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+/* FIREBASE */
 const firebaseConfig = {
 apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
 authDomain: "neytronplanner.firebaseapp.com",
@@ -168,14 +178,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-window.login = () => {
-signInWithPopup(auth, provider)
-.catch(e => showToast("Login xatolik"));
-};
+/* ⭐ LOGIN FIX (1 marta kirish) */
+setPersistence(auth, browserLocalPersistence);
 
+window.login = () => signInWithPopup(auth, provider);
 window.logout = () => signOut(auth);
 
-onAuthStateChanged(auth, (user)=>{
+/* AUTH */
+onAuthStateChanged(auth,(user)=>{
 if(user){
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
@@ -183,7 +193,6 @@ document.getElementById("app").style.display="block";
 document.getElementById("login").style.display="flex";
 document.getElementById("app").style.display="none";
 }
-document.getElementById("loading").style.display="none";
 });
 
 </script>
@@ -191,70 +200,81 @@ document.getElementById("loading").style.display="none";
 <script>
 
 let tasks=[];
-
-window.addTask=()=>{
-
-const name=document.getElementById("taskName").value;
-const time=document.getElementById("taskTime").value;
-
-if(!name || !time) return showToast("To‘ldiring");
-
-tasks.push({name,time});
-
-render();
-
-showToast("Qo‘shildi");
-};
-
-function render(){
-
-let html="";
-
-tasks.forEach(t=>{
-html+=`<div class="task">
-<div>${t.name}</div>
-<div>${t.time} min</div>
-</div>`;
-});
-
-document.getElementById("tasks").innerHTML=html;
-updateChart();
-}
-
 let chart;
 
-function updateChart(){
+/* ADD */
+window.add=()=>{
 
-let labels=tasks.map(t=>t.name);
-let data=tasks.map(t=>t.time);
+const n=document.getElementById("name").value;
+const t=document.getElementById("time").value;
+
+if(!n||!t) return;
+
+tasks.push({n,t});
+
+render();
+ai();
+};
+
+/* RENDER */
+function render(){
+
+document.getElementById("list").innerHTML=
+tasks.map(t=>
+`<div class="task">
+<span>${t.n}</span>
+<span>${t.t} min</span>
+</div>`
+).join("");
+
+chartUpdate();
+}
+
+/* CHART */
+function chartUpdate(){
+
+const ctx=document.getElementById("chart");
 
 if(!chart){
-chart=new Chart(document.getElementById("chart"),{
+chart=new Chart(ctx,{
 type:"doughnut",
 data:{
-labels,
-datasets:[{data}]
+labels:tasks.map(t=>t.n),
+datasets:[{data:tasks.map(t=>t.t)}]
+},
+options:{
+responsive:true
 }
 });
 }else{
-chart.data.labels=labels;
-chart.data.datasets[0].data=data;
+chart.data.labels=tasks.map(t=>t.n);
+chart.data.datasets[0].data=tasks.map(t=>t.t);
 chart.update();
 }
+
 }
 
-function showToast(text){
-let t=document.getElementById("toast");
-t.innerText=text;
-t.classList.add("show");
-setTimeout(()=>t.classList.remove("show"),2000);
+/* AI ENGINE (SIMPLE SMART LOGIC) */
+function ai(){
+
+let box=document.getElementById("ai");
+box.innerHTML="";
+
+tasks.forEach(t=>{
+
+if(t.n.toLowerCase().includes("kitob")){
+box.innerHTML+=`
+<p>📚 Kitob: ${Math.floor(t.t/10)} sahifa o‘qish mumkin</p>`;
 }
 
-window.addEventListener("load",()=>{
-setTimeout(()=>{
-document.getElementById("loading").style.display="none";
-},800);
+if(t.n.toLowerCase().includes("sport")){
+box.innerHTML+=`
+<p>💪 Sport: ${t.t} min juda yaxshi progress</p>`;
+}
+
 });
+
+}
 
 </script>
 
