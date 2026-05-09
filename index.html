@@ -2,8 +2,8 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neytron | Strategic Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Neytron | Strategic Core</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -13,59 +13,64 @@
             --text: #f1f5f9; --border: rgba(255, 255, 255, 0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); padding: 12px; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); padding: 12px; overflow-x: hidden; min-height: 100vh; }
 
-        /* Header & Brand */
+        /* Header */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
-            background: var(--card); padding: 10px 15px; border-radius: 20px; 
-            border: 1px solid var(--border); margin-bottom: 20px; position: sticky; top: 0; z-index: 100;
+            background: var(--card); padding: 12px 18px; border-radius: 20px; 
+            border: 1px solid var(--border); margin-bottom: 20px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px);
         }
         .brand { font-weight: 900; font-size: 16px; letter-spacing: 3px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
         .atom-core { animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .header-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        #pDate { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--accent); padding: 6px 8px; border-radius: 12px; font-weight: 800; font-size: 12px; outline: none; width: 125px; }
+        .header-controls { display: flex; align-items: center; gap: 8px; }
+        #pDate { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--accent); padding: 6px 10px; border-radius: 12px; font-weight: 800; font-size: 12px; outline: none; }
         .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; background: #1e293b; }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Dashboard Elements */
+        /* Panellar */
         .panel { background: var(--card); border-radius: 24px; padding: 22px; border: 1px solid var(--border); margin-bottom: 20px; }
         .label-sm { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; opacity: 0.6; }
 
+        /* Zonalarni boshqarish */
         .zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 14px; margin-bottom: 12px; position: relative; overflow: hidden; }
         .zone-main { display: flex; align-items: center; gap: 12px; }
-        .zone-card input.name { background: transparent; border: none; color: #fff; outline: none; font-size: 15px; font-weight: 600; flex: 1; }
-        .zone-card input.time { width: 70px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-weight: 800; color: var(--accent); outline: none; }
+        .zone-card input { background: transparent; border: none; color: #fff; outline: none; font-weight: 600; }
+        .zone-card input.name { flex: 1; font-size: 15px; }
+        .zone-card input.time { width: 70px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; font-weight: 800; color: var(--accent) !important; }
 
-        /* P1/P2/P3 UI Fix */
-        .p-indicator { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); font-weight: 900; }
+        .p-indicator { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); font-weight: 900; font-size: 13px; }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
         .p-indicator.p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
 
-        .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 20px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
+        /* Toast Message (Saqlandi xabari) */
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; padding: 12px 25px; border-radius: 50px; font-weight: 900; font-size: 14px; z-index: 1000; display: none; box-shadow: 0 10px 30px rgba(34, 211, 238, 0.4); }
 
-        /* Chart & Balans */
-        .chart-container { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
+        /* Analitika */
+        .chart-container { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; margin-top: 10px; }
         .balans-center { position: absolute; text-align: center; pointer-events: none; }
         .balans-center h1 { font-size: 45px; font-weight: 900; color: var(--accent); line-height: 1; }
-        .balans-center p { font-size: 9px; opacity: 0.4; letter-spacing: 3px; }
+        .balans-center p { font-size: 9px; opacity: 0.4; letter-spacing: 3px; margin-top: 5px; }
 
-        .loss-warning { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--p1); color: var(--p1); padding: 15px; border-radius: 18px; font-size: 13px; font-weight: 700; line-height: 1.4; text-align: center; margin-bottom: 15px; }
+        .ai-card { background: rgba(34, 211, 238, 0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 15px; margin-bottom: 15px; font-size: 13px; line-height: 1.5; }
+        .ai-card.warning { border-left-color: var(--p1); background: rgba(239, 68, 68, 0.05); color: var(--p1); }
 
         .btn-run { background: var(--accent); color: #000; width: 100%; padding: 18px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; margin-top: 15px; letter-spacing: 2px; }
-        
+        .btn-add { background: transparent; border: 1px dashed var(--border); color: #64748b; width: 100%; padding: 14px; border-radius: 15px; font-weight: 700; margin: 10px 0; cursor: pointer; }
+
         #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     </style>
 </head>
 <body>
 
+<div id="toast">SAQLANDI</div>
+
 <div id="login-screen">
     <div style="text-align: center;">
-        <h1 style="font-weight: 900; letter-spacing: 8px; color: var(--accent); margin-bottom: 30px;">NEYTRON</h1>
-        <button class="btn-run" style="width: 250px;" onclick="window.signIn()">GOOGLE ORQALI KIRISH</button>
+        <h1 style="font-weight: 900; letter-spacing: 10px; color: var(--accent); margin-bottom: 30px;">NEYTRON</h1>
+        <button class="btn-run" style="width: 260px;" onclick="window.signIn()">KIRISH</button>
     </div>
 </div>
 
@@ -75,7 +80,6 @@
         <div class="header-controls">
             <input type="date" id="pDate" onchange="window.loadData()">
             <div class="user-avatar" id="user-p"></div>
-            <i class="fa-solid fa-power-off" style="opacity: 0.3; cursor: pointer;" onclick="window.logout()"></i>
         </div>
     </header>
 
@@ -83,12 +87,12 @@
         <span class="label-sm">Asosiy Resurslar</span>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 15px; text-align: center;">
-                <label style="font-size: 9px; opacity: 0.5; display: block;">UYQU</label>
-                <input type="number" id="sH" value="8" oninput="updateUI()" style="background:transparent; border:none; color:#fff; text-align:center; font-weight:800; font-size:18px; width:100%; outline:none;">
+                <label style="font-size: 9px; opacity: 0.5; display: block; margin-bottom: 5px;">UYQU (SOAT)</label>
+                <input type="number" id="sH" value="8" oninput="updateUI()" style="background:transparent; border:none; color:#fff; text-align:center; font-weight:800; font-size:20px; width:100%; outline:none;">
             </div>
             <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 15px; text-align: center;">
-                <label style="font-size: 9px; opacity: 0.5; display: block;">ISH</label>
-                <input type="number" id="wH" value="8" oninput="updateUI()" style="background:transparent; border:none; color:#fff; text-align:center; font-weight:800; font-size:18px; width:100%; outline:none;">
+                <label style="font-size: 9px; opacity: 0.5; display: block; margin-bottom: 5px;">ISH (SOAT)</label>
+                <input type="number" id="wH" value="8" oninput="updateUI()" style="background:transparent; border:none; color:#fff; text-align:center; font-weight:800; font-size:20px; width:100%; outline:none;">
             </div>
         </div>
     </div>
@@ -96,7 +100,7 @@
     <div class="panel">
         <span class="label-sm">Vaqt Zonalari (Daqiqa)</span>
         <div id="zList"></div>
-        <button onclick="addZ()" style="background: transparent; border: 1px dashed var(--border); color: #64748b; width: 100%; padding: 14px; border-radius: 15px; font-weight: 700; margin: 10px 0;">+ YANGI ZONA</button>
+        <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
         <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
     </div>
 
@@ -115,7 +119,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -132,29 +136,23 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // 1-TAKLIF: Offline Mode (Poydevorni mustahkamlash)
-    enableIndexedDbPersistence(db).catch((err) => console.log("Offline mode error", err.code));
+    enableIndexedDbPersistence(db).catch(() => {});
 
-    // 3-TAKLIF: Avto-login (Persistence) [cite: 2026-03-23]
     setPersistence(auth, browserLocalPersistence).then(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}">`;
+                if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%">`;
                 window.loadData();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
             }
         });
     });
 
     window.signIn = () => signInWithPopup(auth, provider);
-    window.logout = () => signOut(auth);
 
     window.saveData = async () => {
-        hapticFeedback(); // Touch feedback
+        if(window.navigator.vibrate) window.navigator.vibrate(20);
         const user = auth.currentUser;
         if (!user) return;
         const date = document.getElementById('pDate').value;
@@ -169,12 +167,14 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
-        alert("Strategiya saqlandi!");
+        
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 2000);
     };
 
     window.loadData = async () => {
         const user = auth.currentUser;
-        if (!user) return;
         const date = document.getElementById('pDate').value;
         const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
         document.getElementById('zList').innerHTML = '';
@@ -186,14 +186,6 @@
         } else { window.addZ('', '', 'p2'); }
         updateUI();
     };
-
-    // 3-TAKLIF: Touch-haptic funksiyasi
-    function hapticFeedback() {
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(20);
-        }
-    }
-    window.haptic = hapticFeedback;
 </script>
 
 <script>
@@ -211,20 +203,19 @@
                 <div class="p-indicator ${p}" onclick="showP(${id})">${p.toUpperCase()}</div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
                 <input type="number" placeholder="min" class="time" value="${t}" oninput="updateUI()">
-                <i class="fa-solid fa-xmark" style="opacity:0.2" onclick="remZ(${id})"></i>
+                <i class="fa-solid fa-xmark" style="opacity:0.3" onclick="remZ(${id})"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div onclick="selP(${id},'p1')" style="color:var(--p1); font-weight:900;">P1</div>
-                <div onclick="selP(${id},'p2')" style="color:var(--p2); font-weight:900;">P2</div>
-                <div onclick="selP(${id},'p3')" style="color:var(--p3); font-weight:900;">P3</div>
+                <div onclick="selP(${id},'p1')" style="color:var(--p1)">P1</div>
+                <div onclick="selP(${id},'p2')" style="color:var(--p2)">P2</div>
+                <div onclick="selP(${id},'p3')" style="color:var(--p3)">P3</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         updateUI();
     };
 
-    window.showP = (id) => { window.haptic(); document.getElementById(`ov-${id}`).style.display = 'flex'; }
+    window.showP = (id) => document.getElementById(`ov-${id}`).style.display = 'flex';
     window.selP = (id, p) => {
-        window.haptic();
         const z = document.getElementById(`z-${id}`);
         z.dataset.p = p;
         z.querySelector('.p-indicator').className = `p-indicator ${p}`;
@@ -232,45 +223,47 @@
         document.getElementById(`ov-${id}`).style.display = 'none';
         updateUI();
     };
-    window.remZ = (id) => { window.haptic(); document.getElementById(`z-${id}`).remove(); updateUI(); };
+    window.remZ = (id) => { document.getElementById(`z-${id}`).remove(); updateUI(); };
 
     window.updateUI = () => {
         const s = (+document.getElementById('sH').value || 0) * 60;
         const w = (+document.getElementById('wH').value || 0) * 60;
-        let zSum = 0;
-        document.querySelectorAll('.zone-card').forEach(z => zSum += (+z.querySelector('.time').value || 0));
-        
-        const balMin = Math.max(0, 1440 - (s + w + zSum));
-        document.getElementById('balText').innerText = `${Math.floor(balMin/60).toString().padStart(2,'0')}:${(balMin%60).toString().padStart(2,'0')}`;
+        let zSum = 0, colors = ['#1e293b', '#334155'], vals = [s, w], labs = ['Uyqu', 'Ish'];
 
-        if (!chart) {
-            chart = new Chart(document.getElementById('nChart'), {
-                type: 'doughnut',
-                data: { datasets: [{ data: [s, w, zSum, balMin], backgroundColor: ['#1e293b', '#334155', '#ef4444', '#22d3ee'], borderWidth: 0 }] },
-                options: { cutout: '85%', plugins: { legend: { display: false } } }
-            });
-        } else {
-            chart.data.datasets[0].data = [s, w, zSum, balMin];
-            chart.update();
-        }
-        analyze(balMin);
+        document.querySelectorAll('.zone-card').forEach(z => {
+            const t = +z.querySelector('.time').value || 0;
+            const p = z.dataset.p;
+            zSum += t;
+            vals.push(t);
+            labs.push(z.querySelector('.name').value || 'Vazifa');
+            colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
+        });
+
+        const bal = Math.max(0, 1440 - (s + w + zSum));
+        vals.push(bal); labs.push('Bo\'sh'); colors.push('#22d3ee');
+        
+        document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+
+        const ctx = document.getElementById('nChart').getContext('2d');
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: labs, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
+            options: { cutout: '85%', plugins: { legend: { display: false } }, animation: { duration: 0 } }
+        });
+        
+        analyze(bal, zSum);
     };
 
-    // 2-TAKLIF: Universal Professional Analitika [cite: 2026-03-23]
-    function analyze(balMin) {
+    function analyze(bal, totalZones) {
         const hub = document.getElementById('aiHub');
         hub.innerHTML = '';
-        if (balMin > 0) {
-            const lossYearHours = Math.floor((balMin * 365) / 60);
-            hub.innerHTML = `<div class="loss-warning">
-                <i class="fa-solid fa-triangle-exclamation"></i> 
-                Ushbu bo'sh vaqt bilan bir yilda jami <b>${lossYearHours} soat</b> vaqtni boy berishingiz mumkin!
-            </div>`;
-            
-            // 2-TAKLIF: Telegram Push mantiqi (Faqat ogohlantirish sifatida)
-            if (balMin > 180) { // 3 soatdan ko'p bo'sh vaqt bo'lsa
-                hub.innerHTML += `<p style="font-size:10px; color:var(--accent); text-align:center; opacity:0.6;">* Strategik tahlil: Bo'sh vaqt haddan tashqari ko'p. Telegram botga hisobot yuborish tavsiya etiladi.</p>`;
-            }
+        if (bal > 0) {
+            const loss = Math.floor((bal * 365) / 60);
+            hub.innerHTML += `<div class="ai-card warning"><b>DIQQAT:</b> Bir yilda <b>${loss} soat</b> vaqtingizni boy berishingiz mumkin!</div>`;
+        }
+        if (totalZones > 0) {
+            hub.innerHTML += `<div class="ai-card">Fokuslangan vaqtingiz jami kunning ${(totalZones/14.4).toFixed(1)}% qismini tashkil qiladi.</div>`;
         }
     }
 </script>
