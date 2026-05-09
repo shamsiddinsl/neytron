@@ -1,185 +1,95 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NEYTRON | Strategik Rejalashtirish</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<style>
-:root {
-    --bg: #030712; --card: #0f172a; --card2: #111827;
-    --accent: #22d3ee; --p1: #ef4444; --p2: #d97706; --p3: #10b981;
-    --text: #f1f5f9; --muted: #475569; --border: rgba(255,255,255,0.07);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; overflow-x: hidden; min-height: 100vh; }
-body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 10% 0%, rgba(34,211,238,0.05) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 90% 100%, rgba(34,211,238,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neytron | Final UX Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030712; --card: #0f172a; --accent: #22d3ee;
+            --p1: #ef4444; --p2: #d97706; --p3: #10b981;
+            --text: #f1f5f9; --border: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.4; overflow-x: hidden; }
 
-#toast-wrap { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
-.toast { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 11px 20px; font-size: 12px; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px; animation: tIn 0.3s ease, tOut 0.3s ease 2.7s forwards; white-space: nowrap; pointer-events: auto; }
-.toast.success { border-color: rgba(16,185,129,0.4); color: var(--p3); }
-.toast.error   { border-color: rgba(239,68,68,0.4);  color: var(--p1); }
-.toast.info    { border-color: rgba(34,211,238,0.3); color: var(--accent); }
-@keyframes tIn  { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-@keyframes tOut { from { opacity:1; } to { opacity:0; } }
+        /* Login Ekran */
+        #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+        .login-box { text-align: center; padding: 40px; border-radius: 30px; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border); backdrop-filter: blur(10px); width: 90%; max-width: 400px; }
+        .google-btn { background: #fff; color: #000; border: none; padding: 15px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 25px auto 0; width: 100%; transition: transform 0.2s; }
+        .google-btn:active { transform: scale(0.98); }
 
-#modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 8000; display: none; align-items: center; justify-content: center; }
-#modal-bg.open { display: flex; }
-.modal-box { background: var(--card2); border: 1px solid var(--border); border-radius: 24px; padding: 28px; max-width: 320px; width: 90%; text-align: center; animation: mIn 0.2s ease; }
-@keyframes mIn { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
-.modal-box h3 { font-family:'Syne',sans-serif; font-size:17px; margin-bottom:8px; }
-.modal-box p  { font-size:11px; color:var(--muted); margin-bottom:22px; line-height:1.6; }
-.modal-btns { display:flex; gap:10px; }
-.modal-btns button { flex:1; padding:12px; border-radius:12px; border:none; font-family:'Space Mono',monospace; font-weight:700; font-size:12px; cursor:pointer; transition:transform 0.15s; }
-.modal-btns button:active { transform:scale(0.97); }
-.m-cancel  { background:var(--card); color:var(--muted); }
-.m-confirm { background:var(--p1); color:#fff; }
+        #main-app { display: none; max-width: 1100px; margin: 0 auto; padding-bottom: 40px; }
 
-#offline-bar { display: none; background: var(--p1); color: #fff; text-align: center; padding: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1px; position: relative; z-index: 200; }
-body.offline #offline-bar { display: block; }
+        /* Header Modernizatsiyasi */
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .brand { font-weight: 900; font-size: 18px; letter-spacing: 4px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+        .atom-core { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-#login-screen { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
-.login-box { text-align: center; padding: 44px 36px; border-radius: 28px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); backdrop-filter: blur(12px); width: 90%; max-width: 380px; position: relative; overflow: hidden; }
-.login-box::before { content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 220px; height: 220px; background: radial-gradient(circle, rgba(34,211,238,0.1) 0%, transparent 70%); pointer-events: none; }
-.login-logo { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 900; letter-spacing: 10px; color: var(--accent); margin-bottom: 8px; }
-.login-sub { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 36px; }
-.google-btn { background: #fff; color: #111; border: none; padding: 15px 24px; border-radius: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(255,255,255,0.08); }
-.google-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,255,255,0.13); }
-.google-btn:active { transform: scale(0.98); }
+        .header-controls { display: flex; align-items: center; gap: 12px; }
+        #pDate { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--accent); padding: 6px 10px; border-radius: 12px; font-weight: 800; font-size: 13px; outline: none; width: 130px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; background: #1e293b; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-header { display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.85); backdrop-filter: blur(16px); padding: 12px 18px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-.brand { font-family: 'Syne', sans-serif; font-weight: 900; font-size: 19px; letter-spacing: 5px; color: var(--accent); display: flex; align-items: center; gap: 9px; }
-.atom-core { animation: spin 5s linear infinite; display: inline-block; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.hctrl { display: flex; align-items: center; gap: 10px; }
-.date-nav { display: flex; align-items: center; gap: 5px; }
-.nav-btn { background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; transition: all 0.2s; }
-.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-input[type="date"]#pDate { background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--accent); padding: 6px 10px; border-radius: 10px; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; outline: none; cursor: pointer; width: 138px; transition: border-color 0.2s; }
-input[type="date"]#pDate:focus { border-color: var(--accent); }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; background: #1e293b; transition: box-shadow 0.2s; }
-.user-avatar:hover { box-shadow: 0 0 10px rgba(34,211,238,0.4); }
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.logout-btn { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 5px; transition: color 0.2s; }
-.logout-btn:hover { color: var(--p1); }
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-#main-app { display: none; position: relative; z-index: 1; }
-.dashboard { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 18px; max-width: 1150px; margin: 0 auto; padding-bottom: 40px; }
-@media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
-.panel { background: var(--card); border-radius: 24px; padding: 22px; border: 1px solid var(--border); height: fit-content; }
-.sec-label { font-size: 9px; font-weight: 700; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; opacity: 0.55; display: block; margin-bottom: 13px; }
+        .panel { background: var(--card); border-radius: 24px; padding: 22px; border: 1px solid var(--border); height: fit-content; }
+        .label-sm { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; opacity: 0.6; }
 
-.mode-selector { display: flex; gap: 8px; margin-bottom: 22px; }
-.mode-btn { flex: 1; padding: 12px 8px; border-radius: 13px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--muted); font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
-.mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 18px rgba(34,211,238,0.25); }
-.mode-btn:not(.active):hover { border-color: var(--accent); color: var(--accent); }
+        /* Mode Selector */
+        .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; padding: 12px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+        .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 15px rgba(34, 211, 238, 0.3); }
 
-.res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
-.res-item { background: rgba(0,0,0,0.25); padding: 15px; border-radius: 18px; border: 1px solid var(--border); transition: border-color 0.2s; }
-.res-item:focus-within { border-color: rgba(34,211,238,0.25); }
-.res-item label { font-size: 8px; opacity: 0.45; display: block; margin-bottom: 5px; font-weight: 700; letter-spacing: 1px; }
-.res-item input { background: transparent; border: none; color: #fff; width: 100%; font-family: 'Syne', sans-serif; font-weight: 900; font-size: 26px; outline: none; }
-.res-item .unit { font-size: 9px; color: var(--muted); margin-top: 2px; }
+        /* Resources */
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .res-item { background: rgba(0,0,0,0.25); padding: 14px; border-radius: 18px; border: 1px solid var(--border); }
+        .res-item label { font-size: 9px; opacity: 0.5; display: block; margin-bottom: 4px; font-weight: 700; }
+        .res-item input { background: transparent; border: none; color: #fff; width: 100%; font-weight: 800; font-size: 18px; outline: none; }
 
-.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; }
-.stat-val { font-family:'Syne',sans-serif; font-size:20px; font-weight:900; }
-.stat-lbl { font-size:8px; letter-spacing:1.5px; color:var(--muted); margin-top:3px; }
+        /* Zonalarni boshqarish */
+        .zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 14px; margin-bottom: 12px; position: relative; }
+        .zone-main { display: flex; align-items: center; gap: 12px; }
+        .zone-card input.name { background: transparent; border: none; color: #fff; outline: none; font-size: 15px; font-weight: 600; flex: 1; }
+        .zone-card input.time { width: 75px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-weight: 800; color: var(--accent); outline: none; }
 
-.zone-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 13px 15px; margin-bottom: 10px; position: relative; transition: border-color 0.2s; cursor: grab; }
-.zone-card.dragging { opacity: 0.35; }
-.zone-card.drag-over { border-color: var(--accent); }
-.zone-row { display: flex; align-items: center; gap: 9px; }
-.drag-handle { color: var(--muted); font-size: 11px; cursor: grab; opacity: 0.35; padding: 3px; flex-shrink: 0; }
-.p-indicator { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; flex-shrink: 0; transition: transform 0.2s; border: 1px solid var(--border); }
-.p-indicator:hover { transform: scale(1.08); }
-.p-indicator.p1 { color:var(--p1); border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); }
-.p-indicator.p2 { color:var(--p2); border-color:rgba(217,119,6,0.3); background:rgba(217,119,6,0.08); }
-.p-indicator.p3 { color:var(--p3); border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.08); }
-.zone-name { background: none; border: none; color: #fff; font-family:'Space Mono',monospace; font-size: 13px; flex: 1; outline: none; min-width: 0; }
-.zone-name::placeholder { color: var(--muted); }
-.zone-time { width: 70px; background: #030712; border: 1px solid var(--border); border-radius: 11px; padding: 9px 7px; text-align: center; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 14px; color: var(--accent); outline: none; transition: border-color 0.2s; flex-shrink: 0; }
-.zone-time:focus { border-color: var(--accent); }
-.zone-del { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 5px; transition: color 0.2s; flex-shrink: 0; }
-.zone-del:hover { color: var(--p1); }
-.p-overlay { position: absolute; inset: 0; background: var(--card); border-radius: 20px; border: 1px solid var(--accent); display: none; align-items: center; justify-content: center; gap: 10px; z-index: 10; animation: fadeIn 0.15s ease; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-.p-overlay.open { display: flex; }
-.p-opt { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 12px 16px; border-radius: 14px; transition: background 0.15s; }
-.p-opt:hover { background: rgba(255,255,255,0.05); }
-.p-opt .pl { font-family:'Syne',sans-serif; font-size:20px; font-weight:900; }
-.p-opt .pd { font-size:8px; color:var(--muted); letter-spacing:1px; }
+        .p-indicator { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+        .p-indicator.p1 { color: var(--p1); border-color: var(--p1); }
+        .p-indicator.p2 { color: var(--p2); border-color: var(--p2); }
+        .p-indicator.p3 { color: var(--p3); border-color: var(--p3); }
 
-.btn-add { background: transparent; border: 1px dashed rgba(255,255,255,0.1); color: var(--muted); width: 100%; padding: 14px; border-radius: 18px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 12px; margin-top: 8px; transition: all 0.2s; }
-.btn-add:hover { border-color: var(--accent); color: var(--accent); }
+        .p-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); border-radius: 20px; align-items: center; justify-content: space-around; z-index: 10; border: 1px solid var(--accent); }
+        .p-opt { font-weight: 900; font-size: 16px; padding: 15px; cursor: pointer; }
 
-.btn-run { background: var(--accent); color: #000; width: 100%; padding: 17px; border-radius: 20px; font-family: 'Syne', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 3px; border: none; cursor: pointer; margin-top: 16px; box-shadow: 0 8px 28px rgba(34,211,238,0.2); transition: transform 0.2s, box-shadow 0.2s; }
-.btn-run:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(34,211,238,0.3); }
-.btn-run:active { transform: translateY(0); }
-.btn-run .spinner { display:none; }
-.btn-run.loading .btn-text { display:none; }
-.btn-run.loading .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; border-radius: 50%; animation: bspin 0.7s linear infinite; }
-@keyframes bspin { to { transform: rotate(360deg); } }
+        /* Analitika */
+        .chart-container { position: relative; height: 320px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+        .balans-center { position: absolute; text-align: center; pointer-events: none; }
+        .balans-center h1 { font-size: 50px; font-weight: 900; color: var(--accent); line-height: 0.8; letter-spacing: -2px; }
+        .balans-center p { font-size: 9px; opacity: 0.4; letter-spacing: 3px; margin-top: 5px; }
 
-.chart-container { position: relative; height: 310px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-.balans-center { position: absolute; text-align: center; pointer-events: none; }
-.balans-center h1 { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; letter-spacing: -2px; }
-.balans-center .bl { font-size: 8px; opacity:0.4; letter-spacing:3px; margin-top:4px; }
-.balans-center .bs { font-size:10px; font-weight:700; margin-top:6px; }
-.bs.ok { color: var(--p3); } .bs.warn { color: var(--p2); } .bs.over { color: var(--p1); }
+        .ai-card { background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
+        .ai-card.crit { border-left-color: var(--p1); }
+        .ai-card.sport { border-left-color: #f59e0b; }
+        .ai-card h6 { font-size: 11px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-card p { font-size: 13px; line-height: 1.6; color: #94a3b8; }
+        .ai-card .note { margin-top: 10px; font-size: 11px; color: #475569; font-style: italic; }
 
-.legend-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
-.leg-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--muted); }
-.leg-dot { width:7px; height:7px; border-radius:2px; flex-shrink:0; }
+        .btn-run { background: var(--accent); color: #000; width: 100%; padding: 18px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; letter-spacing: 2px; font-size: 15px; box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2); }
+        .btn-run:active { transform: translateY(2px); }
 
-.ai-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
-.ai-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; padding: 17px; margin-bottom: 11px; border-left: 4px solid var(--accent); transition: transform 0.2s; animation: cIn 0.3s ease; }
-@keyframes cIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-.ai-card:hover { transform: translateY(-2px); }
-.ai-card.crit  { border-left-color: var(--p1); }
-.ai-card.warn  { border-left-color: var(--p2); }
-.ai-card.good  { border-left-color: var(--p3); }
-.ai-card.sport { border-left-color: #f59e0b; }
-.ai-head { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
-.ai-icon { font-size:15px; }
-.ai-ttl { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
-.ai-card p { font-size:12px; line-height:1.7; color:#7a8aaa; }
-.ai-tip { margin-top:8px; font-size:10px; color:var(--muted); font-style:italic; border-top:1px solid var(--border); padding-top:8px; }
-
-.score-wrap { margin-top:14px; }
-.score-head { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-bottom:5px; }
-.score-bar { height:5px; background:rgba(255,255,255,0.05); border-radius:5px; overflow:hidden; }
-.score-fill { height:100%; border-radius:5px; transition:width 0.6s ease; }
-
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius:3px; }
-</style>
+        .btn-add { background: transparent; border: 2px dashed var(--border); color: #475569; width: 100%; padding: 16px; border-radius: 18px; cursor: pointer; font-weight: 700; margin-top: 10px; }
+    </style>
 </head>
 <body>
 
-<div id="toast-wrap"></div>
-
-<div id="modal-bg">
-    <div class="modal-box">
-        <h3 id="modal-title"></h3>
-        <p id="modal-msg"></p>
-        <div class="modal-btns">
-            <button class="m-cancel" onclick="closeModal()">Bekor</button>
-            <button class="m-confirm" id="modal-ok">Tasdiqlash</button>
-        </div>
-    </div>
-</div>
-
-<div id="offline-bar">⚡ Internet aloqasi yo'q</div>
-
 <div id="login-screen">
     <div class="login-box">
-        <div class="login-logo">NEYTRON</div>
-        <div class="login-sub">Strategik rejalashtirish platformasi</div>
+        <h1 style="font-weight: 900; letter-spacing: 8px; margin-bottom: 10px; color: var(--accent);">NEYTRON</h1>
+        <p style="font-size: 12px; opacity: 0.5; letter-spacing: 1px;">Strategik rejalashtirish platformasi</p>
         <button class="google-btn" onclick="window.signIn()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             Google orqali kirish
@@ -189,360 +99,237 @@ input[type="date"]#pDate:focus { border-color: var(--accent); }
 
 <div id="main-app">
     <header>
-        <div class="brand">
-            <span class="atom-core"><i class="fa-solid fa-atom"></i></span>
-            NEYTRON
-        </div>
-        <div class="hctrl">
-            <div class="date-nav">
-                <button class="nav-btn" onclick="shiftDate(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                <input type="date" id="pDate" onchange="window.loadData()">
-                <button class="nav-btn" onclick="shiftDate(1)"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
+        <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
+        <div class="header-controls">
+            <input type="date" id="pDate" onchange="window.loadData()">
             <div class="user-avatar" id="user-p"></div>
-            <button class="logout-btn" onclick="window.doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <i class="fa-solid fa-right-from-bracket" style="opacity: 0.3; cursor: pointer; font-size: 18px;" onclick="window.logout()"></i>
         </div>
     </header>
 
     <div class="dashboard">
         <section class="panel">
-            <span class="sec-label">Aqliy yuklama darajasi</span>
+            <span class="label-sm">Aqliy yuklama darajasi</span>
             <div class="mode-selector">
-                <button class="mode-btn" data-val="1.5" onclick="setMode(1.5,this)">OSON</button>
-                <button class="mode-btn active" data-val="3.0" onclick="setMode(3.0,this)">O'RTACHA</button>
-                <button class="mode-btn" data-val="5.0" onclick="setMode(5.0,this)">QIYIN</button>
+                <button class="mode-btn" id="m1.5" onclick="setMode(1.5, this)">OSON</button>
+                <button class="mode-btn active" id="m3.0" onclick="setMode(3.0, this)">O'RTACHA</button>
+                <button class="mode-btn" id="m5.0" onclick="setMode(5.0, this)">QIYIN</button>
             </div>
-            <span class="sec-label">Asosiy Resurslar</span>
+
+            <span class="label-sm">Asosiy Resurslar</span>
             <div class="res-grid">
                 <div class="res-item">
-                    <label>UYQU</label>
-                    <input type="number" id="sH" value="8" min="0" max="24" step="0.5" oninput="updateUI()">
-                    <div class="unit">soat</div>
+                    <label>UYQU (SOAT)</label>
+                    <input type="number" id="sH" value="8" step="0.5" oninput="updateUI()">
                 </div>
                 <div class="res-item">
-                    <label>ISH / O'QISH</label>
-                    <input type="number" id="wH" value="8" min="0" max="24" step="0.5" oninput="updateUI()">
-                    <div class="unit">soat</div>
+                    <label>ISH/O'QISH (SOAT)</label>
+                    <input type="number" id="wH" value="8" step="0.5" oninput="updateUI()">
                 </div>
             </div>
-            <span class="sec-label">Vaqt Zonalari (Daqiqa)</span>
+
+            <span class="label-sm">Vaqt Zonalari (Daqiqa)</span>
             <div id="zList"></div>
-            <button class="btn-add" onclick="addZ()">+ YANGI ZONA QO'SHISH</button>
-            <button class="btn-run" id="saveBtn" onclick="window.saveData()">
-                <span class="btn-text">STRATEGIK SAQLASH</span>
-                <span class="spinner"></span>
-            </button>
+            <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
+            <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
         </section>
 
         <section class="panel">
-            <span class="sec-label">Vaqt Balansi Analitikasi</span>
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-val" id="statTotal" style="color:var(--accent)">0h</div>
-                    <div class="stat-lbl">REJALASHGAN</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-val" id="statFree" style="color:var(--p3)">0h</div>
-                    <div class="stat-lbl">BO'SH</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-val" id="statZones" style="color:var(--p2)">0</div>
-                    <div class="stat-lbl">ZONALAR</div>
-                </div>
-            </div>
+            <span class="label-sm">Vaqt Balansi Analitikasi</span>
             <div class="chart-container">
                 <canvas id="nChart"></canvas>
                 <div class="balans-center">
                     <h1 id="balText">08:00</h1>
-                    <div class="bl">BO'SH VAQT</div>
-                    <div class="bs" id="balStatus"></div>
+                    <p>BO'SH VAQT</p>
                 </div>
             </div>
-            <div class="legend-row" id="chartLegend"></div>
-            <div class="ai-title">Strategik Tahlil</div>
             <div id="aiHub"></div>
         </section>
     </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
-    authDomain: "neytronplanner.firebaseapp.com",
-    projectId: "neytronplanner",
-    storageBucket: "neytronplanner.firebasestorage.app",
-    messagingSenderId: "960758855592",
-    appId: "1:960758855592:web:bf7c16fea616e75df54f9d"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
+        authDomain: "neytronplanner.firebaseapp.com",
+        projectId: "neytronplanner",
+        storageBucket: "neytronplanner.firebasestorage.app",
+        messagingSenderId: "960758855592",
+        appId: "1:960758855592:web:bf7c16fea616e75df54f9d"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-setPersistence(auth, browserLocalPersistence);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-window.signIn = async () => {
-    try { await signInWithPopup(auth, provider); }
-    catch(e) { toast("Kirish xatosi: " + e.message, 'error'); }
-};
+    // Seansni saqlash mantiqi [cite: 2026-03-23]
+    setPersistence(auth, browserLocalPersistence);
 
-window.doLogout = () => {
-    openModal("Tizimdan chiqish", "Haqiqatan ham chiqmoqchimisiz?", () => {
-        signOut(auth); toast("Tizimdan chiqdingiz", 'info');
-    }, "Chiqish");
-};
+    window.signIn = () => signInWithPopup(auth, provider);
+    window.logout = () => { if(confirm("Tizimdan chiqmoqchimisiz?")) signOut(auth); };
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        if (user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}">`;
-        window.loadData();
-    } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('main-app').style.display = 'none';
-    }
-});
-
-window.saveData = async () => {
-    const user = auth.currentUser;
-    if (!user) { toast("Avval tizimga kiring", 'error'); return; }
-    const date = document.getElementById('pDate').value;
-    if (!date) { toast("Sanani tanlang", 'error'); return; }
-    const btn = document.getElementById('saveBtn');
-    btn.classList.add('loading');
-    const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
-        n: z.querySelector('.zone-name').value,
-        t: z.querySelector('.zone-time').value,
-        p: z.dataset.p
-    }));
-    try {
-        await setDoc(doc(db, "users", user.uid, "plans", date), {
-            sleep: +document.getElementById('sH').value,
-            work: +document.getElementById('wH').value,
-            complexity: window.complexity,
-            zones, savedAt: Date.now()
-        });
-        toast("Muvaffaqiyatli saqlandi ✓", 'success');
-        window.analyze();
-    } catch(e) { toast("Xatolik: " + e.message, 'error'); }
-    finally { btn.classList.remove('loading'); }
-};
-
-window.loadData = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-    const date = document.getElementById('pDate').value;
-    if (!date) return;
-    document.getElementById('zList').innerHTML = '';
-    try {
-        const snap = await getDoc(doc(db, "users", user.uid, "plans", date));
-        if (snap.exists()) {
-            const d = snap.data();
-            document.getElementById('sH').value = d.sleep ?? 8;
-            document.getElementById('wH').value = d.work ?? 8;
-            window.setMode(d.complexity ?? 3.0, null, false);
-            (d.zones || []).forEach(z => addZ(z.n, z.t, z.p, false));
-            toast("Ma'lumot yuklandi", 'info');
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            if(user.photoURL) {
+                document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%">`;
+            }
+            window.loadData();
         } else {
-            document.getElementById('sH').value = 8;
-            document.getElementById('wH').value = 8;
-            addZ('', '', 'p2', false);
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
         }
-    } catch(e) { toast("Yuklash xatosi: " + e.message, 'error'); }
-    updateUI(); window.analyze();
-};
+    });
+
+    window.saveData = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        const date = document.getElementById('pDate').value;
+        const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
+            n: z.querySelector('.name').value,
+            t: z.querySelector('.time').value,
+            p: z.dataset.p
+        }));
+
+        try {
+            await setDoc(doc(db, "users", user.uid, "plans", date), {
+                sleep: document.getElementById('sH').value,
+                work: document.getElementById('wH').value,
+                complexity: window.complexity,
+                zones: zones
+            });
+            alert("Saqlandi!");
+            window.analyze();
+        } catch (e) { alert("Xatolik: " + e.message); }
+    };
+
+    window.loadData = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        const date = document.getElementById('pDate').value;
+        const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
+        
+        document.getElementById('zList').innerHTML = '';
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('sH').value = data.sleep;
+            document.getElementById('wH').value = data.work;
+            window.setMode(data.complexity || 3.0, null, false);
+            if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p, false));
+        } else {
+            window.addZ('', '', 'p2', false);
+        }
+        window.updateUI(); window.analyze();
+    };
 </script>
 
 <script>
-let chart = null, dragSrc = null;
-window.complexity = 3.0;
-const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#6366f1','#a855f7','#ec4899'];
-
-(function(){
+    let chart;
+    window.complexity = 3.0;
     document.getElementById('pDate').valueAsDate = new Date();
-    window.addEventListener('online',  () => { document.body.classList.remove('offline'); toast("Internet tiklandi",'success'); });
-    window.addEventListener('offline', () => { document.body.classList.add('offline');    toast("Internet yo'q",'error'); });
-    if (!navigator.onLine) document.body.classList.add('offline');
-    updateUI();
-})();
 
-window.shiftDate = (dir) => {
-    const inp = document.getElementById('pDate');
-    const d = new Date(inp.value || new Date());
-    d.setDate(d.getDate() + dir);
-    inp.valueAsDate = d;
-    window.loadData();
-};
-
-window.setMode = (val, btn, sync=true) => {
-    window.complexity = val;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', parseFloat(b.dataset.val) === val));
-    if (sync) updateUI();
-};
-
-window.addZ = (n='', m='', p='p2', sync=true) => {
-    const uid = 'z' + Date.now() + Math.floor(Math.random()*9999);
-    const div = document.createElement('div');
-    div.className = 'zone-card'; div.id = uid; div.dataset.p = p; div.draggable = true;
-    div.innerHTML = `
-        <div class="zone-row">
-            <span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
-            <div class="p-indicator ${p}" onclick="showP('${uid}')"><i class="fa-solid fa-flag"></i></div>
-            <input type="text" class="zone-name" placeholder="Vazifa nomi..." value="${esc(n)}" oninput="updateUI()">
-            <input type="number" class="zone-time" placeholder="min" value="${m}" min="0" oninput="validateTime(this)">
-            <button class="zone-del" onclick="remZ('${uid}')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="p-overlay" id="ov${uid}">
-            <div class="p-opt" onclick="selP('${uid}','p1')"><span class="pl" style="color:var(--p1)">P1</span><span class="pd">KRITIK</span></div>
-            <div class="p-opt" onclick="selP('${uid}','p2')"><span class="pl" style="color:var(--p2)">P2</span><span class="pd">MUHIM</span></div>
-            <div class="p-opt" onclick="selP('${uid}','p3')"><span class="pl" style="color:var(--p3)">P3</span><span class="pd">ODDIY</span></div>
-        </div>`;
-    div.addEventListener('dragstart', () => { dragSrc = div; setTimeout(() => div.classList.add('dragging'), 0); });
-    div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.zone-card').forEach(z => z.classList.remove('drag-over')); updateUI(); });
-    div.addEventListener('dragover', e => { e.preventDefault(); if (div !== dragSrc) { document.querySelectorAll('.zone-card').forEach(z => z.classList.remove('drag-over')); div.classList.add('drag-over'); } });
-    div.addEventListener('drop', e => {
-        e.preventDefault();
-        if (dragSrc && dragSrc !== div) {
-            const list = document.getElementById('zList');
-            const all = [...list.querySelectorAll('.zone-card')];
-            if (all.indexOf(dragSrc) < all.indexOf(div)) list.insertBefore(dragSrc, div.nextSibling);
-            else list.insertBefore(dragSrc, div);
+    window.setMode = (val, btn, shouldSync=true) => {
+        window.complexity = val;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        else {
+            const target = document.getElementById('m' + val.toFixed(1));
+            if(target) target.classList.add('active');
         }
-        div.classList.remove('drag-over');
-    });
-    document.getElementById('zList').appendChild(div);
-    if (sync) updateUI();
-};
+        if(shouldSync) updateUI();
+    };
 
-window.showP = (uid) => {
-    document.getElementById('ov'+uid).classList.add('open');
-    const close = (e) => { if (!e.target.closest('.p-overlay')) { document.querySelectorAll('.p-overlay.open').forEach(o => o.classList.remove('open')); document.removeEventListener('click', close); } };
-    setTimeout(() => document.addEventListener('click', close), 10);
-};
-window.selP = (uid, p) => {
-    const card = document.getElementById(uid);
-    card.dataset.p = p;
-    card.querySelector('.p-indicator').className = `p-indicator ${p}`;
-    document.getElementById('ov'+uid).classList.remove('open');
-    updateUI();
-};
-window.remZ = (uid) => { openModal("Zonani o'chirish", "Bu zona o'chiriladi. Davom etasizmi?", () => { document.getElementById(uid)?.remove(); updateUI(); }, "O'chirish"); };
-window.validateTime = (inp) => {
-    const s = (+document.getElementById('sH').value||0)*60;
-    const w = (+document.getElementById('wH').value||0)*60;
-    let others = 0;
-    document.querySelectorAll('.zone-time').forEach(el => { if (el !== inp) others += (+el.value||0); });
-    const max = Math.max(0, 1440-s-w-others);
-    if (+inp.value > max) inp.value = max;
-    updateUI();
-};
+    window.addZ = (n='', m='', p='p2', shouldSync=true) => {
+        const id = Date.now() + Math.random();
+        const div = document.createElement('div');
+        div.className = 'zone-card';
+        div.id = `z-${id}`;
+        div.dataset.p = p;
+        div.innerHTML = `
+            <div class="zone-main">
+                <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
+                <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
+                <input type="number" placeholder="min" class="time" value="${m}" oninput="validateTime(this)">
+                <i class="fa-solid fa-trash-can" style="opacity:0.2; cursor:pointer;" onclick="remZ(${id})"></i>
+            </div>
+            <div class="p-overlay" id="ov-${id}">
+                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">P1</div>
+                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">P2</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">P3</div>
+            </div>`;
+        document.getElementById('zList').appendChild(div);
+        if(shouldSync) updateUI();
+    };
 
-window.updateUI = () => {
-    const s = (+document.getElementById('sH').value||0)*60;
-    const w = (+document.getElementById('wH').value||0)*60;
-    const labs=['Uyqu',"Ish/O'qish"], vals=[s,w], cols=['#1e3a5f','#1a3a2a'];
-    let total=s+w, zCount=0;
-    document.querySelectorAll('.zone-card').forEach((z,i) => {
-        const name = z.querySelector('.zone-name').value||'Zona';
-        const v = +z.querySelector('.zone-time').value||0;
-        labs.push(name); vals.push(v); cols.push(COLORS[i%COLORS.length]);
-        total+=v; if(v>0) zCount++;
-    });
-    const bal = Math.max(0,1440-total);
-    labs.push("Bo'sh"); vals.push(bal); cols.push('rgba(255,255,255,0.03)');
-
-    document.getElementById('statTotal').textContent = (total/60).toFixed(1)+'h';
-    document.getElementById('statFree').textContent  = (bal/60).toFixed(1)+'h';
-    document.getElementById('statZones').textContent = zCount;
-    document.getElementById('balText').textContent = `${String(Math.floor(bal/60)).padStart(2,'0')}:${String(bal%60).padStart(2,'0')}`;
-
-    const st = document.getElementById('balStatus');
-    if (bal<=0)       { st.textContent='⚠ ORTIQCHA YÜKLAMA'; st.className='bs over'; }
-    else if (bal<120) { st.textContent='⚡ YUQORI RITM';      st.className='bs warn'; }
-    else              { st.textContent='✓ MUVOZANAT YAXSHI';  st.className='bs ok';   }
-
-    if (!chart) {
-        chart = new Chart(document.getElementById('nChart').getContext('2d'), {
-            type:'doughnut',
-            data:{ labels:labs, datasets:[{ data:vals, backgroundColor:cols, borderWidth:0, hoverOffset:5 }] },
-            options:{ cutout:'82%', responsive:true, maintainAspectRatio:false, animation:{duration:350},
-                plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${Math.floor(ctx.raw/60)}s ${ctx.raw%60}d`}} } }
+    window.validateTime = (input) => {
+        const s = (+document.getElementById('sH').value || 0) * 60;
+        const w = (+document.getElementById('wH').value || 0) * 60;
+        let otherZones = 0;
+        document.querySelectorAll('.zone-card').forEach(z => {
+            if(z.querySelector('.time') !== input) otherZones += (+z.querySelector('.time').value || 0);
         });
-    } else {
-        chart.data.labels=labs; chart.data.datasets[0].data=vals; chart.data.datasets[0].backgroundColor=cols; chart.update('active');
+        const maxPossible = 1440 - (s + w + otherZones);
+        if (+input.value > maxPossible) input.value = Math.max(0, maxPossible);
+        updateUI();
+    };
+
+    window.showP = (id) => { document.getElementById(`ov-${id}`).style.display = 'flex'; }
+    window.selP = (id, p) => {
+        const z = document.getElementById(`z-${id}`);
+        z.dataset.p = p;
+        z.querySelector('.p-indicator').className = `p-indicator ${p}`;
+        document.getElementById(`ov-${id}`).style.display = 'none';
+        updateUI();
+    };
+    window.remZ = (id) => { if(confirm("O'chirasizmi?")) { document.getElementById(`z-${id}`).remove(); updateUI(); } }
+
+    window.updateUI = () => {
+        const s = (+document.getElementById('sH').value || 0) * 60;
+        const w = (+document.getElementById('wH').value || 0) * 60;
+        let labs = ['Uyqu','Ish'], vals = [s,w], total = s + w;
+
+        document.querySelectorAll('.zone-card').forEach(z => {
+            labs.push(z.querySelector('.name').value || 'Vazifa');
+            const v = +z.querySelector('.time').value || 0;
+            vals.push(v); total += v;
+        });
+
+        const bal = Math.max(0, 1440 - total);
+        labs.push('Bo\'sh'); vals.push(bal);
+        document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+
+        if (!chart) {
+            chart = new Chart(document.getElementById('nChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: labs, datasets: [{ data: vals, backgroundColor: ['#1e293b', '#334155', '#ef4444', '#d97706', '#10b981', '#22d3ee', '#8b5cf6', '#475569'], borderWidth: 0 }] },
+                options: { cutout: '82%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        } else {
+            chart.data.labels = labs; chart.data.datasets[0].data = vals; chart.update('none');
+        }
+    };
+
+    window.analyze = () => {
+        const hub = document.getElementById('aiHub');
+        hub.innerHTML = '';
+        document.querySelectorAll('.zone-card').forEach(z => {
+            const n = z.querySelector('.name').value.toLowerCase();
+            const t = +z.querySelector('.time').value;
+            if ((n.includes('kitob') || n.includes('mutolaa')) && t > 0) {
+                hub.innerHTML += `<div class="ai-card"><h6>Mutolaa Strategiyasi</h6><p>Bugun ${Math.floor(t / window.complexity)} bet o'qish mumkin.</p></div>`;
+            } else if ((n.includes('sport') || n.includes('mashq')) && t > 0) {
+                hub.innerHTML += `<div class="ai-card sport"><h6>Jismoniy Faollik</h6><p>${t} daqiqa sport miyani to'yintiradi.</p></div>`;
+            } else if (z.dataset.p === 'p1' && t > 0) {
+                hub.innerHTML += `<div class="ai-card crit"><h6>Kritik Fokus: ${n.toUpperCase()}</h6><p>Irodangizni shu vazifaga yo'naltiring.</p></div>`;
+            }
+        });
     }
-
-    const lg = document.getElementById('chartLegend');
-    lg.innerHTML='';
-    labs.forEach((l,i) => {
-        if(vals[i]<=0) return;
-        const el=document.createElement('div'); el.className='leg-item';
-        el.innerHTML=`<div class="leg-dot" style="background:${cols[i]}"></div>${l}: ${Math.floor(vals[i]/60)}s ${vals[i]%60}d`;
-        lg.appendChild(el);
-    });
-};
-
-window.analyze = () => {
-    const hub = document.getElementById('aiHub');
-    hub.innerHTML = '';
-    const s = +document.getElementById('sH').value||0;
-    const w = +document.getElementById('wH').value||0;
-    const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
-        name: z.querySelector('.zone-name').value.toLowerCase(),
-        time: +z.querySelector('.zone-time').value||0, p: z.dataset.p
-    })).filter(z => z.time>0||z.name);
-    const freeMin = Math.max(0, 1440 - (s*60+w*60+zones.reduce((a,z)=>a+z.time,0)));
-
-    if (s<6) hub.innerHTML+=card('crit','🚨','Uyqu yetishmasligi',`${s} soat uyqu juda kam. Minimal tavsiya 7 soat.`,"20-30 daqiqa tushdan keyin uxlash foydali.");
-    else if (s>=9) hub.innerHTML+=card('warn','💤',"Haddan ko'p uyqu",`${s} soat ortiqcha. 7-8 soat optimal.`,null);
-    else hub.innerHTML+=card('good','✅','Uyqu optimal',`${s} soat — ajoyib tanlov. Samarali kun uchun tayyor.`,null);
-
-    if (w>10) hub.innerHTML+=card('warn','⚠️','Yuqori ish yüki',`${w} soat juda intensiv. 6 soatdan keyin unumdorlik tushadi.`,'Pomodoro: 90 daqiqa ish + 20 daqiqa dam.');
-    if (freeMin<30) hub.innerHTML+=card('crit','🔴',"Bo'sh vaqt yo'q","Dam olish uchun vaqt qolmagan. Bu charchoqqa olib keladi.","Kamida 60 daqiqa strukturasiz vaqt ajrating.");
-
-    const kitob = zones.find(z=>z.name.includes('kitob')||z.name.includes('mutolaa')||z.name.includes("o'qi"));
-    if (kitob) hub.innerHTML+=card('','📚','Mutolaa Strategiyasi',`${kitob.time} daqiqada ~${Math.floor(kitob.time/window.complexity)} bet o'qish mumkin.`,"Har 25 daqiqada 5 daqiqa tanaffus.");
-
-    const sport = zones.find(z=>z.name.includes('sport')||z.name.includes('mashq')||z.name.includes('yugur'));
-    if (sport) hub.innerHTML+=card('sport','💪','Jismoniy Faollik',`${sport.time} daqiqa sport — miya uchun eng yaxshi investitsiya.`, sport.time<20?"20+ daqiqa qo'shing.":sport.time<=60?"Ideal davomiylik.":"To'yimli ovqat va suv muhim.");
-
-    const p1 = zones.filter(z=>z.p==='p1');
-    if (p1.length>1) hub.innerHTML+=card('warn','⚡','Fokus tarqoqligi',`${p1.length} ta P1 vazifa bor. Faqat 1 tasiga fokuslanish tavsiya etiladi.`,`Bugun asosiy: "${p1[0]?.name}"`);
-    else if (p1.length===1) hub.innerHTML+=card('crit','🎯','Kritik Fokus',`Bugungi asosiy: "${p1[0].name}" (${p1[0].time} daqiqa).`,"Deep work: telefon va bildirishnomalarni o'chiring.");
-
-    let score=100;
-    if(s<6) score-=30; else if(s<7) score-=10;
-    if(freeMin<30) score-=25; else if(freeMin<60) score-=10;
-    if(w>10) score-=15; if(p1.length>2) score-=10;
-    score=Math.max(10,Math.min(100,score));
-    const sc=score>=70?'var(--p3)':score>=45?'var(--p2)':'var(--p1)';
-    const sl=score>=70?'YAXSHI KUN':score>=45?"O'RTACHA":'QIYIN KUN';
-    hub.innerHTML+=`<div class="ai-card"><div class="ai-head"><span class="ai-icon">📊</span><span class="ai-ttl">Kun Ko'rsatkichi</span></div><p>Bugungi reja: <strong style="color:${sc}">${sl}</strong></p><div class="score-wrap"><div class="score-head"><span>0</span><span style="color:${sc}">${score}/100</span></div><div class="score-bar"><div class="score-fill" style="width:${score}%;background:${sc}"></div></div></div></div>`;
-    if(zones.length===0) hub.innerHTML+=card('','💡','Boshlang',"Chap paneldan vaqt zonalari qo'shing.",null);
-};
-
-function card(type,icon,title,text,tip) {
-    return `<div class="ai-card ${type}"><div class="ai-head"><span class="ai-icon">${icon}</span><span class="ai-ttl">${title}</span></div><p>${text}</p>${tip?`<div class="ai-tip">💡 ${tip}</div>`:''}</div>`;
-}
-
-window.toast = (msg, type='info') => {
-    const el=document.createElement('div'); el.className=`toast ${type}`;
-    el.innerHTML=`<span>${{success:'✓',error:'✕',info:'ℹ'}[type]||'ℹ'}</span><span>${msg}</span>`;
-    document.getElementById('toast-wrap').appendChild(el);
-    setTimeout(()=>el.remove(),3200);
-};
-
-let _cb=null;
-window.openModal=(title,msg,cb,okLabel='Tasdiqlash')=>{ _cb=cb; document.getElementById('modal-title').textContent=title; document.getElementById('modal-msg').textContent=msg; document.getElementById('modal-ok').textContent=okLabel; document.getElementById('modal-bg').classList.add('open'); };
-window.closeModal=()=>{ document.getElementById('modal-bg').classList.remove('open'); _cb=null; };
-document.getElementById('modal-ok').onclick=()=>{ if(_cb)_cb(); closeModal(); };
-document.getElementById('modal-bg').addEventListener('click',e=>{ if(e.target===document.getElementById('modal-bg'))closeModal(); });
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
