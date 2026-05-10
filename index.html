@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neytron | Strategic Intelligence Core</title>
+    <title>Neytron | Strategic Intelligence</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg: #030712; --card: #0f172a; --accent: #22d3ee;
             --p1: #ef4444; --p2: #d97706; --p3: #10b981;
-            --text: #f1f5f9; --border: rgba(255,255,255,0.08);
+            --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
-        /* Premium Login */
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
         .login-box { width: 90%; max-width: 400px; padding: 45px 30px; border-radius: 35px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         .login-box h1 { letter-spacing: 10px; color: var(--accent); font-weight: 900; margin-bottom: 10px; }
@@ -63,11 +62,12 @@
         .highlight { color: #fff; font-weight: 900; }
 
         .btn-run { width: 100%; margin-top: 20px; padding: 20px; border: none; border-radius: 22px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34, 211, 238, 0.25); transition: 0.3s; }
-        .btn-run:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(34, 211, 238, 0.4); }
         .btn-add { width: 100%; margin-top: 10px; padding: 18px; border-radius: 20px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
         
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 22px; z-index: 10; border: 2px solid var(--accent); }
         .p-opt { font-weight: 900; font-size: 12px; cursor: pointer; }
+        .fa-trash-can { opacity: 0.2; cursor: pointer; transition: 0.2s; }
+        .fa-trash-can:hover { opacity: 1; color: var(--p1); }
     </style>
 </head>
 <body>
@@ -103,7 +103,7 @@
         </section>
 
         <section class="panel">
-            <span class="label-sm">Vaqt balansi analitikasi</span>
+            <span class="label-sm">Vaqt balansi</span>
             <div class="chart-container">
                 <canvas id="nChart"></canvas>
                 <div class="balans-center">
@@ -173,8 +173,8 @@
         document.getElementById('zList').innerHTML = '';
         if (docSnap.exists()) {
             const data = docSnap.data();
-            document.getElementById('sH').value = data.sleep;
-            document.getElementById('wH').value = data.work;
+            document.getElementById('sH').value = data.sleep || 8;
+            document.getElementById('wH').value = data.work || 8;
             if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p));
         } else { window.addZ('', '', 'p2'); }
         updateUI();
@@ -185,12 +185,12 @@
     let chart;
     document.getElementById('pDate').valueAsDate = new Date();
 
-    // Universal Premium Rang Palitrasi (Bayroqchalarga ko'ra guruhlangan)
-    const colorPalette = {
-        p1: ['#ef4444', '#f87171', '#dc2626', '#991b1b', '#b91c1c'], // Qizil tonlar
-        p2: ['#d97706', '#fbbf24', '#b45309', '#f59e0b', '#f97316'], // Sariq tonlar
-        p3: ['#10b981', '#34d399', '#059669', '#15803d', '#166534'], // Yashil tonlar
-        base: ['#1e293b', '#334155'] // Uyqu va Ish
+    // Premium Ranglar palitrasini bayroqchalar guruhiga ko'ra ajratish (7-band yechimi)
+    const colorMatrix = {
+        p1: ['#ef4444', '#f87171', '#dc2626', '#b91c1c'], 
+        p2: ['#d97706', '#fbbf24', '#b45309', '#f59e0b'], 
+        p3: ['#10b981', '#34d399', '#059669', '#15803d'],
+        base: ['#1e293b', '#334155']
     };
 
     window.addZ = (n='', m='', p='p2') => {
@@ -201,13 +201,13 @@
             <div class="zone-main">
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
-                <input type="number" placeholder="min" value="${m}" oninput="updateUI()">
-                <i class="fa-solid fa-trash-can" style="opacity:0.2" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
+                <input type="number" class="time" placeholder="min" value="${m}" oninput="updateUI()">
+                <i class="fa-solid fa-trash-can" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
                 <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM (P1)</div>
                 <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">O'RTA (P2)</div>
-                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODDIY (P3)</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODATIY (P3)</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         updateUI();
@@ -225,55 +225,61 @@
     window.updateUI = () => {
         const s = (+document.getElementById('sH').value || 0) * 60;
         const w = (+document.getElementById('wH').value || 0) * 60;
-        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = [colorPalette.base[0], colorPalette.base[1]], total = s + w;
+        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = [colorMatrix.base[0], colorMatrix.base[1]], total = s + w;
 
-        // Bayroqchalar bo'yicha hisoblagichlar
-        let counters = { p1: 0, p2: 0, p3: 0 };
+        let pCounts = { p1: 0, p2: 0, p3: 0 };
 
         document.querySelectorAll('.zone-card').forEach(z => {
-            const v = +z.querySelector('.time').value || 0;
+            let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
 
-            vals.push(v);
-            labels.push(n);
-            total += v;
+            // 4-band: 24 soatlik limitni qat'iy tekshirish
+            if (total + v > 1440) {
+                v = Math.max(0, 1440 - total);
+                z.querySelector('.time').value = v;
+            }
 
-            // Rangni aniqlash (Har bir vazifa uchun alohida Premium rang)
-            const colorIdx = counters[p] % colorPalette[p].length;
-            colors.push(colorPalette[p][colorIdx]);
-            counters[p]++; // Guruh ichida hisoblagichni oshirish
+            if (v > 0) {
+                vals.push(v); labels.push(n); total += v;
+                // 7-band: Bir xil bayroqli vazifalarni rang bilan ajratish
+                const cIdx = pCounts[p] % colorMatrix[p].length;
+                colors.push(colorMatrix[p][cIdx]);
+                pCounts[p]++;
+            }
         });
 
         const bal = Math.max(0, 1440 - total);
-        vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.1)');
+        vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
-        // Diagramma sakrashini to'xtatish (Premium Animation)
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById('nChart').getContext('2d'), {
             type: 'doughnut',
             data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }] },
-            options: { 
-                cutout: '85%', 
-                animation: { animateRotate: true, animateScale: true, duration: 800 },
-                plugins: { legend: { display: false }, tooltip: { enabled: true } } 
-            }
+            options: { cutout: '85%', animation: { animateRotate: true, duration: 800 }, plugins: { legend: { display: false } } }
         });
 
-        // Legend (Ranglar izohi)
         const leg = document.getElementById('chart-legend');
         leg.innerHTML = labels.map((l, i) => `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${l}</div>`).join('');
 
-        // Universal Analitika
-        const hub = document.getElementById('aiHub');
-        const lostHrs = Math.floor((bal * 365) / 60);
-        const lostDays = ((bal * 365) / 1440).toFixed(1);
-        hub.innerHTML = `<div class="ai-card crit"><h6>Vaqt yo'qotish prognozi</h6><p>Ushbu bo'sh vaqt bilan bir yilda <span class="highlight">${lostHrs} soat</span> yoki <span class="highlight">${lostDays} kun</span> sof vaqtingizni yo'qotishingiz mumkin.</p></div>`;
+        const hub = document.getElementById('aiHub'); hub.innerHTML = '';
 
+        // 5-band: Faqat bo'sh vaqt qolsagina tahlil chiqadi
+        if (bal > 0) {
+            const lostHrs = Math.floor((bal * 365) / 60);
+            hub.innerHTML = `<div class="ai-card crit"><h6>Vaqt yo'qotish prognozi</h6><p>Yillik <span class="highlight">${lostHrs} soat</span> bo'sh vaqtingiz mavjud. Bu resursni strategik qayta ko'rib chiqing.</p></div>`;
+        }
+
+        // 2 va 3-band: Har bir daraja uchun xolis tahlil
         document.querySelectorAll('.zone-card').forEach(z => {
-            const name = z.querySelector('.name').value;
-            if(z.dataset.p === 'p1' && name) hub.innerHTML += `<div class="ai-card"><h6>Universal Fokus</h6><p>"${name.toUpperCase()}" vazifasi bugungi eng muhim strategik maqsadingizdir.</p></div>`;
+            const n = z.querySelector('.name').value;
+            const p = z.dataset.p;
+            if (!n) return;
+
+            if (p === 'p1') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p1)"><h6>Fokus</h6><p>"${n.toUpperCase()}" - bugungi eng muhim strategik maqsadingizdir.</p></div>`;
+            if (p === 'p2') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p2)"><h6>Strategik muvozanat</h6><p>"${n}" vazifasi kunlik o'sishingizni ta'minlaydi.</p></div>`;
+            if (p === 'p3') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p3)"><h6>Barqarorlik</h6><p>"${n}" - intizomni ushlab turuvchi odatiy jarayon.</p></div>`;
         });
     };
 </script>
