@@ -21,76 +21,90 @@
             --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        /* iPhone va Telegram uchun moslashuvchanlik */
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            padding: 10px; 
-            line-height: 1.4; 
-            min-height: 100vh; 
-            width: 100%;
-            overflow-x: hidden; /* Gorizontal scroll chiqib ketmasligi uchun */
+        body { background: var(--bg); color: var(--text); padding: 10px; line-height: 1.4; min-height: 100vh; overflow-x: hidden; }
+
+        /* Premium Modal (Rasmda ko'rsatilganidek) */
+        #custom-alert { 
+            position: fixed; inset: 0; z-index: 2000; display: none; 
+            align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); 
         }
-        
+        .modal-box { 
+            width: 85%; max-width: 320px; background: var(--card); 
+            border: 1px solid var(--accent); border-radius: 25px; padding: 30px 20px; text-align: center; 
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
+        }
+        .success-icon { 
+            width: 50px; height: 50px; background: var(--accent); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;
+            color: var(--bg); font-size: 24px;
+        }
+
+        /* Qizil tebranish effekti (Vaqt oshib ketganda) */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .error-shake { 
+            animation: shake 0.3s ease-in-out; 
+            border-color: var(--p1) !important; 
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
         .login-box { width: 90%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; }
 
-        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; width: 100%; }
+        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 10px 15px; border-radius: 20px; 
             background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); 
-            backdrop-filter: blur(15px); width: 100%;
+            backdrop-filter: blur(15px);
         }
         .brand { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .atom-core { animation: spin 4s linear infinite; font-size: 20px; }
-        
-        .header-right { display: flex; align-items: center; gap: 8px; }
+        .atom-core { animation: spin 4s linear infinite; }
 
-        #pDate {
-            background: rgba(34, 211, 238, 0.05); border: 1px solid var(--border); 
-            color: var(--accent); border-radius: 10px; padding: 5px; 
-            font-size: 12px; font-weight: 800; width: 120px; text-align: center;
-        }
+        #pDate { background: rgba(34, 211, 238, 0.05); border: 1px solid var(--border); color: var(--accent); border-radius: 10px; padding: 5px; font-size: 12px; font-weight: 800; width: 120px; text-align: center; }
 
-        #user-p { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); background: var(--card); }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-        .panel { background: rgba(15, 23, 42, 0.7); border-radius: 25px; border: 1px solid var(--border); padding: 15px; backdrop-filter: blur(10px); width: 100%; }
-        .label-sm { display: block; margin-bottom: 12px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; color: var(--accent); }
-
+        .panel { background: rgba(15, 23, 42, 0.7); border-radius: 25px; border: 1px solid var(--border); padding: 20px; backdrop-filter: blur(10px); }
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .res-item { background: rgba(0,0,0,0.3); border-radius: 18px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .res-item input { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 18px; font-weight: 900; }
 
-        .zone-card { position: relative; margin-bottom: 10px; padding: 10px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .zone-card { position: relative; margin-bottom: 10px; padding: 10px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; }
         .zone-main { display: flex; align-items: center; gap: 8px; }
         .p-indicator { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
         
-        .zone-card input.name { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 14px; font-weight: 600; width: 50%; }
-        .zone-card input.time { width: 55px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 6px; text-align: center; color: var(--accent); font-weight: 900; font-size: 14px; }
+        .zone-card input.name { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 14px; font-weight: 600; }
+        .zone-card input.time { width: 60px; background: #030712; border: 1px solid var(--border); border-radius: 10px; padding: 6px; text-align: center; color: var(--accent); font-weight: 900; }
 
-        .chart-container { position: relative; height: 250px; width: 100%; display: flex; align-items: center; justify-content: center; }
+        .chart-container { position: relative; height: 250px; display: flex; align-items: center; justify-content: center; }
+        .balans-center { position: absolute; text-align: center; }
         .balans-center h1 { font-size: 40px; font-weight: 900; color: var(--accent); }
         
-        .btn-run { width: 100%; margin-top: 10px; padding: 15px; border: none; border-radius: 18px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 14px; font-weight: 900; cursor: pointer; }
+        .btn-run { width: 100%; margin-top: 10px; padding: 16px; border: none; border-radius: 20px; background: var(--accent); color: #000; font-size: 14px; font-weight: 900; cursor: pointer; }
         .btn-add { width: 100%; margin-top: 5px; padding: 12px; border-radius: 15px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
 
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 2px solid var(--accent); }
-        .ai-card { padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border: 1px solid var(--border); border-left-width: 4px; }
+        .ai-card { padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-left: 4px solid var(--border); }
         
-        .p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
-        .p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
-        .p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+<div id="custom-alert">
+    <div class="modal-box">
+        <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+        <p id="modal-msg" style="margin-bottom: 20px; font-weight: 600;">Strategiya muvaffaqiyatli saqlandi!</p>
+        <button class="btn-run" onclick="closeModal()" style="margin:0; padding:12px;">OK</button>
+    </div>
+</div>
 
 <div id="login-screen">
     <div class="login-box">
@@ -102,34 +116,34 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div class="header-right">
+        <div class="header-right" style="display:flex; gap:8px; align-items:center;">
             <input type="date" id="pDate" onchange="window.loadData()">
-            <div id="user-p"></div>
+            <div id="user-p" style="width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); overflow:hidden;"></div>
         </div>
     </header>
 
     <div class="dashboard">
         <section class="panel">
-            <span class="label-sm">Strategik Resurslar</span>
-            <div class="res-grid">
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU</label><input type="number" id="sH" value="8" step="0.5" onchange="updateUI()"></div>
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH</label><input type="number" id="wH" value="8" step="0.5" onchange="updateUI()"></div>
+            <span style="font-size:10px; color:var(--accent); font-weight:800;">ASOSIY RESURSLAR</span>
+            <div class="res-grid" style="margin-top:10px;">
+                <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" onchange="updateUI()"></div>
+                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" onchange="updateUI()"></div>
             </div>
             <div id="zList"></div>
             <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
-            <button class="btn-run" onclick="window.saveData()">SAQLASH</button>
+            <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
         </section>
 
         <section class="panel">
-            <span class="label-sm">Vaqt Balansi</span>
+            <span style="font-size:10px; color:var(--accent); font-weight:800;">VAQT BALANSI</span>
             <div class="chart-container">
                 <canvas id="nChart"></canvas>
-                <div class="balans-center" style="position:absolute; text-align:center;">
+                <div class="balans-center">
                     <h1 id="balText">08:00</h1>
                     <p style="font-size: 8px; opacity: 0.5;">BO'SH VAQT</p>
                 </div>
             </div>
-            <div id="aiHub" style="margin-top:15px;"></div>
+            <div id="aiHub" style="margin-top:20px;"></div>
         </section>
     </div>
 </div>
@@ -156,10 +170,7 @@
     setPersistence(auth, browserLocalPersistence);
     
     window.signIn = async () => {
-        try {
-            await signInWithPopup(auth, provider);
-            gtag('event', 'login', { method: 'Google' });
-        } catch (e) { console.error(e); }
+        try { await signInWithPopup(auth, provider); } catch (e) { console.error(e); }
     };
 
     window.saveData = async () => {
@@ -175,8 +186,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
-        gtag('event', 'save_strategy', { user_id: user.uid });
-        alert("Saqlandi!");
+        window.showModal("Strategiya muvaffaqiyatli saqlandi!");
     };
 
     window.loadData = async () => {
@@ -197,7 +207,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; border-radius:50%;">`;
+            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
             window.loadData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
@@ -210,31 +220,69 @@
     let chart;
     document.getElementById('pDate').valueAsDate = new Date();
 
+    window.showModal = (msg) => {
+        document.getElementById('modal-msg').innerText = msg;
+        document.getElementById('custom-alert').style.display = 'flex';
+    };
+    window.closeModal = () => document.getElementById('custom-alert').style.display = 'none';
+
     window.addZ = (n='', m='', p='p2') => {
         const id = Date.now() + Math.random();
         const div = document.createElement('div');
         div.className = 'zone-card'; div.id = `z-${id}`; div.dataset.p = p;
+        
+        // Ranglar logikasi (3-banddagi talab bo'yicha)
+        const pColors = { p1: '#ef4444', p2: '#d97706', p3: '#10b981' };
+        
         div.innerHTML = `
             <div class="zone-main">
-                <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
+                <div class="p-indicator" style="color:${pColors[p]}; background:${pColors[p]}15; border-color:${pColors[p]}" onclick="showP(${id})">
+                    <i class="fa-solid fa-flag"></i>
+                </div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" onchange="updateUI()">
-                <input type="number" class="time" placeholder="min" value="${m}" onchange="updateUI()">
-                <i class="fa-solid fa-xmark" style="opacity:0.3;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
+                <input type="number" class="time" placeholder="min" value="${m}" onchange="validateTime(${id})">
+                <i class="fa-solid fa-trash-can" style="opacity:0.3; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div onclick="selP(${id},'p1')" style="color:var(--p1); font-weight:900;">P1</div>
-                <div onclick="selP(${id},'p2')" style="color:var(--p2); font-weight:900;">P2</div>
-                <div onclick="selP(${id},'p3')" style="color:var(--p3); font-weight:900;">P3</div>
+                <div onclick="selP(${id},'p1')" style="color:#ef4444; font-weight:900;">Muhim</div>
+                <div onclick="selP(${id},'p2')" style="color:#d97706; font-weight:900;">O'rta</div>
+                <div onclick="selP(${id},'p3')" style="color:#10b981; font-weight:900;">Odatiy</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
+        updateUI();
+    };
+
+    window.validateTime = (id) => {
+        const card = document.getElementById(`z-${id}`);
+        const input = card.querySelector('.time');
+        
+        // Hozirgi kiritilgan vaqtlarni hisoblash
+        let currentTotal = (+document.getElementById('sH').value * 60) + (+document.getElementById('wH').value * 60);
+        document.querySelectorAll('.zone-card').forEach(z => {
+            if(z.id !== `z-${id}`) currentTotal += (+z.querySelector('.time').value || 0);
+        });
+
+        const remaining = 1440 - currentTotal;
+        const val = +input.value || 0;
+
+        // 1-band: 24 soatdan oshsa avtomatik to'g'irlash va tebranish effekti
+        if (val > remaining) {
+            input.value = remaining > 0 ? remaining : 0;
+            card.classList.add('error-shake');
+            setTimeout(() => card.classList.remove('error-shake'), 400);
+        }
         updateUI();
     };
 
     window.showP = (id) => document.getElementById(`ov-${id}`).style.display = 'flex';
     window.selP = (id, p) => {
         const z = document.getElementById(`z-${id}`);
+        const pColors = { p1: '#ef4444', p2: '#d97706', p3: '#10b981' };
         z.dataset.p = p;
-        z.querySelector('.p-indicator').className = `p-indicator ${p}`;
+        const ind = z.querySelector('.p-indicator');
+        ind.style.color = pColors[p];
+        ind.style.borderColor = pColors[p];
+        ind.style.background = pColors[p] + "15";
         document.getElementById(`ov-${id}`).style.display = 'none';
         updateUI();
     };
@@ -248,9 +296,9 @@
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
-            const p = z.dataset.p;
             if (v > 0) { 
                 vals.push(v); labels.push(n); total += v; 
+                const p = z.dataset.p;
                 colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); 
             }
         });
@@ -269,19 +317,17 @@
             });
         }
 
+        // 2-band: Analitika matnlarini soddalashtirish
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         document.querySelectorAll('.zone-card').forEach(z => {
             const n = z.querySelector('.name').value;
-            const p = z.dataset.p;
             if (n) {
-                let msg = "", color = "", title = "";
-                if (p === 'p1') { title = "P1: MUHIM"; msg = `"${n}" — bugungi eng ustuvor vazifa.`; color = "var(--p1)"; }
-                else if (p === 'p2') { title = "P2: O'RTA"; msg = `"${n}" — rejali ish.`; color = "var(--p2)"; }
-                else if (p === 'p3') { title = "P3: ODATIY"; msg = `"${n}" — kundalik yumush.`; color = "var(--p3)"; }
-                
+                const p = z.dataset.p;
+                let title = p === 'p1' ? 'Muhim' : p === 'p2' ? 'O\'rta' : 'Odatiy';
+                let color = p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981';
                 hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
-                    <h6 style="font-size:9px; color:${color}; font-weight:900;">${title}</h6>
-                    <p style="font-size:11px; opacity:0.9;">${msg}</p>
+                    <h6 style="font-size:9px; color:${color}; font-weight:900; letter-spacing:1px;">${title.toUpperCase()}</h6>
+                    <p style="font-size:12px; margin-top:2px;">${n}</p>
                 </div>`;
             }
         });
