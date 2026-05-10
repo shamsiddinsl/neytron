@@ -269,7 +269,7 @@
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
             hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
-                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b></p></div>`;
+                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b>(${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
         }
 
         document.querySelectorAll('.zone-card').forEach(z => {
