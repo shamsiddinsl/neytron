@@ -83,6 +83,7 @@
         .btn-add { width: 100%; margin-top: 5px; padding: 15px; border-radius: 18px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
 
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 2px solid var(--accent); }
+        .p-option { font-size: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; padding: 5px 10px; border-radius: 8px; }
         .ai-card { padding: 15px; border-radius: 18px; background: rgba(255,255,255,0.03); margin-bottom: 10px; border: 1px solid var(--border); border-left-width: 5px; }
     </style>
 </head>
@@ -211,7 +212,6 @@
 <script>
     let chart;
     
-    // Aniq mahalliy sanani o'rnatish
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - (offset * 60 * 1000));
@@ -235,9 +235,9 @@
                 <i class="fa-solid fa-trash-can" style="opacity:0.3; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div onclick="selP(${id},'p1')" style="color:var(--p1); font-weight:900; cursor:pointer;">P1</div>
-                <div onclick="selP(${id},'p2')" style="color:var(--p2); font-weight:900; cursor:pointer;">P2</div>
-                <div onclick="selP(${id},'p3')" style="color:var(--p3); font-weight:900; cursor:pointer;">P3</div>
+                <div class="p-option" onclick="selP(${id},'p1')" style="color:var(--p1);">MUHIM</div>
+                <div class="p-option" onclick="selP(${id},'p2')" style="color:var(--p2);">O'RTACHA</div>
+                <div class="p-option" onclick="selP(${id},'p3')" style="color:var(--p3);">ODATIY</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         updateUI();
