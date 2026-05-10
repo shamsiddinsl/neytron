@@ -138,7 +138,6 @@
     </div>
 </div>
 
-<!-- FIREBASE MODULE DOIMIY -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -234,7 +233,7 @@
                 <div onclick="selP(${id},'p3')" style="color:var(--p3); font-weight:900; cursor:pointer;">P3</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
-        if(m) updateUI();
+        updateUI();
     };
 
     window.showP = (id) => document.getElementById(`ov-${id}`).style.display = 'flex';
@@ -246,81 +245,72 @@
         updateUI();
     };
 
-    // UPDATE UI FUNKSIYASI - QIZIL TEBRANISH BILAN
     window.updateUI = () => {
-        let sleepInput = document.getElementById('sH');
-        let workInput = document.getElementById('wH');
+        const sleepInput = document.getElementById('sH');
+        const workInput = document.getElementById('wH');
+        const hub = document.getElementById('aiHub');
         
         let sleep = (+sleepInput.value || 0) * 60;
         let work = (+workInput.value || 0) * 60;
-
-        // 24 soatlik limitni tekshirish (1440 minut)
+        
+        // 24 soat limit
         if (sleep > 1440) { sleep = 1440; sleepInput.value = 24; }
         if (sleep + work > 1440) { work = 1440 - sleep; workInput.value = work/60; }
         
-        let total = sleep + work;
-        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
+        let totalUsed = sleep + work;
+        let labels = ['Uyqu', 'Ish/O\'qish'];
+        let vals = [sleep, work];
+        let colors = ['#1e293b', '#334155'];
+
+        hub.innerHTML = '';
 
         document.querySelectorAll('.zone-card').forEach(z => {
-    const n = z.querySelector('.name').value; // Vazifa nomi (masalan: "Kitob o'qish")
-    const p = z.dataset.p;                   // Vazifa turi (p1, p2 yoki p3)
+            const nInput = z.querySelector('.name');
+            const tInput = z.querySelector('.time');
+            const n = nInput.value;
+            const p = z.dataset.p;
+            let v = +tInput.value || 0;
 
-    if (n) { // Faqat nomi yozilgan vazifalar uchun tahlil chiqaradi
-        let msg = "";
-        let color = "";
-
-        // Shartli tekshiruv:
-        if (p === 'p1') { 
-            msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; 
-            color = "var(--p1)"; // Qizil rang
-        }
-        else if (p === 'p2') { 
-            msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; 
-            color = "var(--p2)"; // Sariq/Sarg'ish rang
-        }
-        else if (p === 'p3') { 
-            msg = `"${n}" - odatiy yumush.`; 
-            color = "var(--p3)"; // Yashil rang
-        }
-
-        // Tahlil kartasini ekranga chiqarish:
-        hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
-            <p style="font-size:11px;">${msg}</p>
-        </div>`;
-    }
-});
-
-            // LIMITDAN O'TSA QIZIL TEBRANISH EFFEKTI
-            if (total + v > 1440) {
-                v = Math.max(0, 1440 - total);
+            // Limit tekshiruvi va tebranish
+            if (totalUsed + v > 1440) {
+                v = 1440 - totalUsed;
                 tInput.value = v;
-
-                // Tebranish va qizil chegara
-                tInput.style.transition = "0.2s";
                 tInput.style.borderColor = "var(--p1)";
-                tInput.animate([
-                    { transform: 'translateX(0px)' },
-                    { transform: 'translateX(-4px)' },
-                    { transform: 'translateX(4px)' },
-                    { transform: 'translateX(0px)' }
-                ], { duration: 200 });
-
-                setTimeout(() => { tInput.style.borderColor = "var(--border)"; }, 1000);
+                tInput.animate([{transform:'translateX(-3px)'},{transform:'translateX(3px)'}],{duration:100,iterations:3});
+                setTimeout(()=>tInput.style.borderColor="var(--border)", 1000);
             }
 
-            if (v > 0) { 
-                vals.push(v); labels.push(n); total += v; 
-                colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); 
+            if (v > 0) {
+                totalUsed += v;
+                vals.push(v);
+                labels.push(n || "Vazifa");
+                colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
+            }
+
+            // Analitika xabarlari (Siz so'ragan if-else mantiqi)
+            if (n) {
+                let msg = "";
+                let color = "";
+                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; color = "var(--p1)"; }
+                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
+                else if (p === 'p3') { msg = `"${n}" - odatiy yumush.`; color = "var(--p3)"; }
+                
+                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}"><p style="font-size:11px;">${msg}</p></div>`;
             }
         });
 
-        const bal = 1440 - total;
-        vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
-        
+        const bal = 1440 - totalUsed;
+        vals.push(bal);
+        labels.push('Bo\'sh vaqt');
+        colors.push('rgba(34, 211, 238, 0.05)');
+
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
-        
+
         if (chart) {
-            chart.data.labels = labels; chart.data.datasets[0].data = vals; chart.data.datasets[0].backgroundColor = colors; chart.update('none');
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = vals;
+            chart.data.datasets[0].backgroundColor = colors;
+            chart.update('none');
         } else {
             chart = new Chart(document.getElementById('nChart').getContext('2d'), {
                 type: 'doughnut',
@@ -329,20 +319,11 @@
             });
         }
 
-        const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
-            hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
-                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b style="color:var(--p1)">${Math.floor((bal*365)/60)} soat</b> (${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
+            const lostHours = Math.floor((bal * 365) / 60);
+            hub.insertAdjacentHTML('afterbegin', `<div class="ai-card" style="border-left-color:var(--p1)">
+                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b style="color:var(--p1)">${lostHours} soat</b> (${Math.floor(lostHours/24)} kunga teng)</p></div>`);
         }
-        document.querySelectorAll('.zone-card').forEach(z => {
-            const n = z.querySelector('.name').value;
-            const p = z.dataset.p;
-            if (n) {
-                let msg = p === 'p1' ? `"${n}" - strategik maqsad.` : p === 'p2' ? `"${n}" - o'rtacha ustuvorlik.` : `"${n}" - odatiy yumush.`;
-                let color = p === 'p1' ? "var(--p1)" : p === 'p2' ? "var(--p2)" : "var(--p3)";
-                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}"><p style="font-size:11px;">${msg}</p></div>`;
-            }
-        });
     };
 </script>
 </body>
