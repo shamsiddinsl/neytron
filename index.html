@@ -20,8 +20,11 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        header { position: sticky; top: 0; z-index: 100; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 20px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); backdrop-filter: blur(15px); }
-        .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 2px; }
+        /* Header va Logotip qismi */
+        header { position: sticky; top: 0; z-index: 100; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
+        .atom-core { animation: spin 4s linear infinite; font-size: 24px; color: var(--accent); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
@@ -36,7 +39,6 @@
         .zone-card { position: relative; margin-bottom: 12px; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
         .zone-main { display: flex; align-items: center; gap: 10px; }
         
-        /* Bayroq ranglari uchun to'g'irlangan stillar */
         .p-indicator { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; transition: 0.3s; }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
@@ -55,7 +57,7 @@
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 2px solid var(--accent); }
         .p-opt { font-weight: 900; font-size: 11px; cursor: pointer; padding: 10px; }
         
-        .ai-card { padding: 15px; border-radius: 18px; background: rgba(255,255,255,0.03); border-left: 5px solid var(--accent); margin-bottom: 10px; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .ai-card { padding: 15px; border-radius: 18px; background: rgba(255,255,255,0.03); border-left: 5px solid var(--accent); margin-bottom: 10px; border: 1px solid var(--border); border-left-width: 5px; }
     </style>
 </head>
 <body>
@@ -69,10 +71,12 @@
 
 <div id="main-app">
     <header>
-        <div class="brand">NEYTRON</div>
+        <div class="brand">
+            <i class="fa-solid fa-atom atom-core"></i> NEYTRON
+        </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:5px; font-size:12px;">
-            <div id="user-p" style="width:32px; height:32px; border-radius:50%; overflow:hidden; border:1px solid var(--accent);"></div>
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:12px; padding:6px 10px; font-size:12px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); box-shadow: 0 0 10px rgba(34,211,238,0.2);"></div>
         </div>
     </header>
 
@@ -185,7 +189,7 @@
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
                 <input type="number" class="time" placeholder="min" value="${m}" oninput="updateUI()">
-                <i class="fa-solid fa-trash-can" style="opacity:0.3" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
+                <i class="fa-solid fa-trash-can" style="opacity:0.3; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
                 <div class="p-opt" onclick="selP(${id},'p1')" style="color:var(--p1)">MUHIM</div>
