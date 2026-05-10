@@ -20,10 +20,21 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        header { position: sticky; top: 0; z-index: 100; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); backdrop-filter: blur(15px); }
-        .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
-        .atom-core { animation: spin 4s linear infinite; font-size: 24px; color: var(--accent); }
+        /* Header qismi optimallashdi */
+        header { 
+            position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px 15px; border-radius: 22px; 
+            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); 
+            backdrop-filter: blur(15px); width: 100%;
+        }
+        .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
+        .atom-core { animation: spin 4s linear infinite; font-size: 22px; color: var(--accent); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        #custom-alert { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); }
+        .modal-box { width: 85%; max-width: 320px; background: var(--card); border: 1px solid var(--accent); border-radius: 25px; padding: 30px 20px; text-align: center; box-shadow: 0 0 30px rgba(34, 211, 238, 0.2); }
+        .modal-box i { font-size: 40px; color: var(--accent); margin-bottom: 15px; }
 
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
@@ -38,28 +49,34 @@
         .zone-card { position: relative; margin-bottom: 12px; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
         .zone-main { display: flex; align-items: center; gap: 10px; }
         
-        .p-indicator { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; transition: 0.3s; }
+        .p-indicator { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
         .p-indicator.p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
         
-        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-size: 15px; font-weight: 600; }
+        .zone-card input.name { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 15px; font-weight: 600; }
         .zone-card input.time { width: 65px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 8px; text-align: center; color: var(--accent); font-weight: 900; }
 
         .chart-container { position: relative; height: 280px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
         .balans-center { position: absolute; text-align: center; }
         .balans-center h1 { font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; }
         
-        .btn-run { width: 100%; margin-top: 15px; padding: 18px; border: none; border-radius: 20px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 15px; font-weight: 900; letter-spacing: 1px; cursor: pointer; }
+        .btn-run { width: 100%; margin-top: 15px; padding: 18px; border: none; border-radius: 20px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 15px; font-weight: 900; cursor: pointer; }
         .btn-add { width: 100%; margin-top: 5px; padding: 15px; border-radius: 18px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
 
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 2px solid var(--accent); }
-        .p-opt { font-weight: 900; font-size: 11px; cursor: pointer; padding: 10px; }
-        
         .ai-card { padding: 15px; border-radius: 18px; background: rgba(255,255,255,0.03); margin-bottom: 10px; border: 1px solid var(--border); border-left-width: 5px; }
     </style>
 </head>
 <body>
+
+<div id="custom-alert">
+    <div class="modal-box">
+        <i class="fa-solid fa-circle-check"></i>
+        <p id="modal-msg">Amal bajarildi!</p>
+        <button class="btn-run" onclick="closeModal()" style="margin:0; padding:12px;">OK</button>
+    </div>
+</div>
 
 <div id="login-screen">
     <div class="login-box">
@@ -71,9 +88,9 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:12px; padding:6px 10px; font-size:12px; font-weight:800; outline:none;">
-            <div id="user-p" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--accent);"></div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:5px 8px; font-size:11px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:34px; height:34px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); flex-shrink:0;"></div>
         </div>
     </header>
 
@@ -82,7 +99,7 @@
             <span class="label-sm">Asosiy resurslar</span>
             <div class="res-grid">
                 <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" onchange="updateUI()"></div>
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" onchange="updateUI()"></div>
+                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" onchange="updateUI()"></div>
             </div>
             <div id="zList"></div>
             <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
@@ -98,7 +115,6 @@
                     <p style="font-size: 8px; letter-spacing: 2px; opacity: 0.5;">BO'SH VAQT</p>
                 </div>
             </div>
-            <div id="chart-legend" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; font-size:10px; margin-bottom:15px;"></div>
             <div id="aiHub"></div>
         </section>
     </div>
@@ -150,7 +166,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
-        alert("Saqlandi!");
+        window.showAlert("Strategiya muvaffaqiyatli saqlandi!");
     };
 
     window.loadData = async () => {
@@ -172,10 +188,11 @@
     let chart;
     document.getElementById('pDate').valueAsDate = new Date();
 
-    const colorMatrix = {
-        p1: ['#ef4444', '#f87171'], p2: ['#d97706', '#fbbf24'], p3: ['#10b981', '#34d399'],
-        base: ['#1e293b', '#334155']
+    window.showAlert = (msg) => {
+        document.getElementById('modal-msg').innerText = msg;
+        document.getElementById('custom-alert').style.display = 'flex';
     };
+    window.closeModal = () => document.getElementById('custom-alert').style.display = 'none';
 
     window.addZ = (n='', m='', p='p2') => {
         const id = Date.now() + Math.random();
@@ -189,12 +206,11 @@
                 <i class="fa-solid fa-trash-can" style="opacity:0.3; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div class="p-opt" onclick="selP(${id},'p1')" style="color:var(--p1)">MUHIM</div>
-                <div class="p-opt" onclick="selP(${id},'p2')" style="color:var(--p2)">O'RTACHA</div>
-                <div class="p-opt" onclick="selP(${id},'p3')" style="color:var(--p3)">ODATIY</div>
+                <div onclick="selP(${id},'p1')" style="color:var(--p1); font-weight:900; cursor:pointer;">P1</div>
+                <div onclick="selP(${id},'p2')" style="color:var(--p2); font-weight:900; cursor:pointer;">P2</div>
+                <div onclick="selP(${id},'p3')" style="color:var(--p3); font-weight:900; cursor:pointer;">P3</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
-        // Yangi zona qo'shilganda diagramma darhol yangilanishi uchun (lekin yozayotganda sakramaydi)
         if(m) updateUI();
     };
 
@@ -208,22 +224,32 @@
     };
 
     window.updateUI = () => {
-        const s = (+document.getElementById('sH').value || 0) * 60;
-        const w = (+document.getElementById('wH').value || 0) * 60;
-        let labels = ['Uyqu', 'Ish'], vals = [s, w], colors = [colorMatrix.base[0], colorMatrix.base[1]], total = s + w;
+        let sleep = (+document.getElementById('sH').value || 0) * 60;
+        let work = (+document.getElementById('wH').value || 0) * 60;
+        
+        if (sleep > 1440) { sleep = 1440; document.getElementById('sH').value = 24; }
+        if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
+
+        let total = sleep + work;
+        let labels = ['Uyqu', 'Ish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
 
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
-            if (total + v > 1440) { v = 1440 - total; z.querySelector('.time').value = v; }
+
+            if (total + v > 1440) {
+                v = Math.max(0, 1440 - total);
+                z.querySelector('.time').value = v;
+            }
+            
             if (v > 0) {
                 vals.push(v); labels.push(n); total += v;
-                colors.push(colorMatrix[p][0]);
+                colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
             }
         });
 
-        const bal = Math.max(0, 1440 - total);
+        const bal = 1440 - total;
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
@@ -235,25 +261,11 @@
         });
 
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
-        if (bal > 0) {
-            hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--accent)">
-                <p style="font-size:12px; color:#94a3b8;">Yillik yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b></p></div>`;
-        }
-
-        // Tahlil qismini kengaytirish (Barcha ustuvorliklar uchun)
         document.querySelectorAll('.zone-card').forEach(z => {
             const n = z.querySelector('.name').value;
-            const p = z.dataset.p;
             if (n) {
-                let msg = "", color = "";
-                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz. Bor diqqatingizni shunga qarating.`; color = "var(--p1)"; }
-                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa. Asosiy ishlardan so'ng bajaring.`; color = "var(--p2)"; }
-                else if (p === 'p3') { msg = `"${n}" - odatiy yumush. Kun oxirida bo'sh vaqt qolsa shug'ullanish tavsiya etiladi.`; color = "var(--p3)"; }
-                
-                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
-                    <h6 style="font-size:10px; color:${color}; margin-bottom:5px;">TAHLIL</h6>
-                    <p style="font-size:11px;">${msg}</p>
-                </div>`;
+                const color = z.dataset.p === 'p1' ? 'var(--p1)' : z.dataset.p === 'p2' ? 'var(--p2)' : 'var(--p3)';
+                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}"><p style="font-size:11px;">"${n}" vazifasi rejangizga kiritildi.</p></div>`;
             }
         });
     };
