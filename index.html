@@ -230,7 +230,7 @@
         if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
 
         let total = sleep + work;
-        let labels = ['Uyqu', 'Ish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
+        let labels = ['Uyqu', 'Ish/O'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
 
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
