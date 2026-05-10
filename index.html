@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neytron | Strategic Intelligence</title>
+    <title>Neytron | Strategic Intelligence Core</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg: #030712; --card: #0f172a; --accent: #22d3ee;
             --p1: #ef4444; --p2: #d97706; --p3: #10b981;
-            --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
+            --text: #f1f5f9; --border: rgba(255,255,255,0.08);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
@@ -22,7 +22,6 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 50px; }
 
-        /* Header Fix (Rasmga mos) */
         header { position: sticky; top: 0; z-index: 100; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); backdrop-filter: blur(15px); }
         .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
         .atom-core { animation: spin 4s linear infinite; }
@@ -31,7 +30,6 @@
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-        /* Panel Premium Look */
         .panel { background: rgba(15, 23, 42, 0.7); border-radius: 30px; border: 1px solid var(--border); padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
         .label-sm { display: block; margin-bottom: 15px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: var(--accent); opacity: 0.7; }
 
@@ -40,8 +38,7 @@
         .res-item label { font-size: 9px; opacity: 0.5; font-weight: 800; display: block; margin-bottom: 5px; }
         .res-item input { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 20px; font-weight: 900; }
 
-        /* Zone Card Fix */
-        .zone-card { position: relative; margin-bottom: 15px; padding: 16px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; }
+        .zone-card { position: relative; margin-bottom: 15px; padding: 16px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
         .zone-main { display: flex; align-items: center; gap: 12px; }
         .p-indicator { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; }
         .p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
@@ -51,28 +48,26 @@
         .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; font-weight: 600; }
         .zone-card input.time { width: 75px; background: #030712; border: 1px solid var(--border); border-radius: 14px; padding: 10px; text-align: center; color: var(--accent); font-weight: 900; outline: none; }
 
-        /* Diagramma & Legend */
         .chart-container { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
         .balans-center { position: absolute; text-align: center; pointer-events: none; }
         .balans-center h1 { font-size: 56px; font-weight: 900; color: var(--accent); line-height: 0.8; text-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
+        
         #chart-legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 25px; padding: 0 10px; }
         .legend-item { font-size: 10px; display: flex; align-items: center; gap: 6px; color: #94a3b8; font-weight: 600; }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        /* Analitika Kartalari */
-        .ai-card { padding: 22px; border-radius: 24px; border-left: 6px solid var(--accent); background: rgba(255,255,255,0.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 6px; transition: 0.3s; }
+        .ai-card { padding: 22px; border-radius: 24px; border-left: 6px solid var(--accent); background: rgba(255,255,255,0.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 6px; }
         .ai-card.crit { border-left-color: var(--p1); }
         .ai-card h6 { margin-bottom: 8px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
         .ai-card p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; }
         .highlight { color: #fff; font-weight: 900; }
 
-        /* Tugmalar */
         .btn-run { width: 100%; margin-top: 20px; padding: 20px; border: none; border-radius: 22px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34, 211, 238, 0.25); transition: 0.3s; }
         .btn-run:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(34, 211, 238, 0.4); }
-        .btn-add { width: 100%; margin-top: 10px; padding: 18px; border-radius: 20px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-add { width: 100%; margin-top: 10px; padding: 18px; border-radius: 20px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
         
         .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 22px; z-index: 10; border: 2px solid var(--accent); }
+        .p-opt { font-weight: 900; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -190,6 +185,14 @@
     let chart;
     document.getElementById('pDate').valueAsDate = new Date();
 
+    // Universal Premium Rang Palitrasi (Bayroqchalarga ko'ra guruhlangan)
+    const colorPalette = {
+        p1: ['#ef4444', '#f87171', '#dc2626', '#991b1b', '#b91c1c'], // Qizil tonlar
+        p2: ['#d97706', '#fbbf24', '#b45309', '#f59e0b', '#f97316'], // Sariq tonlar
+        p3: ['#10b981', '#34d399', '#059669', '#15803d', '#166534'], // Yashil tonlar
+        base: ['#1e293b', '#334155'] // Uyqu va Ish
+    };
+
     window.addZ = (n='', m='', p='p2') => {
         const id = Date.now() + Math.random();
         const div = document.createElement('div');
@@ -198,8 +201,8 @@
             <div class="zone-main">
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
-                <input type="number" class="time" placeholder="min" value="${m}" oninput="updateUI()">
-                <i class="fa-solid fa-trash-can" style="opacity:0.2; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
+                <input type="number" placeholder="min" value="${m}" oninput="updateUI()">
+                <i class="fa-solid fa-trash-can" style="opacity:0.2" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
                 <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM (P1)</div>
@@ -222,21 +225,31 @@
     window.updateUI = () => {
         const s = (+document.getElementById('sH').value || 0) * 60;
         const w = (+document.getElementById('wH').value || 0) * 60;
-        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = ['#1e293b', '#334155'], total = s + w;
+        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = [colorPalette.base[0], colorPalette.base[1]], total = s + w;
+
+        // Bayroqchalar bo'yicha hisoblagichlar
+        let counters = { p1: 0, p2: 0, p3: 0 };
 
         document.querySelectorAll('.zone-card').forEach(z => {
             const v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
-            vals.push(v); labels.push(n); total += v;
             const p = z.dataset.p;
-            colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
+
+            vals.push(v);
+            labels.push(n);
+            total += v;
+
+            // Rangni aniqlash (Har bir vazifa uchun alohida Premium rang)
+            const colorIdx = counters[p] % colorPalette[p].length;
+            colors.push(colorPalette[p][colorIdx]);
+            counters[p]++; // Guruh ichida hisoblagichni oshirish
         });
 
         const bal = Math.max(0, 1440 - total);
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.1)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
-        // Diagramma "sakrashi"ni to'xtatish (Premium Animation)
+        // Diagramma sakrashini to'xtatish (Premium Animation)
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById('nChart').getContext('2d'), {
             type: 'doughnut',
