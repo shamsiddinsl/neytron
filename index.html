@@ -3,73 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neytron | Strategic System</title>
+    <title>Neytron | Strategic Intelligence</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg: #030712; --card: #0f172a; --accent: #22d3ee;
             --p1: #ef4444; --p2: #d97706; --p3: #10b981;
-            --text: #f1f5f9; --border: rgba(255,255,255,0.08);
+            --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.4; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
+        /* Premium Login */
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
-        .login-box { width: 90%; max-width: 400px; padding: 40px; border-radius: 30px; background: rgba(15,23,42,0.5); border: 1px solid var(--border); backdrop-filter: blur(15px); text-align: center; }
+        .login-box { width: 90%; max-width: 400px; padding: 45px 30px; border-radius: 35px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .login-box h1 { letter-spacing: 10px; color: var(--accent); font-weight: 900; margin-bottom: 10px; }
 
-        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 40px; }
+        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 50px; }
 
-        header { position: sticky; top: 0; z-index: 100; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 24px; background: rgba(15,23,42,.8); border: 1px solid var(--border); backdrop-filter: blur(12px); }
-        .brand { color: var(--accent); font-size: 19px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
+        /* Header Fix (Rasmga mos) */
+        header { position: sticky; top: 0; z-index: 100; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
         .atom-core { animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-        .panel { background: var(--card); border-radius: 28px; border: 1px solid var(--border); padding: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
-        .label-sm { display: block; margin-bottom: 12px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: var(--accent); opacity: .6; }
+        /* Panel Premium Look */
+        .panel { background: rgba(15, 23, 42, 0.7); border-radius: 30px; border: 1px solid var(--border); padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+        .label-sm { display: block; margin-bottom: 15px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: var(--accent); opacity: 0.7; }
 
-        .res-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
-        @media (min-width: 480px) { .res-grid { grid-template-columns: 1fr 1fr; } }
-        .res-item { background: rgba(0,0,0,.2); border-radius: 18px; padding: 14px; border: 1px solid var(--border); }
-        .res-item label { font-size: 9px; opacity: .5; font-weight: 700; display: block; margin-bottom: 4px; }
-        .res-item input { width: 100%; background: transparent; border: none; outline: none; color: white; font-size: 18px; font-weight: 900; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .res-item { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .res-item label { font-size: 9px; opacity: 0.5; font-weight: 800; display: block; margin-bottom: 5px; }
+        .res-item input { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 20px; font-weight: 900; }
 
-        .zone-card { position: relative; margin-bottom: 12px; padding: 14px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+        /* Zone Card Fix */
+        .zone-card { position: relative; margin-bottom: 15px; padding: 16px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; }
         .zone-main { display: flex; align-items: center; gap: 12px; }
-        .p-indicator { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); cursor: pointer; }
-        .p1 { color: var(--p1); border-color: var(--p1); }
-        .p2 { color: var(--p2); border-color: var(--p2); }
-        .p3 { color: var(--p3); border-color: var(--p3); }
+        .p-indicator { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
+        .p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
+        .p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
 
-        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: white; font-size: 15px; font-weight: 700; }
-        .zone-card input.time { width: 70px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; color: var(--accent); font-weight: 900; outline: none; }
+        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; font-weight: 600; }
+        .zone-card input.time { width: 75px; background: #030712; border: 1px solid var(--border); border-radius: 14px; padding: 10px; text-align: center; color: var(--accent); font-weight: 900; outline: none; }
 
-        .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 1px solid var(--accent); }
-        .p-opt { font-size: 11px; font-weight: 900; cursor: pointer; text-align: center; }
-
-        .chart-container { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        /* Diagramma & Legend */
+        .chart-container { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
         .balans-center { position: absolute; text-align: center; pointer-events: none; }
-        .balans-center h1 { font-size: 48px; font-weight: 900; color: var(--accent); line-height: .9; }
+        .balans-center h1 { font-size: 56px; font-weight: 900; color: var(--accent); line-height: 0.8; text-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
+        #chart-legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 25px; padding: 0 10px; }
+        .legend-item { font-size: 10px; display: flex; align-items: center; gap: 6px; color: #94a3b8; font-weight: 600; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        .ai-card { padding: 20px; border-radius: 20px; border-left: 5px solid var(--accent); background: rgba(255,255,255,.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 5px; }
-        .ai-card.lost { border-left-color: var(--p1); }
-        .ai-card h6 { margin-bottom: 8px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        .ai-card p { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+        /* Analitika Kartalari */
+        .ai-card { padding: 22px; border-radius: 24px; border-left: 6px solid var(--accent); background: rgba(255,255,255,0.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 6px; transition: 0.3s; }
+        .ai-card.crit { border-left-color: var(--p1); }
+        .ai-card h6 { margin-bottom: 8px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .ai-card p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; }
         .highlight { color: #fff; font-weight: 900; }
 
-        .btn-run { width: 100%; margin-top: 20px; padding: 18px; border: none; border-radius: 20px; background: linear-gradient(135deg,#22d3ee,#06b6d4); color: black; font-size: 15px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34,211,238,.2); }
-        .btn-add { width: 100%; margin-top: 10px; padding: 16px; border-radius: 18px; border: 2px dashed var(--border); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
+        /* Tugmalar */
+        .btn-run { width: 100%; margin-top: 20px; padding: 20px; border: none; border-radius: 22px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34, 211, 238, 0.25); transition: 0.3s; }
+        .btn-run:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(34, 211, 238, 0.4); }
+        .btn-add { width: 100%; margin-top: 10px; padding: 18px; border-radius: 20px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+        
+        .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 22px; z-index: 10; border: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <h1 style="letter-spacing: 8px; color: var(--accent); margin-bottom: 10px; font-weight: 900;">NEYTRON</h1>
-        <p style="font-size: 11px; opacity: 0.5; margin-bottom: 30px;">STRATEGIC RESOURCE MANAGEMENT</p>
+        <h1>NEYTRON</h1>
+        <p style="font-size: 11px; opacity: 0.5; margin-bottom: 35px; letter-spacing: 1px;">STRATEGIC RESOURCE MANAGEMENT</p>
         <button class="btn-run" onclick="window.signIn()" style="margin-top:0"><i class="fa-brands fa-google"></i> Google bilan boshlash</button>
     </div>
 </div>
@@ -77,9 +88,9 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()">
-            <div id="user-p" style="width:35px; height:35px; border-radius:50%; overflow:hidden; border:2px solid var(--accent);"></div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:12px; padding:8px 12px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:38px; height:38px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); box-shadow: 0 0 15px rgba(34,211,238,0.2);"></div>
         </div>
     </header>
 
@@ -90,7 +101,7 @@
                 <div class="res-item"><label>UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" oninput="updateUI()"></div>
                 <div class="res-item"><label>ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" oninput="updateUI()"></div>
             </div>
-            <span class="label-sm">Vaqt zonalari</span>
+            <span class="label-sm">Vaqt zonalari (Daqiqa)</span>
             <div id="zList"></div>
             <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
             <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
@@ -102,9 +113,10 @@
                 <canvas id="nChart"></canvas>
                 <div class="balans-center">
                     <h1 id="balText">08:00</h1>
-                    <p>BO'SH VAQT</p>
+                    <p style="font-size: 10px; letter-spacing: 4px; opacity: 0.5;">BO'SH VAQT</p>
                 </div>
             </div>
+            <div id="chart-legend"></div>
             <div id="aiHub"></div>
         </section>
     </div>
@@ -130,14 +142,13 @@
     const provider = new GoogleAuthProvider();
 
     setPersistence(auth, browserLocalPersistence);
-
     window.signIn = () => signInWithRedirect(auth, provider);
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%">`;
+            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
             window.loadData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
@@ -157,7 +168,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
-        alert("Saqlandi!");
+        alert("Strategik tizim yangilandi!");
     };
 
     window.loadData = async () => {
@@ -187,13 +198,13 @@
             <div class="zone-main">
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
                 <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
-                <input type="number" class="time" value="${m}" oninput="updateUI()">
-                <i class="fa-solid fa-trash-can" style="opacity:0.2" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
+                <input type="number" class="time" placeholder="min" value="${m}" oninput="updateUI()">
+                <i class="fa-solid fa-trash-can" style="opacity:0.2; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM<br>(P1)</div>
-                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">O'RTACHA<br>(P2)</div>
-                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODDIY<br>(P3)</div>
+                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM (P1)</div>
+                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">O'RTA (P2)</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODDIY (P3)</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         updateUI();
@@ -211,45 +222,45 @@
     window.updateUI = () => {
         const s = (+document.getElementById('sH').value || 0) * 60;
         const w = (+document.getElementById('wH').value || 0) * 60;
-        let vals = [s, w], colors = ['#1e293b', '#334155'], total = s + w;
+        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = ['#1e293b', '#334155'], total = s + w;
 
         document.querySelectorAll('.zone-card').forEach(z => {
             const v = +z.querySelector('.time').value || 0;
-            vals.push(v); total += v;
+            const n = z.querySelector('.name').value || 'Vazifa';
+            vals.push(v); labels.push(n); total += v;
             const p = z.dataset.p;
             colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
         });
 
         const bal = Math.max(0, 1440 - total);
-        vals.push(bal); colors.push('rgba(34, 211, 238, 0.1)');
+        vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.1)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
+        // Diagramma "sakrashi"ni to'xtatish (Premium Animation)
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById('nChart').getContext('2d'), {
             type: 'doughnut',
-            data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
-            options: { cutout: '85%', animation: false, plugins: { tooltip: { enabled: false } } }
+            data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }] },
+            options: { 
+                cutout: '85%', 
+                animation: { animateRotate: true, animateScale: true, duration: 800 },
+                plugins: { legend: { display: false }, tooltip: { enabled: true } } 
+            }
         });
 
-        const hub = document.getElementById('aiHub');
-        const lostHours = Math.floor((bal * 365) / 60);
-        const lostDays = ((bal * 365) / 1440).toFixed(1);
+        // Legend (Ranglar izohi)
+        const leg = document.getElementById('chart-legend');
+        leg.innerHTML = labels.map((l, i) => `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${l}</div>`).join('');
 
-        hub.innerHTML = `
-            <div class="ai-card lost">
-                <h6>Vaqt yo'qotish prognozi</h6>
-                <p>Ushbu bo'sh vaqt bilan bir yilda <span class="highlight">${lostHours} soat</span> yoki <span class="highlight">${lostDays} kun</span> sof vaqtingizni yo'qotishingiz mumkin.</p>
-            </div>
-        `;
+        // Universal Analitika
+        const hub = document.getElementById('aiHub');
+        const lostHrs = Math.floor((bal * 365) / 60);
+        const lostDays = ((bal * 365) / 1440).toFixed(1);
+        hub.innerHTML = `<div class="ai-card crit"><h6>Vaqt yo'qotish prognozi</h6><p>Ushbu bo'sh vaqt bilan bir yilda <span class="highlight">${lostHrs} soat</span> yoki <span class="highlight">${lostDays} kun</span> sof vaqtingizni yo'qotishingiz mumkin.</p></div>`;
 
         document.querySelectorAll('.zone-card').forEach(z => {
             const name = z.querySelector('.name').value;
-            if(z.dataset.p === 'p1' && name) {
-                hub.innerHTML += `<div class="ai-card">
-                    <h6>Universal Fokus</h6>
-                    <p>"${name.toUpperCase()}" vazifasi eng yuqori ustuvorlikka ega. Strategik resurslarni shunga safarbar qiling.</p>
-                </div>`;
-            }
+            if(z.dataset.p === 'p1' && name) hub.innerHTML += `<div class="ai-card"><h6>Universal Fokus</h6><p>"${name.toUpperCase()}" vazifasi bugungi eng muhim strategik maqsadingizdir.</p></div>`;
         });
     };
 </script>
