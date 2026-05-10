@@ -1,962 +1,257 @@
-```html
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neytron | Final UX Edition</title>
-
+    <title>Neytron | Strategic System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
     <style>
         :root {
-            --bg: #030712;
-            --card: #0f172a;
-            --accent: #22d3ee;
-            --p1: #ef4444;
-            --p2: #d97706;
-            --p3: #10b981;
-            --text: #f1f5f9;
-            --border: rgba(255,255,255,0.08);
+            --bg: #030712; --card: #0f172a; --accent: #22d3ee;
+            --p1: #ef4444; --p2: #d97706; --p3: #10b981;
+            --text: #f1f5f9; --border: rgba(255,255,255,0.08);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Inter, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding: 15px;
-            line-height: 1.4;
-        }
-
-        img {
-            max-width: 100%;
-            display: block;
-        }
-
-        input,
-        button,
-        textarea,
-        select {
-            font-size: 16px;
-        }
-
-        #main-app {
-            max-width: 1200px;
-            margin: auto;
-            display: none;
-            padding-bottom: 40px;
-        }
-
-        /* LOGIN */
-
-        #login-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background:
-                radial-gradient(circle at center, #0f172a 0%, #030712 100%);
-        }
-
-        .login-box {
-            width: 100%;
-            max-width: 420px;
-            padding: 40px;
-            border-radius: 30px;
-            background: rgba(15,23,42,0.55);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(15px);
-            text-align: center;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.45);
-        }
-
-        .login-title {
-            font-size: 38px;
-            font-weight: 900;
-            letter-spacing: 8px;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .login-sub {
-            opacity: .55;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        .google-btn {
-            margin-top: 25px;
-            width: 100%;
-            border: none;
-            border-radius: 16px;
-            padding: 15px;
-            cursor: pointer;
-            background: white;
-            color: black;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: .25s ease;
-        }
-
-        .google-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .google-btn:active {
-            transform: scale(.98);
-        }
-
-        /* HEADER */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 14px 18px;
-            border-radius: 24px;
-            background: rgba(15,23,42,.88);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(14px);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--accent);
-            font-size: 19px;
-            font-weight: 900;
-            letter-spacing: 4px;
-        }
-
-        .atom-core {
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        #pDate {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            color: var(--accent);
-            border-radius: 12px;
-            padding: 8px 10px;
-            outline: none;
-            font-weight: 800;
-        }
-
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid var(--accent);
-            background: #1e293b;
-        }
-
-        /* GRID */
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        @media (min-width: 1024px) {
-            .dashboard {
-                grid-template-columns: 420px 1fr;
-            }
-        }
-
-        .panel {
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(15,23,42,.98),
-                    rgba(15,23,42,.92)
-                );
-            border-radius: 28px;
-            border: 1px solid var(--border);
-            padding: 22px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,.25);
-        }
-
-        .label-sm {
-            display: block;
-            margin-bottom: 12px;
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: var(--accent);
-            opacity: .6;
-        }
-
-        /* MODE */
-
-        .mode-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 22px;
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,0.03);
-            color: #64748b;
-            font-size: 11px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .mode-btn.active {
-            background: var(--accent);
-            color: black;
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(34,211,238,.35);
-        }
-
-        /* RESOURCE */
-
-        .res-grid {
-            display: grid;
-            grid-template-columns: repeat(2,1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .res-item {
-            background: rgba(0,0,0,.22);
-            border-radius: 18px;
-            padding: 14px;
-            border: 1px solid var(--border);
-        }
-
-        .res-item label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 9px;
-            opacity: .5;
-            font-weight: 700;
-        }
-
-        .res-item input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 18px;
-            font-weight: 900;
-        }
-
-        /* ZONE */
-
-        .zone-card {
-            position: relative;
-            margin-bottom: 12px;
-            padding: 14px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-        }
-
-        .zone-main {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .p-indicator {
-            width: 42px;
-            height: 42px;
-            flex-shrink: 0;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border);
-            cursor: pointer;
-        }
-
-        .p1 {
-            color: var(--p1);
-            border-color: var(--p1);
-        }
-
-        .p2 {
-            color: var(--p2);
-            border-color: var(--p2);
-        }
-
-        .p3 {
-            color: var(--p3);
-            border-color: var(--p3);
-        }
-
-        .zone-card input.name {
-            flex: 1;
-            min-width: 0;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .zone-card input.time {
-            width: 75px;
-            flex-shrink: 0;
-            background: #030712;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px;
-            outline: none;
-            text-align: center;
-            color: var(--accent);
-            font-weight: 900;
-        }
-
-        .trash-btn {
-            opacity: .25;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .trash-btn:hover {
-            opacity: 1;
-        }
-
-        .p-overlay {
-            position: absolute;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: space-around;
-            background: var(--card);
-            border-radius: 20px;
-            border: 1px solid var(--accent);
-            z-index: 10;
-        }
-
-        .p-opt {
-            font-size: 18px;
-            font-weight: 900;
-            cursor: pointer;
-        }
-
-        /* CHART */
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .balans-center {
-            position: absolute;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .balans-center h1 {
-            font-size: 52px;
-            font-weight: 900;
-            color: var(--accent);
-            line-height: .9;
-        }
-
-        .balans-center p {
-            font-size: 9px;
-            opacity: .45;
-            letter-spacing: 3px;
-            margin-top: 5px;
-        }
-
-        /* AI CARD */
-
-        .ai-card {
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            border-left: 5px solid var(--accent);
-            background: rgba(255,255,255,.03);
-            margin-bottom: 15px;
-        }
-
-        .ai-card.crit {
-            border-left-color: var(--p1);
-        }
-
-        .ai-card.sport {
-            border-left-color: #f59e0b;
-        }
-
-        .ai-card h6 {
-            margin-bottom: 8px;
-            color: var(--accent);
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .ai-card p {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 13px;
-        }
-
-        /* BUTTONS */
-
-        .btn-run {
-            width: 100%;
-            margin-top: 20px;
-            padding: 18px;
-            border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg,#22d3ee,#06b6d4);
-            color: black;
-            font-size: 15px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: .25s ease;
-            box-shadow: 0 10px 25px rgba(34,211,238,.22);
-        }
-
-        .btn-run:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-run:active {
-            transform: scale(.98);
-        }
-
-        .btn-add {
-            width: 100%;
-            margin-top: 10px;
-            padding: 16px;
-            border-radius: 18px;
-            border: 2px dashed var(--border);
-            background: transparent;
-            color: #64748b;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 768px) {
-
-            body {
-                padding: 10px;
-            }
-
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 14px;
-            }
-
-            .header-controls {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .brand {
-                font-size: 16px;
-                letter-spacing: 3px;
-            }
-
-            .panel {
-                padding: 16px;
-                border-radius: 22px;
-            }
-
-            .mode-btn {
-                font-size: 10px;
-                padding: 10px;
-            }
-
-            .res-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .zone-main {
-                gap: 8px;
-            }
-
-            .zone-card input.name {
-                font-size: 13px;
-            }
-
-            .zone-card input.time {
-                width: 62px;
-                padding: 8px;
-                font-size: 13px;
-            }
-
-            .chart-container {
-                height: 250px;
-            }
-
-            .balans-center h1 {
-                font-size: 38px;
-            }
-
-            .btn-run {
-                padding: 15px;
-                font-size: 14px;
-            }
-
-            .login-box {
-                padding: 28px 20px;
-                border-radius: 24px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.4; overflow-x: hidden; }
+        
+        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
+        .login-box { width: 90%; max-width: 400px; padding: 40px; border-radius: 30px; background: rgba(15,23,42,0.5); border: 1px solid var(--border); backdrop-filter: blur(15px); text-align: center; }
+
+        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 40px; }
+
+        header { position: sticky; top: 0; z-index: 100; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 24px; background: rgba(15,23,42,.8); border: 1px solid var(--border); backdrop-filter: blur(12px); }
+        .brand { color: var(--accent); font-size: 19px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
+        .atom-core { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
+
+        .panel { background: var(--card); border-radius: 28px; border: 1px solid var(--border); padding: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+        .label-sm { display: block; margin-bottom: 12px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: var(--accent); opacity: .6; }
+
+        .res-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
+        @media (min-width: 480px) { .res-grid { grid-template-columns: 1fr 1fr; } }
+        .res-item { background: rgba(0,0,0,.2); border-radius: 18px; padding: 14px; border: 1px solid var(--border); }
+        .res-item label { font-size: 9px; opacity: .5; font-weight: 700; display: block; margin-bottom: 4px; }
+        .res-item input { width: 100%; background: transparent; border: none; outline: none; color: white; font-size: 18px; font-weight: 900; }
+
+        .zone-card { position: relative; margin-bottom: 12px; padding: 14px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+        .zone-main { display: flex; align-items: center; gap: 12px; }
+        .p-indicator { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); cursor: pointer; }
+        .p1 { color: var(--p1); border-color: var(--p1); }
+        .p2 { color: var(--p2); border-color: var(--p2); }
+        .p3 { color: var(--p3); border-color: var(--p3); }
+
+        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: white; font-size: 15px; font-weight: 700; }
+        .zone-card input.time { width: 70px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; color: var(--accent); font-weight: 900; outline: none; }
+
+        .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 1px solid var(--accent); }
+        .p-opt { font-size: 11px; font-weight: 900; cursor: pointer; text-align: center; }
+
+        .chart-container { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .balans-center { position: absolute; text-align: center; pointer-events: none; }
+        .balans-center h1 { font-size: 48px; font-weight: 900; color: var(--accent); line-height: .9; }
+
+        .ai-card { padding: 20px; border-radius: 20px; border-left: 5px solid var(--accent); background: rgba(255,255,255,.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 5px; }
+        .ai-card.lost { border-left-color: var(--p1); }
+        .ai-card h6 { margin-bottom: 8px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-card p { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+        .highlight { color: #fff; font-weight: 900; }
+
+        .btn-run { width: 100%; margin-top: 20px; padding: 18px; border: none; border-radius: 20px; background: linear-gradient(135deg,#22d3ee,#06b6d4); color: black; font-size: 15px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34,211,238,.2); }
+        .btn-add { width: 100%; margin-top: 10px; padding: 16px; border-radius: 18px; border: 2px dashed var(--border); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <div class="login-title">NEYTRON</div>
-        <div class="login-sub">Strategik rejalashtirish platformasi</div>
-
-        <button class="google-btn" onclick="window.signIn()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-            Google orqali kirish
-        </button>
+        <h1 style="letter-spacing: 8px; color: var(--accent); margin-bottom: 10px; font-weight: 900;">NEYTRON</h1>
+        <p style="font-size: 11px; opacity: 0.5; margin-bottom: 30px;">STRATEGIC RESOURCE MANAGEMENT</p>
+        <button class="btn-run" onclick="window.signIn()" style="margin-top:0"><i class="fa-brands fa-google"></i> Google bilan boshlash</button>
     </div>
 </div>
 
 <div id="main-app">
-
     <header>
-        <div class="brand">
-            <i class="fa-solid fa-atom atom-core"></i>
-            NEYTRON
-        </div>
-
-        <div class="header-controls">
+        <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
+        <div style="display: flex; gap: 12px; align-items: center;">
             <input type="date" id="pDate" onchange="window.loadData()">
-
-            <div class="user-avatar" id="user-p"></div>
-
-            <i class="fa-solid fa-right-from-bracket"
-               style="opacity:.4; cursor:pointer; font-size:18px"
-               onclick="window.logout()"></i>
+            <div id="user-p" style="width:35px; height:35px; border-radius:50%; overflow:hidden; border:2px solid var(--accent);"></div>
         </div>
     </header>
 
     <div class="dashboard">
-
         <section class="panel">
-
-            <span class="label-sm">Aqliy yuklama darajasi</span>
-
-            <div class="mode-selector">
-                <button class="mode-btn" id="m1.5" onclick="setMode(1.5,this)">
-                    OSON
-                </button>
-
-                <button class="mode-btn active" id="m3.0" onclick="setMode(3.0,this)">
-                    O'RTACHA
-                </button>
-
-                <button class="mode-btn" id="m5.0" onclick="setMode(5.0,this)">
-                    QIYIN
-                </button>
-            </div>
-
             <span class="label-sm">Asosiy resurslar</span>
-
             <div class="res-grid">
-                <div class="res-item">
-                    <label>UYQU (SOAT)</label>
-                    <input type="number" id="sH" value="8" step="0.5" oninput="updateUI()">
-                </div>
-
-                <div class="res-item">
-                    <label>ISH/O'QISH (SOAT)</label>
-                    <input type="number" id="wH" value="8" step="0.5" oninput="updateUI()">
-                </div>
+                <div class="res-item"><label>UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" oninput="updateUI()"></div>
+                <div class="res-item"><label>ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" oninput="updateUI()"></div>
             </div>
-
             <span class="label-sm">Vaqt zonalari</span>
-
             <div id="zList"></div>
-
-            <button class="btn-add" onclick="addZ()">
-                + YANGI ZONA
-            </button>
-
-            <button class="btn-run" onclick="saveData()">
-                STRATEGIK SAQLASH
-            </button>
-
+            <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
+            <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
         </section>
 
         <section class="panel">
-
             <span class="label-sm">Vaqt balansi analitikasi</span>
-
             <div class="chart-container">
                 <canvas id="nChart"></canvas>
-
                 <div class="balans-center">
                     <h1 id="balText">08:00</h1>
                     <p>BO'SH VAQT</p>
                 </div>
             </div>
-
             <div id="aiHub"></div>
-
         </section>
-
     </div>
-
 </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
+        authDomain: "neytronplanner.firebaseapp.com",
+        projectId: "neytronplanner",
+        storageBucket: "neytronplanner.firebasestorage.app",
+        messagingSenderId: "960758855592",
+        appId: "1:960758855592:web:bf7c16fea616e75df54f9d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    setPersistence(auth, browserLocalPersistence);
+
+    window.signIn = () => signInWithRedirect(auth, provider);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%">`;
+            window.loadData();
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+    });
+
+    window.saveData = async () => {
+        const user = auth.currentUser; if(!user) return;
+        const date = document.getElementById('pDate').value;
+        const zones = Array.from(document.querySelectorAll('.zone-card')).map(z => ({
+            n: z.querySelector('.name').value,
+            t: z.querySelector('.time').value,
+            p: z.dataset.p
+        }));
+        await setDoc(doc(db, "users", user.uid, "plans", date), {
+            sleep: document.getElementById('sH').value,
+            work: document.getElementById('wH').value,
+            zones: zones
+        });
+        alert("Saqlandi!");
+    };
+
+    window.loadData = async () => {
+        const user = auth.currentUser; if (!user) return;
+        const date = document.getElementById('pDate').value;
+        const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
+        document.getElementById('zList').innerHTML = '';
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('sH').value = data.sleep;
+            document.getElementById('wH').value = data.work;
+            if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p));
+        } else { window.addZ('', '', 'p2'); }
+        updateUI();
+    };
+</script>
+
 <script>
-
     let chart;
-    let complexity = 3.0;
-
     document.getElementById('pDate').valueAsDate = new Date();
 
-    window.signIn = () => {
-       <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-import {
-    getAuth,
-    signInWithPopup,
-    GoogleAuthProvider,
-    onAuthStateChanged,
-    signOut,
-    setPersistence,
-    browserLocalPersistence
-
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-const firebaseConfig = {
-
-    apiKey: "SIZNING_API_KEY",
-    authDomain: "SIZNING_DOMAIN",
-    projectId: "SIZNING_PROJECT_ID",
-    storageBucket: "SIZNING_BUCKET",
-    messagingSenderId: "SIZNING_SENDER_ID",
-    appId: "SIZNING_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const provider = new GoogleAuthProvider();
-
-setPersistence(auth, browserLocalPersistence);
-
-window.signIn = async () => {
-
-    try {
-
-        await signInWithPopup(auth, provider);
-
-    } catch(err) {
-
-        alert(err.message);
-    }
-};
-
-window.logout = () => signOut(auth);
-
-onAuthStateChanged(auth, (user) => {
-
-    if(user){
-
-        document.getElementById('login-screen').style.display = 'none';
-
-        document.getElementById('main-app').style.display = 'block';
-
-        if(user.photoURL){
-
-            document.getElementById('user-p').innerHTML =
-            `<img src="${user.photoURL}" style="width:100%;height:100%">`;
-        }
-
-    } else {
-
-        document.getElementById('login-screen').style.display = 'flex';
-
-        document.getElementById('main-app').style.display = 'none';
-    }
-});
-
-</script>
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-    }
-
-    window.logout = () => {
-        location.reload();
-    }
-
-    function setMode(val, btn) {
-        complexity = val;
-
-        document.querySelectorAll('.mode-btn').forEach(b => {
-            b.classList.remove('active');
-        });
-
-        btn.classList.add('active');
-    }
-
-    function addZ(n='',m='',p='p2') {
-
+    window.addZ = (n='', m='', p='p2') => {
         const id = Date.now() + Math.random();
-
         const div = document.createElement('div');
-
-        div.className = 'zone-card';
-        div.id = `z-${id}`;
-        div.dataset.p = p;
-
+        div.className = 'zone-card'; div.id = `z-${id}`; div.dataset.p = p;
         div.innerHTML = `
             <div class="zone-main">
-
-                <div class="p-indicator ${p}" onclick="showP(${id})">
-                    <i class="fa-solid fa-flag"></i>
-                </div>
-
-                <input
-                    type="text"
-                    class="name"
-                    placeholder="Maqsad..."
-                    value="${n}"
-                    oninput="updateUI()"
-                >
-
-                <input
-                    type="number"
-                    class="time"
-                    placeholder="min"
-                    value="${m}"
-                    oninput="updateUI()"
-                >
-
-                <i class="fa-solid fa-trash-can trash-btn"
-                   onclick="remZ(${id})"></i>
-
+                <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
+                <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
+                <input type="number" class="time" value="${m}" oninput="updateUI()">
+                <i class="fa-solid fa-trash-can" style="opacity:0.2" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
-
             <div class="p-overlay" id="ov-${id}">
-                <div class="p-opt" style="color:var(--p1)"
-                     onclick="selP(${id},'p1')">P1</div>
+                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM<br>(P1)</div>
+                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">O'RTACHA<br>(P2)</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODDIY<br>(P3)</div>
+            </div>`;
+        document.getElementById('zList').appendChild(div);
+        updateUI();
+    };
 
-                <div class="p-opt" style="color:var(--p2)"
-                     onclick="selP(${id},'p2')">P2</div>
+    window.showP = (id) => document.getElementById(`ov-${id}`).style.display = 'flex';
+    window.selP = (id, p) => {
+        const z = document.getElementById(`z-${id}`);
+        z.dataset.p = p;
+        z.querySelector('.p-indicator').className = `p-indicator ${p}`;
+        document.getElementById(`ov-${id}`).style.display = 'none';
+        updateUI();
+    };
 
-                <div class="p-opt" style="color:var(--p3)"
-                     onclick="selP(${id},'p3')">P3</div>
+    window.updateUI = () => {
+        const s = (+document.getElementById('sH').value || 0) * 60;
+        const w = (+document.getElementById('wH').value || 0) * 60;
+        let vals = [s, w], colors = ['#1e293b', '#334155'], total = s + w;
+
+        document.querySelectorAll('.zone-card').forEach(z => {
+            const v = +z.querySelector('.time').value || 0;
+            vals.push(v); total += v;
+            const p = z.dataset.p;
+            colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
+        });
+
+        const bal = Math.max(0, 1440 - total);
+        vals.push(bal); colors.push('rgba(34, 211, 238, 0.1)');
+        document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById('nChart').getContext('2d'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
+            options: { cutout: '85%', animation: false, plugins: { tooltip: { enabled: false } } }
+        });
+
+        const hub = document.getElementById('aiHub');
+        const lostHours = Math.floor((bal * 365) / 60);
+        const lostDays = ((bal * 365) / 1440).toFixed(1);
+
+        hub.innerHTML = `
+            <div class="ai-card lost">
+                <h6>Vaqt yo'qotish prognozi</h6>
+                <p>Ushbu bo'sh vaqt bilan bir yilda <span class="highlight">${lostHours} soat</span> yoki <span class="highlight">${lostDays} kun</span> sof vaqtingizni yo'qotishingiz mumkin.</p>
             </div>
         `;
 
-        document.getElementById('zList').appendChild(div);
-
-        updateUI();
-    }
-
-    function showP(id) {
-        document.getElementById(`ov-${id}`).style.display = 'flex';
-    }
-
-    function selP(id,p) {
-
-        const z = document.getElementById(`z-${id}`);
-
-        z.dataset.p = p;
-
-        z.querySelector('.p-indicator').className = `p-indicator ${p}`;
-
-        document.getElementById(`ov-${id}`).style.display = 'none';
-
-        updateUI();
-    }
-
-    function remZ(id) {
-        document.getElementById(`z-${id}`).remove();
-        updateUI();
-    }
-
-    function updateUI() {
-
-        const s = (+document.getElementById('sH').value || 0) * 60;
-        const w = (+document.getElementById('wH').value || 0) * 60;
-
-        let labs = ['Uyqu','Ish'];
-        let vals = [s,w];
-        let total = s + w;
-
         document.querySelectorAll('.zone-card').forEach(z => {
-
-            const v = +z.querySelector('.time').value || 0;
-
-            vals.push(v);
-            labs.push(z.querySelector('.name').value || 'Vazifa');
-
-            total += v;
-        });
-
-        const bal = Math.max(0,1440-total);
-
-        vals.push(bal);
-        labs.push('Bo\'sh');
-
-        document.getElementById('balText').innerText =
-            `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
-
-        if(!chart) {
-
-            chart = new Chart(document.getElementById('nChart'), {
-                type: 'doughnut',
-
-                data: {
-                    labels: labs,
-                    datasets: [{
-                        data: vals,
-                        borderWidth: 0,
-                        backgroundColor: [
-                            '#1e293b',
-                            '#334155',
-                            '#ef4444',
-                            '#d97706',
-                            '#10b981',
-                            '#22d3ee',
-                            '#8b5cf6'
-                        ]
-                    }]
-                },
-
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '82%',
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-        } else {
-            chart.data.labels = labs;
-            chart.data.datasets[0].data = vals;
-            chart.update();
-        }
-
-        analyze();
-    }
-
-    function analyze() {
-
-        const hub = document.getElementById('aiHub');
-
-        hub.innerHTML = '';
-
-        document.querySelectorAll('.zone-card').forEach(z => {
-
-            const n = z.querySelector('.name').value.toLowerCase();
-            const t = +z.querySelector('.time').value;
-
-            if((n.includes('kitob') || n.includes('mutolaa')) && t > 0) {
-
-                hub.innerHTML += `
-                    <div class="ai-card">
-                        <h6>Mutolaa Strategiyasi</h6>
-                        <p>
-                            Bugun ${Math.floor(t / complexity)} bet o'qish mumkin.
-                        </p>
-                    </div>
-                `;
-
-            } else if((n.includes('sport') || n.includes('mashq')) && t > 0) {
-
-                hub.innerHTML += `
-                    <div class="ai-card sport">
-                        <h6>Jismoniy Faollik</h6>
-                        <p>
-                            ${t} daqiqa sport miyani to'yintiradi.
-                        </p>
-                    </div>
-                `;
-
-            } else if(z.dataset.p === 'p1' && t > 0) {
-
-                hub.innerHTML += `
-                    <div class="ai-card crit">
-                        <h6>Kritik Fokus</h6>
-                        <p>
-                            Irodangizni shu vazifaga yo'naltiring.
-                        </p>
-                    </div>
-                `;
+            const name = z.querySelector('.name').value;
+            if(z.dataset.p === 'p1' && name) {
+                hub.innerHTML += `<div class="ai-card">
+                    <h6>Universal Fokus</h6>
+                    <p>"${name.toUpperCase()}" vazifasi eng yuqori ustuvorlikka ega. Strategik resurslarni shunga safarbar qiling.</p>
+                </div>`;
             }
         });
-    }
-
-    addZ('', '', 'p2');
-
+    };
 </script>
-
 </body>
 </html>
-```
