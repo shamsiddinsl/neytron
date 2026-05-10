@@ -13,10 +13,7 @@
             --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* 2. iPhone-da avtomatik zoom bo'lmasligi uchun font o'lchami 16px qilindi */
         input { font-size: 16px !important; }
-
         body { background: var(--bg); color: var(--text); padding: 10px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
@@ -24,16 +21,32 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* 3. Header kengligi to'g'irlandi */
+        /* HEADER TUZATILDI: O'ng tomondagi bo'shliq va siqilish muammosi hal bo'ldi */
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px 20px; border-radius: 22px; 
-            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); 
+            padding: 10px 15px; border-radius: 20px; 
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); 
             backdrop-filter: blur(15px); width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
-        .atom-core { animation: spin 4s linear infinite; font-size: 22px; color: var(--accent); }
+        .brand { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .atom-core { animation: spin 4s linear infinite; font-size: 20px; color: var(--accent); }
+        
+        /* SANA INPUTI TUZATILDI: Markazda va o'qishga qulay */
+        #pDate {
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border); 
+            color: var(--accent); 
+            border-radius: 12px; 
+            padding: 6px 10px; 
+            font-size: 13px; 
+            font-weight: 800; 
+            outline: none;
+            max-width: 130px;
+            text-align: center;
+        }
+
+        #user-p { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--card); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         #custom-alert { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); }
@@ -51,7 +64,6 @@
 
         .zone-card { position: relative; margin-bottom: 12px; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
         .zone-main { display: flex; align-items: center; gap: 10px; }
-        
         .p-indicator { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
@@ -91,10 +103,8 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:6px 10px; font-size:11px; font-weight:800; outline:none;">
-            <div id="user-p" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); flex-shrink: 0;"></div>
-        </div>
+        <input type="date" id="pDate" onchange="window.loadData()">
+        <div id="user-p"></div>
     </header>
 
     <div class="dashboard">
@@ -125,7 +135,6 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    // 4. signInWithPopup qo'shildi (Chrome barqarorligi uchun)
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -145,7 +154,6 @@
 
     setPersistence(auth, browserLocalPersistence);
     
-    // 5. Popup orqali kirish funksiyasi
     window.signIn = async () => {
         try {
             await signInWithPopup(auth, provider);
@@ -240,39 +248,22 @@
     window.updateUI = () => {
         let sleep = (+document.getElementById('sH').value || 0) * 60;
         let work = (+document.getElementById('wH').value || 0) * 60;
-        
         if (sleep > 1440) { sleep = 1440; document.getElementById('sH').value = 24; }
         if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
-
         let total = sleep + work;
-        // 6. Grafikdagi nom ham o'zgartirildi
         let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
-
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
-
-            if (total + v > 1440) {
-                v = Math.max(0, 1440 - total);
-                z.querySelector('.time').value = v;
-            }
-            
-            if (v > 0) {
-                vals.push(v); labels.push(n); total += v;
-                colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
-            }
+            if (total + v > 1440) { v = Math.max(0, 1440 - total); z.querySelector('.time').value = v; }
+            if (v > 0) { vals.push(v); labels.push(n); total += v; colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); }
         });
-
         const bal = 1440 - total;
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
-
         if (chart) {
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = vals;
-            chart.data.datasets[0].backgroundColor = colors;
-            chart.update('none');
+            chart.data.labels = labels; chart.data.datasets[0].data = vals; chart.data.datasets[0].backgroundColor = colors; chart.update('none');
         } else {
             chart = new Chart(document.getElementById('nChart').getContext('2d'), {
                 type: 'doughnut',
@@ -280,14 +271,11 @@
                 options: { cutout: '82%', animation: false, plugins: { legend: { display: false } } }
             });
         }
-
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
-            // 7. Yillik yo'qotish qizil rangda ajratildi
             hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
                 <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b style="color:var(--p1)">${Math.floor((bal*365)/60)} soat</b> (${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
         }
-
         document.querySelectorAll('.zone-card').forEach(z => {
             const n = z.querySelector('.name').value;
             const p = z.dataset.p;
@@ -296,7 +284,6 @@
                 if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz. Bor diqqatingizni shunga qarating.`; color = "var(--p1)"; }
                 else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa. Asosiy ishlardan so'ng bajaring.`; color = "var(--p2)"; }
                 else if (p === 'p3') { msg = `"${n}" - odatiy yumush. Kun oxirida bo'sh vaqt qolsa shug'ullanish tavsiya etiladi.`; color = "var(--p3)"; }
-                
                 hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
                     <h6 style="font-size:10px; color:${color}; margin-bottom:5px;">STRATEGIK TAHLIL</h6>
                     <p style="font-size:11px;">${msg}</p>
