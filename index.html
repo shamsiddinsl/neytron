@@ -21,35 +21,40 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* HEADER TUZATILDI: O'ng tomondagi bo'shliq va siqilish muammosi hal bo'ldi */
+        /* HEADER YANGILANDI: Brend chapda, qolganlari o'ngda */
         header { 
-    position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
-    display: flex; 
-    justify-content: space-between; /* Brend chapda, qolganlari o'ngda */
-    align-items: center; 
-    padding: 10px 15px; border-radius: 20px; 
-    background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); 
-    backdrop-filter: blur(15px); width: 100%;
-}
+            position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 15px; border-radius: 20px; 
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); 
+            backdrop-filter: blur(15px); width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .brand { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .atom-core { animation: spin 4s linear infinite; font-size: 20px; color: var(--accent); }
         
-        /* SANA INPUTI TUZATILDI: Markazda va o'qishga qulay */
+        /* O'ng tomondagi elementlar guruhi */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* SANA INPUTI IXCHAM VA O'NGDA */
         #pDate {
-            background: rgba(255,255,255,0.05); 
+            background: rgba(34, 211, 238, 0.05); 
             border: 1px solid var(--border); 
             color: var(--accent); 
-            border-radius: 12px; 
-            padding: 6px 10px; 
+            border-radius: 10px; 
+            padding: 5px 8px; 
             font-size: 13px; 
             font-weight: 800; 
             outline: none;
-            max-width: 130px;
+            width: 135px; /* Telefon uchun eng maqbul o'lcham */
             text-align: center;
+            -webkit-appearance: none;
         }
 
-        #user-p { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--card); }
+        #user-p { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--card); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         #custom-alert { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); }
@@ -105,9 +110,13 @@
 
 <div id="main-app">
     <header>
-        <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <input type="date" id="pDate" onchange="window.loadData()">
-        <div id="user-p"></div>
+        <div class="brand">
+            <i class="fa-solid fa-atom atom-core"></i> NEYTRON
+        </div>
+        <div class="header-right">
+            <input type="date" id="pDate" onchange="window.loadData()">
+            <div id="user-p"></div>
+        </div>
     </header>
 
     <div class="dashboard">
@@ -162,7 +171,6 @@
             await signInWithPopup(auth, provider);
         } catch (error) {
             console.error("Auth error:", error);
-            alert("Google bilan kirishda xatolik! Pop-up bloklanmaganini tekshiring.");
         }
     };
 
@@ -284,9 +292,9 @@
             const p = z.dataset.p;
             if (n) {
                 let msg = "", color = "";
-                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz. Bor diqqatingizni shunga qarating.`; color = "var(--p1)"; }
-                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa. Asosiy ishlardan so'ng bajaring.`; color = "var(--p2)"; }
-                else if (p === 'p3') { msg = `"${n}" - odatiy yumush. Kun oxirida bo'sh vaqt qolsa shug'ullanish tavsiya etiladi.`; color = "var(--p3)"; }
+                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; color = "var(--p1)"; }
+                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
+                else if (p === 'p3') { msg = `"${n}" - odatiy yumush.`; color = "var(--p3)"; }
                 hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
                     <h6 style="font-size:10px; color:${color}; margin-bottom:5px;">STRATEGIK TAHLIL</h6>
                     <p style="font-size:11px;">${msg}</p>
