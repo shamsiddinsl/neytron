@@ -13,21 +13,18 @@
             --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* 2. iPhone-da avtomatik zoom bo'lmasligi uchun font o'lchami 16px qilindi */
+        input { font-size: 16px !important; }
+
         body { background: var(--bg); color: var(--text); padding: 10px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
         .login-box { width: 92%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; }
 
-        #main-app { 
-    display: none; /* Boshida yashirin turadi */
-    opacity: 0;    /* Yumshoq ko'rinishi uchun */
-    transition: opacity 0.5s ease;
-    max-width: 1200px; 
-    margin: auto; 
-    padding-bottom: 30px; 
-}
+        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* Header dizayni pastki bloklar bilan bir xil kenglikka keltirildi */
+        /* 3. Header kengligi to'g'irlandi */
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -128,9 +125,9 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-// Pastdagi qatorda signInWithRedirect so'zi signInWithPopup ga almashdi:
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // 4. signInWithPopup qo'shildi (Chrome barqarorligi uchun)
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
@@ -147,18 +144,16 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
     const provider = new GoogleAuthProvider();
 
     setPersistence(auth, browserLocalPersistence);
-    window.signIn = () => signInWithRedirect(auth, provider);
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
-            window.loadData();
-        } else {
-            document.getElementById('login-screen').style.display = 'flex';
+    
+    // 5. Popup orqali kirish funksiyasi
+    window.signIn = async () => {
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            console.error("Auth error:", error);
+            alert("Google bilan kirishda xatolik! Pop-up bloklanmaganini tekshiring.");
         }
-    });
+    };
 
     window.saveData = async () => {
         const user = auth.currentUser; if(!user) return;
@@ -189,6 +184,18 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
         }
         updateUI();
     };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
+            window.loadData();
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+        }
+    });
 </script>
 
 <script>
@@ -238,7 +245,8 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
         if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
 
         let total = sleep + work;
-        let labels = ['Uyqu', 'Ish/O'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
+        // 6. Grafikdagi nom ham o'zgartirildi
+        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
 
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
@@ -260,12 +268,11 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
-        // Sakrashni yo'qotish uchun animatsiyani o'chirib, ma'lumotni yangilaymiz
         if (chart) {
             chart.data.labels = labels;
             chart.data.datasets[0].data = vals;
             chart.data.datasets[0].backgroundColor = colors;
-            chart.update('none'); // 'none' animatsiyani butunlay o'chiradi
+            chart.update('none');
         } else {
             chart = new Chart(document.getElementById('nChart').getContext('2d'), {
                 type: 'doughnut',
@@ -276,8 +283,9 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
 
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
+            // 7. Yillik yo'qotish qizil rangda ajratildi
             hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
-                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b>(${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
+                <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b style="color:var(--p1)">${Math.floor((bal*365)/60)} soat</b> (${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
         }
 
         document.querySelectorAll('.zone-card').forEach(z => {
