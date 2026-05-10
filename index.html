@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BLEXD4WTZH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BLEXD4WTZH');
+    </script>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neytron | Strategic Intelligence</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -21,7 +29,6 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* HEADER YANGILANDI: Brend chapda, qolganlari o'ngda */
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -32,26 +39,12 @@
         .brand { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .atom-core { animation: spin 4s linear infinite; font-size: 20px; color: var(--accent); }
         
-        /* O'ng tomondagi elementlar guruhi */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
 
-        /* SANA INPUTI IXCHAM VA O'NGDA */
         #pDate {
-            background: rgba(34, 211, 238, 0.05); 
-            border: 1px solid var(--border); 
-            color: var(--accent); 
-            border-radius: 10px; 
-            padding: 5px 8px; 
-            font-size: 13px; 
-            font-weight: 800; 
-            outline: none;
-            width: 135px; /* Telefon uchun eng maqbul o'lcham */
-            text-align: center;
-            -webkit-appearance: none;
+            background: rgba(34, 211, 238, 0.05); border: 1px solid var(--border); 
+            color: var(--accent); border-radius: 10px; padding: 5px 8px; 
+            font-size: 13px; font-weight: 800; outline: none; width: 135px; text-align: center; -webkit-appearance: none;
         }
 
         #user-p { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--card); }
@@ -72,7 +65,7 @@
 
         .zone-card { position: relative; margin-bottom: 12px; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
         .zone-main { display: flex; align-items: center; gap: 10px; }
-        .p-indicator { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
+        .p-indicator { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; transition: 0.3s; }
         .p-indicator.p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
         .p-indicator.p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
         .p-indicator.p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
@@ -169,6 +162,7 @@
     window.signIn = async () => {
         try {
             await signInWithPopup(auth, provider);
+            gtag('event', 'login', { method: 'Google' });
         } catch (error) {
             console.error("Auth error:", error);
         }
@@ -187,6 +181,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
+        gtag('event', 'save_strategy', { user_id: user.uid });
         window.showAlert("Strategiya muvaffaqiyatli saqlandi!");
     };
 
@@ -263,6 +258,7 @@
         if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
         let total = sleep + work;
         let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
+        
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
@@ -270,9 +266,11 @@
             if (total + v > 1440) { v = Math.max(0, 1440 - total); z.querySelector('.time').value = v; }
             if (v > 0) { vals.push(v); labels.push(n); total += v; colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); }
         });
+
         const bal = 1440 - total;
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+        
         if (chart) {
             chart.data.labels = labels; chart.data.datasets[0].data = vals; chart.data.datasets[0].backgroundColor = colors; chart.update('none');
         } else {
@@ -282,22 +280,26 @@
                 options: { cutout: '82%', animation: false, plugins: { legend: { display: false } } }
             });
         }
+
+        // STRATEGIK TAHLIL QISMI (P1, P2, P3 tushuntirishlari bilan)
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
-            hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
+            hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--accent)">
                 <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b style="color:var(--p1)">${Math.floor((bal*365)/60)} soat</b> (${Math.floor((bal*365)/60/24)} kunga teng)</p></div>`;
         }
+        
         document.querySelectorAll('.zone-card').forEach(z => {
             const n = z.querySelector('.name').value;
             const p = z.dataset.p;
             if (n) {
-                let msg = "", color = "";
-                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; color = "var(--p1)"; }
-                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
-                else if (p === 'p3') { msg = `"${n}" - odatiy yumush.`; color = "var(--p3)"; }
+                let msg = "", color = "", title = "";
+                if (p === 'p1') { title = "P1: MUHIM STRATEGIYA"; msg = `"${n}" — bugungi eng ustuvor vazifa. Buni birinchi bo'lib bajaring.`; color = "var(--p1)"; }
+                else if (p === 'p2') { title = "P2: O'RTACHA USTUVORLIK"; msg = `"${n}" — rejali ish. Muhim vazifalardan so'ng diqqat qarating.`; color = "var(--p2)"; }
+                else if (p === 'p3') { title = "P3: ODATIY AMAL"; msg = `"${n}" — kundalik tartib yoki kichik yumush.`; color = "var(--p3)"; }
+                
                 hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
-                    <h6 style="font-size:10px; color:${color}; margin-bottom:5px;">STRATEGIK TAHLIL</h6>
-                    <p style="font-size:11px;">${msg}</p>
+                    <h6 style="font-size:10px; color:${color}; margin-bottom:5px; letter-spacing:1px; font-weight:900;">${title}</h6>
+                    <p style="font-size:12px;">${msg}</p>
                 </div>`;
             }
         });
