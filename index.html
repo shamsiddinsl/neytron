@@ -21,7 +21,6 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* HEADER YANGILANDI: Brend chapda, qolganlari o'ngda */
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -32,14 +31,8 @@
         .brand { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .atom-core { animation: spin 4s linear infinite; font-size: 20px; color: var(--accent); }
         
-        /* O'ng tomondagi elementlar guruhi */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
 
-        /* SANA INPUTI IXCHAM VA O'NGDA */
         #pDate {
             background: rgba(34, 211, 238, 0.05); 
             border: 1px solid var(--border); 
@@ -49,7 +42,7 @@
             font-size: 13px; 
             font-weight: 800; 
             outline: none;
-            width: 135px; /* Telefon uchun eng maqbul o'lcham */
+            width: 135px;
             text-align: center;
             -webkit-appearance: none;
         }
@@ -123,8 +116,8 @@
         <section class="panel">
             <span class="label-sm">Asosiy resurslar</span>
             <div class="res-grid">
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" onchange="updateUI()"></div>
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" onchange="updateUI()"></div>
+                <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" oninput="updateUI()"></div>
+                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" oninput="updateUI()"></div>
             </div>
             <div id="zList"></div>
             <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
@@ -145,6 +138,7 @@
     </div>
 </div>
 
+<!-- FIREBASE MODULE DOIMIY -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -167,11 +161,7 @@
     setPersistence(auth, browserLocalPersistence);
     
     window.signIn = async () => {
-        try {
-            await signInWithPopup(auth, provider);
-        } catch (error) {
-            console.error("Auth error:", error);
-        }
+        try { await signInWithPopup(auth, provider); } catch (e) { console.error(e); }
     };
 
     window.saveData = async () => {
@@ -234,8 +224,8 @@
         div.innerHTML = `
             <div class="zone-main">
                 <div class="p-indicator ${p}" onclick="showP(${id})"><i class="fa-solid fa-flag"></i></div>
-                <input type="text" placeholder="Maqsad..." class="name" value="${n}" onchange="updateUI()">
-                <input type="number" class="time" placeholder="min" value="${m}" onchange="updateUI()">
+                <input type="text" placeholder="Maqsad..." class="name" value="${n}" oninput="updateUI()">
+                <input type="number" class="time" placeholder="min" value="${m}" oninput="updateUI()">
                 <i class="fa-solid fa-trash-can" style="opacity:0.3; cursor:pointer;" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
@@ -256,23 +246,56 @@
         updateUI();
     };
 
+    // UPDATE UI FUNKSIYASI - QIZIL TEBRANISH BILAN
     window.updateUI = () => {
-        let sleep = (+document.getElementById('sH').value || 0) * 60;
-        let work = (+document.getElementById('wH').value || 0) * 60;
-        if (sleep > 1440) { sleep = 1440; document.getElementById('sH').value = 24; }
-        if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
+        let sleepInput = document.getElementById('sH');
+        let workInput = document.getElementById('wH');
+        
+        let sleep = (+sleepInput.value || 0) * 60;
+        let work = (+workInput.value || 0) * 60;
+
+        // 24 soatlik limitni tekshirish (1440 minut)
+        if (sleep > 1440) { sleep = 1440; sleepInput.value = 24; }
+        if (sleep + work > 1440) { work = 1440 - sleep; workInput.value = work/60; }
+        
         let total = sleep + work;
         let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
+
         document.querySelectorAll('.zone-card').forEach(z => {
-            let v = +z.querySelector('.time').value || 0;
+            const tInput = z.querySelector('.time');
+            let v = +tInput.value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
-            if (total + v > 1440) { v = Math.max(0, 1440 - total); z.querySelector('.time').value = v; }
-            if (v > 0) { vals.push(v); labels.push(n); total += v; colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); }
+
+            // LIMITDAN O'TSA QIZIL TEBRANISH EFFEKTI
+            if (total + v > 1440) {
+                v = Math.max(0, 1440 - total);
+                tInput.value = v;
+
+                // Tebranish va qizil chegara
+                tInput.style.transition = "0.2s";
+                tInput.style.borderColor = "var(--p1)";
+                tInput.animate([
+                    { transform: 'translateX(0px)' },
+                    { transform: 'translateX(-4px)' },
+                    { transform: 'translateX(4px)' },
+                    { transform: 'translateX(0px)' }
+                ], { duration: 200 });
+
+                setTimeout(() => { tInput.style.borderColor = "var(--border)"; }, 1000);
+            }
+
+            if (v > 0) { 
+                vals.push(v); labels.push(n); total += v; 
+                colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981'); 
+            }
         });
+
         const bal = 1440 - total;
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
+        
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
+        
         if (chart) {
             chart.data.labels = labels; chart.data.datasets[0].data = vals; chart.data.datasets[0].backgroundColor = colors; chart.update('none');
         } else {
@@ -282,6 +305,7 @@
                 options: { cutout: '82%', animation: false, plugins: { legend: { display: false } } }
             });
         }
+
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
         if (bal > 0) {
             hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--p1)">
@@ -291,19 +315,12 @@
             const n = z.querySelector('.name').value;
             const p = z.dataset.p;
             if (n) {
-                let msg = "", color = "";
-                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; color = "var(--p1)"; }
-                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
-                else if (p === 'p3') { msg = `"${n}" - odatiy yumush.`; color = "var(--p3)"; }
-                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
-                    <h6 style="font-size:10px; color:${color}; margin-bottom:5px;">STRATEGIK TAHLIL</h6>
-                    <p style="font-size:11px;">${msg}</p>
-                </div>`;
+                let msg = p === 'p1' ? `"${n}" - strategik maqsad.` : p === 'p2' ? `"${n}" - o'rtacha ustuvorlik.` : `"${n}" - odatiy yumush.`;
+                let color = p === 'p1' ? "var(--p1)" : p === 'p2' ? "var(--p2)" : "var(--p3)";
+                hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}"><p style="font-size:11px;">${msg}</p></div>`;
             }
         });
     };
 </script>
 </body>
 </html>
-
-
