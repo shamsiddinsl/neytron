@@ -9,7 +9,9 @@
     <style>
         :root {
             --bg: #030712; --card: #0f172a; --accent: #22d3ee;
-            --p1: #ef4444; --p2: #d97706; --p3: #10b981;
+            --p1: #ef4444; /* MUHIM - Qizil */
+            --p2: #d97706; /* O'RTACHA - Sabzirang */
+            --p3: #10b981; /* ODATIY - Och ko'k yashil */
             --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -17,7 +19,7 @@
         body { background: var(--bg); color: var(--text); padding: 10px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
-        .login-box { width: 92%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; }
+        .login-box { width: 92%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(200px); text-align: center; }
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
@@ -208,7 +210,12 @@
 
 <script>
     let chart;
-    document.getElementById('pDate').valueAsDate = new Date();
+    
+    // Aniq mahalliy sanani o'rnatish
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localDate = new Date(today.getTime() - (offset * 60 * 1000));
+    document.getElementById('pDate').value = localDate.toISOString().split('T')[0];
 
     window.showAlert = (msg) => {
         document.getElementById('modal-msg').innerText = msg;
@@ -253,7 +260,6 @@
         let sleep = (+sleepInput.value || 0) * 60;
         let work = (+workInput.value || 0) * 60;
         
-        // 24 soat limit
         if (sleep > 1440) { sleep = 1440; sleepInput.value = 24; }
         if (sleep + work > 1440) { work = 1440 - sleep; workInput.value = work/60; }
         
@@ -271,7 +277,6 @@
             const p = z.dataset.p;
             let v = +tInput.value || 0;
 
-            // Limit tekshiruvi va tebranish
             if (totalUsed + v > 1440) {
                 v = 1440 - totalUsed;
                 tInput.value = v;
@@ -287,13 +292,12 @@
                 colors.push(p === 'p1' ? '#ef4444' : p === 'p2' ? '#d97706' : '#10b981');
             }
 
-            // Analitika xabarlari (Siz so'ragan if-else mantiqi)
             if (n) {
                 let msg = "";
                 let color = "";
-                if (p === 'p1') { msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; color = "var(--p1)"; }
-                else if (p === 'p2') { msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
-                else if (p === 'p3') { msg = `"${n}" - odatiy yumush.`; color = "var(--p3)"; }
+                if (p === 'p1') { msg = `"${n}" — bugungi eng MUHIM strategik maqsadingiz.`; color = "var(--p1)"; }
+                else if (p === 'p2') { msg = `"${n}" — O'RTACHA ustuvorlikdagi vazifa.`; color = "var(--p2)"; }
+                else if (p === 'p3') { msg = `"${n}" — ODATIY yumush.`; color = "var(--p3)"; }
                 
                 hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}"><p style="font-size:11px;">${msg}</p></div>`;
             }
