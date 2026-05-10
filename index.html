@@ -20,21 +20,16 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* Header qismi optimallashdi */
-        header { 
-            position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px 15px; border-radius: 22px; 
-            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); 
-            backdrop-filter: blur(15px); width: 100%;
-        }
-        .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
-        .atom-core { animation: spin 4s linear infinite; font-size: 22px; color: var(--accent); }
+        header { position: sticky; top: 0; z-index: 100; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
+        .atom-core { animation: spin 4s linear infinite; font-size: 24px; color: var(--accent); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+        /* Premium Modal Stili */
         #custom-alert { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); }
         .modal-box { width: 85%; max-width: 320px; background: var(--card); border: 1px solid var(--accent); border-radius: 25px; padding: 30px 20px; text-align: center; box-shadow: 0 0 30px rgba(34, 211, 238, 0.2); }
         .modal-box i { font-size: 40px; color: var(--accent); margin-bottom: 15px; }
+        .modal-box p { font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; }
 
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
@@ -88,9 +83,9 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:5px 8px; font-size:11px; font-weight:800; outline:none;">
-            <div id="user-p" style="width:34px; height:34px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); flex-shrink:0;"></div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:12px; padding:6px; font-size:12px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--accent);"></div>
         </div>
     </header>
 
@@ -227,6 +222,7 @@
         let sleep = (+document.getElementById('sH').value || 0) * 60;
         let work = (+document.getElementById('wH').value || 0) * 60;
         
+        // Asosiy resurslarni limitlash
         if (sleep > 1440) { sleep = 1440; document.getElementById('sH').value = 24; }
         if (sleep + work > 1440) { work = 1440 - sleep; document.getElementById('wH').value = work/60; }
 
@@ -238,6 +234,7 @@
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
 
+            // AQLLI LIMIT: Agar vaqt oshib ketsa, faqat qolgan bo'sh vaqtni yozadi
             if (total + v > 1440) {
                 v = Math.max(0, 1440 - total);
                 z.querySelector('.time').value = v;
