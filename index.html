@@ -262,10 +262,33 @@
         let labels = ['Uyqu', 'Ish/O\'qish'], vals = [sleep, work], colors = ['#1e293b', '#334155'];
 
         document.querySelectorAll('.zone-card').forEach(z => {
-            const tInput = z.querySelector('.time');
-            let v = +tInput.value || 0;
-            const n = z.querySelector('.name').value || 'Vazifa';
-            const p = z.dataset.p;
+    const n = z.querySelector('.name').value; // Vazifa nomi (masalan: "Kitob o'qish")
+    const p = z.dataset.p;                   // Vazifa turi (p1, p2 yoki p3)
+
+    if (n) { // Faqat nomi yozilgan vazifalar uchun tahlil chiqaradi
+        let msg = "";
+        let color = "";
+
+        // Shartli tekshiruv:
+        if (p === 'p1') { 
+            msg = `"${n}" - bugungi eng muhim strategik maqsadingiz.`; 
+            color = "var(--p1)"; // Qizil rang
+        }
+        else if (p === 'p2') { 
+            msg = `"${n}" - o'rtacha ustuvorlikdagi vazifa.`; 
+            color = "var(--p2)"; // Sariq/Sarg'ish rang
+        }
+        else if (p === 'p3') { 
+            msg = `"${n}" - odatiy yumush.`; 
+            color = "var(--p3)"; // Yashil rang
+        }
+
+        // Tahlil kartasini ekranga chiqarish:
+        hub.innerHTML += `<div class="ai-card" style="border-left-color:${color}">
+            <p style="font-size:11px;">${msg}</p>
+        </div>`;
+    }
+});
 
             // LIMITDAN O'TSA QIZIL TEBRANISH EFFEKTI
             if (total + v > 1440) {
