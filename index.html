@@ -145,6 +145,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDEqZaUxiEffhuNChwMYvNDi_T8xbPn5Oc",
@@ -152,18 +153,23 @@
         projectId: "neytronplanner",
         storageBucket: "neytronplanner.firebasestorage.app",
         messagingSenderId: "960758855592",
-        appId: "1:960758855592:web:bf7c16fea616e75df54f9d"
+        appId: "1:960758855592:web:bf7c16fea616e75df54f9d",
+        measurementId: "G-BLEXD4WTZH"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const analytics = getAnalytics(app);
     const provider = new GoogleAuthProvider();
 
     setPersistence(auth, browserLocalPersistence);
     
     window.signIn = async () => {
-        try { await signInWithPopup(auth, provider); } catch (e) { console.error(e); }
+        try { 
+            const result = await signInWithPopup(auth, provider);
+            logEvent(analytics, 'login', { method: 'Google' });
+        } catch (e) { console.error(e); }
     };
 
     window.saveData = async () => {
@@ -179,6 +185,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
+        logEvent(analytics, 'save_strategy', { date: date });
         window.showAlert("Strategiya muvaffaqiyatli saqlandi!");
     };
 
