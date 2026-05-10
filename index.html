@@ -13,64 +13,79 @@
             --text: #f1f5f9; --border: rgba(34, 211, 238, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); padding: 10px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.4; overflow-x: hidden; min-height: 100vh; }
         
-        /* Login Screen */
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
-        .login-box { width: 92%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; }
+        .login-box { width: 90%; max-width: 400px; padding: 45px 30px; border-radius: 35px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .login-box h1 { letter-spacing: 10px; color: var(--accent); font-weight: 900; margin-bottom: 10px; }
 
-        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
+        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 50px; }
 
-        /* Header Responsive Fix */
-        header { position: sticky; top: 0; z-index: 100; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 20px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); backdrop-filter: blur(15px); }
-        .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 2px; }
+        header { position: sticky; top: 0; z-index: 100; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 22px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .brand { color: var(--accent); font-size: 20px; font-weight: 900; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
+        .atom-core { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
 
-        /* Panel & Items */
-        .panel { background: rgba(15, 23, 42, 0.7); border-radius: 25px; border: 1px solid var(--border); padding: 20px; backdrop-filter: blur(10px); }
-        .label-sm { display: block; margin-bottom: 12px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; color: var(--accent); }
+        .panel { background: rgba(15, 23, 42, 0.7); border-radius: 30px; border: 1px solid var(--border); padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+        .label-sm { display: block; margin-bottom: 15px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: var(--accent); opacity: 0.7; }
 
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .res-item { background: rgba(0,0,0,0.3); border-radius: 18px; padding: 14px; border: 1px solid rgba(255,255,255,0.05); }
-        .res-item input { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 18px; font-weight: 900; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .res-item { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .res-item label { font-size: 9px; opacity: 0.5; font-weight: 800; display: block; margin-bottom: 5px; }
+        .res-item input { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 20px; font-weight: 900; }
 
-        /* Zone Card Mobile Optimization */
-        .zone-card { position: relative; margin-bottom: 12px; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
-        .zone-main { display: flex; align-items: center; gap: 10px; }
-        .p-indicator { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border); }
+        .zone-card { position: relative; margin-bottom: 15px; padding: 16px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .zone-main { display: flex; align-items: center; gap: 12px; }
+        .p-indicator { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .p1 { color: var(--p1); border-color: var(--p1); background: rgba(239, 68, 68, 0.1); }
+        .p2 { color: var(--p2); border-color: var(--p2); background: rgba(217, 119, 6, 0.1); }
+        .p3 { color: var(--p3); border-color: var(--p3); background: rgba(16, 185, 129, 0.1); }
+
+        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; font-weight: 600; }
+        .zone-card input.time { width: 75px; background: #030712; border: 1px solid var(--border); border-radius: 14px; padding: 10px; text-align: center; color: var(--accent); font-weight: 900; outline: none; }
+
+        .chart-container { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+        .balans-center { position: absolute; text-align: center; pointer-events: none; }
+        .balans-center h1 { font-size: 56px; font-weight: 900; color: var(--accent); line-height: 0.8; text-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
         
-        .zone-card input.name { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-size: 15px; font-weight: 600; }
-        .zone-card input.time { width: 65px; background: #030712; border: 1px solid var(--border); border-radius: 12px; padding: 8px; text-align: center; color: var(--accent); font-weight: 900; }
+        #chart-legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 25px; padding: 0 10px; }
+        .legend-item { font-size: 10px; display: flex; align-items: center; gap: 6px; color: #94a3b8; font-weight: 600; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        /* Chart Center Fix */
-        .chart-container { position: relative; height: 280px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-        .balans-center { position: absolute; text-align: center; }
-        .balans-center h1 { font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; }
+        .ai-card { padding: 22px; border-radius: 24px; border-left: 6px solid var(--accent); background: rgba(255,255,255,0.03); margin-bottom: 15px; border: 1px solid var(--border); border-left-width: 6px; }
+        .ai-card.crit { border-left-color: var(--p1); }
+        .ai-card h6 { margin-bottom: 8px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .ai-card p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; }
+        .highlight { color: #fff; font-weight: 900; }
+
+        .btn-run { width: 100%; margin-top: 20px; padding: 20px; border: none; border-radius: 22px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; box-shadow: 0 10px 25px rgba(34, 211, 238, 0.25); transition: 0.3s; }
+        .btn-add { width: 100%; margin-top: 10px; padding: 18px; border-radius: 20px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; cursor: pointer; }
         
-        /* Buttons */
-        .btn-run { width: 100%; margin-top: 15px; padding: 18px; border: none; border-radius: 20px; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-size: 15px; font-weight: 900; letter-spacing: 1px; cursor: pointer; }
-        .btn-add { width: 100%; margin-top: 5px; padding: 15px; border-radius: 18px; border: 2px dashed rgba(255,255,255,0.1); background: transparent; color: #64748b; font-weight: 700; }
-
-        .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 20px; z-index: 10; border: 2px solid var(--accent); }
+        .p-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: space-around; background: var(--card); border-radius: 22px; z-index: 10; border: 2px solid var(--accent); }
+        .p-opt { font-weight: 900; font-size: 12px; cursor: pointer; }
+        .fa-trash-can { opacity: 0.2; cursor: pointer; transition: 0.2s; }
+        .fa-trash-can:hover { opacity: 1; color: var(--p1); }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <h1 style="letter-spacing: 5px; color: var(--accent);">NEYTRON</h1>
-        <button class="btn-run" onclick="window.signIn()"><i class="fa-brands fa-google"></i> Google bilan boshlash</button>
+        <h1>NEYTRON</h1>
+        <p style="font-size: 11px; opacity: 0.5; margin-bottom: 35px; letter-spacing: 1px;">STRATEGIC RESOURCE MANAGEMENT</p>
+        <button class="btn-run" onclick="window.signIn()" style="margin-top:0"><i class="fa-brands fa-google"></i> Google bilan boshlash</button>
     </div>
 </div>
 
 <div id="main-app">
     <header>
-        <div class="brand">NEYTRON</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:5px; font-size:12px;">
-            <div id="user-p" style="width:32px; height:32px; border-radius:50%; overflow:hidden; border:1px solid var(--accent);"></div>
+        <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:12px; padding:8px 12px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:38px; height:38px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); box-shadow: 0 0 15px rgba(34,211,238,0.2);"></div>
         </div>
     </header>
 
@@ -78,9 +93,10 @@
         <section class="panel">
             <span class="label-sm">Asosiy resurslar</span>
             <div class="res-grid">
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">UYQU</label><input type="number" id="sH" value="8" step="0.5" oninput="updateUI()"></div>
-                <div class="res-item"><label style="font-size:8px; opacity:0.5;">ISH</label><input type="number" id="wH" value="8" step="0.5" oninput="updateUI()"></div>
+                <div class="res-item"><label>UYQU (SOAT)</label><input type="number" id="sH" value="8" step="0.5" oninput="updateUI()"></div>
+                <div class="res-item"><label>ISH/O'QISH (SOAT)</label><input type="number" id="wH" value="8" step="0.5" oninput="updateUI()"></div>
             </div>
+            <span class="label-sm">Vaqt zonalari (Daqiqa)</span>
             <div id="zList"></div>
             <button class="btn-add" onclick="addZ()">+ YANGI ZONA</button>
             <button class="btn-run" onclick="window.saveData()">STRATEGIK SAQLASH</button>
@@ -92,11 +108,11 @@
                 <canvas id="nChart"></canvas>
                 <div class="balans-center">
                     <h1 id="balText">08:00</h1>
-                    <p style="font-size: 8px; letter-spacing: 2px; opacity: 0.5;">BO'SH VAQT</p>
+                    <p style="font-size: 10px; letter-spacing: 4px; opacity: 0.5;">BO'SH VAQT</p>
                 </div>
             </div>
-            <div id="chart-legend" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; font-size:10px;"></div>
-            <div id="aiHub" style="margin-top:20px;"></div>
+            <div id="chart-legend"></div>
+            <div id="aiHub"></div>
         </section>
     </div>
 </div>
@@ -127,7 +143,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%;">`;
+            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
             window.loadData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
@@ -147,7 +163,7 @@
             work: document.getElementById('wH').value,
             zones: zones
         });
-        alert("Saqlandi!");
+        alert("Strategik tizim yangilandi!");
     };
 
     window.loadData = async () => {
@@ -160,10 +176,8 @@
             document.getElementById('sH').value = data.sleep || 8;
             document.getElementById('wH').value = data.work || 8;
             if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p));
-        } else {
-            // Yangi kirganda hech qanday zona chiqmaydi
-            updateUI();
-        }
+        } else { window.addZ('', '', 'p2'); }
+        updateUI();
     };
 </script>
 
@@ -171,8 +185,11 @@
     let chart;
     document.getElementById('pDate').valueAsDate = new Date();
 
+    // Premium Ranglar palitrasini bayroqchalar guruhiga ko'ra ajratish (7-band yechimi)
     const colorMatrix = {
-        p1: ['#ef4444', '#f87171'], p2: ['#d97706', '#fbbf24'], p3: ['#10b981', '#34d399'],
+        p1: ['#ef4444', '#f87171', '#dc2626', '#b91c1c'], 
+        p2: ['#d97706', '#fbbf24', '#b45309', '#f59e0b'], 
+        p3: ['#10b981', '#34d399', '#059669', '#15803d'],
         base: ['#1e293b', '#334155']
     };
 
@@ -188,9 +205,9 @@
                 <i class="fa-solid fa-trash-can" onclick="document.getElementById('z-${id}').remove(); updateUI();"></i>
             </div>
             <div class="p-overlay" id="ov-${id}">
-                <div onclick="selP(${id},'p1')" style="color:var(--p1)">P1</div>
-                <div onclick="selP(${id},'p2')" style="color:var(--p2)">P2</div>
-                <div onclick="selP(${id},'p3')" style="color:var(--p3)">P3</div>
+                <div class="p-opt" style="color:var(--p1)" onclick="selP(${id},'p1')">MUHIM (P1)</div>
+                <div class="p-opt" style="color:var(--p2)" onclick="selP(${id},'p2')">O'RTA (P2)</div>
+                <div class="p-opt" style="color:var(--p3)" onclick="selP(${id},'p3')">ODATIY (P3)</div>
             </div>`;
         document.getElementById('zList').appendChild(div);
         updateUI();
@@ -208,16 +225,27 @@
     window.updateUI = () => {
         const s = (+document.getElementById('sH').value || 0) * 60;
         const w = (+document.getElementById('wH').value || 0) * 60;
-        let labels = ['Uyqu', 'Ish'], vals = [s, w], colors = [colorMatrix.base[0], colorMatrix.base[1]], total = s + w;
+        let labels = ['Uyqu', 'Ish/O\'qish'], vals = [s, w], colors = [colorMatrix.base[0], colorMatrix.base[1]], total = s + w;
+
+        let pCounts = { p1: 0, p2: 0, p3: 0 };
 
         document.querySelectorAll('.zone-card').forEach(z => {
             let v = +z.querySelector('.time').value || 0;
             const n = z.querySelector('.name').value || 'Vazifa';
             const p = z.dataset.p;
-            if (total + v > 1440) v = 1440 - total;
+
+            // 4-band: 24 soatlik limitni qat'iy tekshirish
+            if (total + v > 1440) {
+                v = Math.max(0, 1440 - total);
+                z.querySelector('.time').value = v;
+            }
+
             if (v > 0) {
                 vals.push(v); labels.push(n); total += v;
-                colors.push(colorMatrix[p][0]);
+                // 7-band: Bir xil bayroqli vazifalarni rang bilan ajratish
+                const cIdx = pCounts[p] % colorMatrix[p].length;
+                colors.push(colorMatrix[p][cIdx]);
+                pCounts[p]++;
             }
         });
 
@@ -228,15 +256,31 @@
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById('nChart').getContext('2d'), {
             type: 'doughnut',
-            data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
-            options: { cutout: '82%', plugins: { legend: { display: false } } }
+            data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }] },
+            options: { cutout: '85%', animation: { animateRotate: true, duration: 800 }, plugins: { legend: { display: false } } }
         });
 
+        const leg = document.getElementById('chart-legend');
+        leg.innerHTML = labels.map((l, i) => `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${l}</div>`).join('');
+
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
+
+        // 5-band: Faqat bo'sh vaqt qolsagina tahlil chiqadi
         if (bal > 0) {
-            hub.innerHTML = `<div style="padding:15px; border-radius:15px; background:rgba(255,255,255,0.03); border-left:4px solid var(--p1);">
-                <p style="font-size:12px; color:#94a3b8;">Yillik yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b></p></div>`;
+            const lostHrs = Math.floor((bal * 365) / 60);
+            hub.innerHTML = `<div class="ai-card crit"><h6>Vaqt yo'qotish prognozi</h6><p>Yillik <span class="highlight">${lostHrs} soat</span> bo'sh vaqtingiz mavjud. Bu resursni strategik qayta ko'rib chiqing.</p></div>`;
         }
+
+        // 2 va 3-band: Har bir daraja uchun xolis tahlil
+        document.querySelectorAll('.zone-card').forEach(z => {
+            const n = z.querySelector('.name').value;
+            const p = z.dataset.p;
+            if (!n) return;
+
+            if (p === 'p1') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p1)"><h6>Fokus</h6><p>"${n.toUpperCase()}" - bugungi eng muhim strategik maqsadingizdir.</p></div>`;
+            if (p === 'p2') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p2)"><h6>Strategik muvozanat</h6><p>"${n}" vazifasi kunlik o'sishingizni ta'minlaydi.</p></div>`;
+            if (p === 'p3') hub.innerHTML += `<div class="ai-card" style="border-left-color:var(--p3)"><h6>Barqarorlik</h6><p>"${n}" - intizomni ushlab turuvchi odatiy jarayon.</p></div>`;
+        });
     };
 </script>
 </body>
