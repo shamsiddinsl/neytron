@@ -20,22 +20,20 @@
 
         #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
 
-        /* Header qismi telefonda to'liq yopilishi uchun to'g'irlandi */
+        /* Header dizayni pastki bloklar bilan bir xil kenglikka keltirildi */
         header { 
             position: sticky; top: 0; z-index: 100; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px 16px; border-radius: 22px; 
+            padding: 12px 20px; border-radius: 22px; 
             background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); 
-            backdrop-filter: blur(15px); width: 100%;
+            backdrop-filter: blur(15px); width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .brand { color: var(--accent); font-size: 18px; font-weight: 900; letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
         .atom-core { animation: spin 4s linear infinite; font-size: 22px; color: var(--accent); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         #custom-alert { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); }
-        .modal-box { width: 85%; max-width: 320px; background: var(--card); border: 1px solid var(--accent); border-radius: 25px; padding: 30px 20px; text-align: center; box-shadow: 0 0 30px rgba(34, 211, 238, 0.2); }
-        .modal-box i { font-size: 40px; color: var(--accent); margin-bottom: 15px; }
-        .modal-box p { font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; }
+        .modal-box { width: 85%; max-width: 320px; background: var(--card); border: 1px solid var(--accent); border-radius: 25px; padding: 30px 20px; text-align: center; }
 
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 420px 1fr; } }
@@ -73,7 +71,7 @@
 
 <div id="custom-alert">
     <div class="modal-box">
-        <i class="fa-solid fa-circle-check"></i>
+        <i class="fa-solid fa-circle-check" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
         <p id="modal-msg">Amal bajarildi!</p>
         <button class="btn-run" onclick="closeModal()" style="margin:0; padding:12px;">OK</button>
     </div>
@@ -89,9 +87,9 @@
 <div id="main-app">
     <header>
         <div class="brand"><i class="fa-solid fa-atom atom-core"></i> NEYTRON</div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:5px 8px; font-size:11px; font-weight:800; outline:none;">
-            <div id="user-p" style="width:34px; height:34px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); flex-shrink: 0;"></div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="date" id="pDate" onchange="window.loadData()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--accent); border-radius:10px; padding:6px 10px; font-size:11px; font-weight:800; outline:none;">
+            <div id="user-p" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--accent); flex-shrink: 0;"></div>
         </div>
     </header>
 
@@ -254,22 +252,26 @@
         vals.push(bal); labels.push('Bo\'sh vaqt'); colors.push('rgba(34, 211, 238, 0.05)');
         document.getElementById('balText').innerText = `${Math.floor(bal/60).toString().padStart(2,'0')}:${(bal%60).toString().padStart(2,'0')}`;
 
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById('nChart').getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
-            options: { cutout: '82%', animation: false, plugins: { legend: { display: false } } }
-        });
+        // Sakrashni yo'qotish uchun animatsiyani o'chirib, ma'lumotni yangilaymiz
+        if (chart) {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = vals;
+            chart.data.datasets[0].backgroundColor = colors;
+            chart.update('none'); // 'none' animatsiyani butunlay o'chiradi
+        } else {
+            chart = new Chart(document.getElementById('nChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
+                options: { cutout: '82%', animation: false, plugins: { legend: { display: false } } }
+            });
+        }
 
         const hub = document.getElementById('aiHub'); hub.innerHTML = '';
-        
-        // Bo'sh vaqt tahlili (birinchi bo'lib)
         if (bal > 0) {
             hub.innerHTML = `<div class="ai-card" style="border-left-color:var(--accent)">
                 <p style="font-size:12px; color:#94a3b8;">Yillik potentsial yo'qotish: <b>${Math.floor((bal*365)/60)} soat</b></p></div>`;
         }
 
-        // Kengaytirilgan strategik tahlil (siz xohlagandek formatda)
         document.querySelectorAll('.zone-card').forEach(z => {
             const n = z.querySelector('.name').value;
             const p = z.dataset.p;
