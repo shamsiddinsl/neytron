@@ -18,7 +18,14 @@
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0f172a 0%, #030712 100%); }
         .login-box { width: 92%; max-width: 400px; padding: 40px 20px; border-radius: 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center; }
 
-        #main-app { display: none; max-width: 1200px; margin: auto; padding-bottom: 30px; }
+        #main-app { 
+    display: none; /* Boshida yashirin turadi */
+    opacity: 0;    /* Yumshoq ko'rinishi uchun */
+    transition: opacity 0.5s ease;
+    max-width: 1200px; 
+    margin: auto; 
+    padding-bottom: 30px; 
+}
 
         /* Header dizayni pastki bloklar bilan bir xil kenglikka keltirildi */
         header { 
