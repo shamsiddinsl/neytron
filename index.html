@@ -49,6 +49,23 @@
             -webkit-appearance: none;
         }
 
+        /* Telegram Tugmasi Dizayni */
+        .btn-telegram {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        .btn-telegram:hover { background: var(--accent); color: #000; }
+
         #user-p { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--card); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -110,6 +127,9 @@
             <i class="fa-solid fa-atom atom-core"></i> NEYTRON
         </div>
         <div class="header-right">
+            <button class="btn-telegram" onclick="window.connectTelegram()">
+                <i class="fa-brands fa-telegram"></i> BOT
+            </button>
             <input type="date" id="pDate" onchange="window.loadData()">
             <div id="user-p"></div>
         </div>
@@ -170,6 +190,18 @@
             const result = await signInWithPopup(auth, provider);
             logEvent(analytics, 'login', { method: 'Google' });
         } catch (e) { console.error(e); }
+    };
+
+    // BOTGA ULASH LOGIKASI
+    window.connectTelegram = () => {
+        const user = auth.currentUser;
+        if (!user) {
+            window.showAlert("Avval tizimga kiring!");
+            return;
+        }
+        // UID ni botga start parametri sifatida yuboramiz
+        const botUrl = `https://t.me/neytron_robot?start=${user.uid}`; 
+        window.open(botUrl, '_blank');
     };
 
     window.saveData = async () => {
