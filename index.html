@@ -49,7 +49,6 @@
             -webkit-appearance: none;
         }
 
-        /* Telegram Tugmasi Dizayni */
         .btn-telegram {
             background: rgba(34, 211, 238, 0.1);
             border: 1px solid var(--accent);
@@ -163,7 +162,15 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+        getAuth, 
+        signInWithRedirect, 
+        getRedirectResult, 
+        GoogleAuthProvider, 
+        onAuthStateChanged, 
+        setPersistence, 
+        browserLocalPersistence 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -185,23 +192,28 @@
 
     setPersistence(auth, browserLocalPersistence);
     
+    // iPhone uchun to'g'irlangan redirect usuli
     window.signIn = async () => {
         try { 
-            const result = await signInWithPopup(auth, provider);
-            logEvent(analytics, 'login', { method: 'Google' });
-        } catch (e) { console.error(e); }
+            await signInWithRedirect(auth, provider);
+        } catch (e) { 
+            console.error(e); 
+            alert("Kirishda xatolik yuz berdi.");
+        }
     };
 
-    // BOTGA ULASH LOGIKASI
+    // Redirect natijasini tekshirish
+    getRedirectResult(auth).then(() => {
+        logEvent(analytics, 'login', { method: 'Google' });
+    }).catch((e) => console.error(e));
+
     window.connectTelegram = () => {
         const user = auth.currentUser;
         if (!user) {
             window.showAlert("Avval tizimga kiring!");
             return;
         }
-        // UID ni botga start parametri sifatida yuboramiz
-        const botUrl = `https://t.me/neytron_robot?start=${user.uid}`; 
-        window.open(botUrl, '_blank');
+        window.open(`https://t.me/neytron_robot?start=${user.uid}`, '_blank');
     };
 
     window.saveData = async () => {
@@ -212,34 +224,45 @@
             t: z.querySelector('.time').value,
             p: z.dataset.p
         }));
-        await setDoc(doc(db, "users", user.uid, "plans", date), {
-            sleep: document.getElementById('sH').value,
-            work: document.getElementById('wH').value,
-            zones: zones
-        });
-        logEvent(analytics, 'save_strategy', { date: date });
-        window.showAlert("Strategiya muvaffaqiyatli saqlandi!");
+        try {
+            await setDoc(doc(db, "users", user.uid, "plans", date), {
+                sleep: document.getElementById('sH').value,
+                work: document.getElementById('wH').value,
+                zones: zones
+            });
+            logEvent(analytics, 'save_strategy', { date: date });
+            window.showAlert("Strategiya muvaffaqiyatli saqlandi!");
+        } catch (e) {
+            console.error(e);
+            alert("Saqlashda xatolik!");
+        }
     };
 
     window.loadData = async () => {
         const user = auth.currentUser; if (!user) return;
         const date = document.getElementById('pDate').value;
-        const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
-        document.getElementById('zList').innerHTML = '';
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('sH').value = data.sleep || 8;
-            document.getElementById('wH').value = data.work || 8;
-            if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p));
+        try {
+            const docSnap = await getDoc(doc(db, "users", user.uid, "plans", date));
+            document.getElementById('zList').innerHTML = '';
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('sH').value = data.sleep || 8;
+                document.getElementById('wH').value = data.work || 8;
+                if(data.zones) data.zones.forEach(z => window.addZ(z.n, z.t, z.p));
+            }
+            window.updateUI();
+        } catch (e) {
+            console.error(e);
         }
-        updateUI();
     };
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            if(user.photoURL) document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;">`;
+            if(user.photoURL) {
+                document.getElementById('user-p').innerHTML = `<img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            }
             window.loadData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
